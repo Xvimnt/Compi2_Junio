@@ -29,7 +29,7 @@ const optimizer = require('./parser/Grammar/OptGrammar');
 })
 export class EditorComponent {
   // Variables
-  title = 'olc2web';
+  title = 'Compi2_Junio';
   entrada = 'console.log("Hello World");';
   salida = '[Xvimnt201700831]MatrioshTS Output: \n\n';
   ast: any;
@@ -284,7 +284,7 @@ export class EditorComponent {
       //alert(new Plotter().makeDot(this.ast));
       //return;
       this.dotService.setDot(new Plotter().makeDot(this.ast));
-      window.open('/olc2web/ast');
+      window.open('/Compi2_Junio/ast');
       return;
     }
   }

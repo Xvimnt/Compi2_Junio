@@ -6,7 +6,7 @@ import { Component } from '@angular/core';
   styleUrls: ['./app.component.css']
 })
 export class AppComponent {
-  title = 'olc2web';
+  title = 'Compi2_Junio';
   
   ngOnInit() {
   
