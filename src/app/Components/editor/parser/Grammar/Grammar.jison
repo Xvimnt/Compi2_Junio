@@ -1,42 +1,7 @@
  
 %{
-    const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
-    const {Relational, RelationalOption} = require('../Expression/Relational');
-    const {Logic, LogicOption} = require('../Expression/Logic');
-    const {Unary, UnaryOption} = require('../Expression/Unary');
-    const {Access} = require('../Expression/Access');
-    const {Property} = require('../Expression/Property');
-    const {Literal} = require('../Expression/Literal');
-    const {Ternary} = require('../Expression/Ternary');
-    const {Param} = require('../Expression/Param');
-    // Tipos de Objetos
-    const {ArrayType} = require('../Types/Array');
-    const {_Type} = require('../Types/Type');
-    // Instrucciones
-    const {Operation, OperationOption} = require('../Instruction/Operation');
-    const {If} = require('../Instruction/If');
-    const {Switch} = require('../Instruction/Switch');
-    const {Case} = require('../Instruction/Case');
-    const {Print} = require('../Instruction/Print');
-    const {Statement} = require('../Instruction/Statement');
-    const {For} = require('../Instruction/For');
-    const {ForIn} = require('../Instruction/ForIn');
-    const {ForOf} = require('../Instruction/ForOf');
-    const {While} = require('../Instruction/While');
-    const {DoWhile} = require('../Instruction/DoWhile');
-    const {Declaration} = require('../Instruction/Declaration');
-    const {TypeDeclaration} = require('../Instruction/TypeDeclaration');
-    const {ArrayDeclaration} = require('../Instruction/ArrayDeclaration');
-    const {Assignation} = require('../Instruction/Assignation');
-    const {Break} = require('../Instruction/Break');
-    const {Continue} = require('../Instruction/Continue');
-    const {Return} = require('../Instruction/Return');
-    const {Call} = require('../Instruction/Call');
-    const {Function} = require('../Instruction/Function');
-    const {_Array} = require('../Object/Array');
-    const { Error_ } = require('../Error');
-    const { errores } = require('../Errores');
-
+   // const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
+    
 %}
 
 %lex

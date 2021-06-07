@@ -1282,6 +1282,7 @@ exports.main = function commonjsMain (args) {
         console.log('Usage: '+args[0]+' FILE');
         process.exit(1);
     }
+   
 };
 if (typeof module !== 'undefined' && require.main === module) {
   exports.main(process.argv.slice(1));

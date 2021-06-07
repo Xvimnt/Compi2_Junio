@@ -1,8 +1,6 @@
-import { env } from "process"
 import { Symbol } from "./Symbol";
 import { Type } from "../Abstract/Retorno";
 import { Function } from "../Instruction/Function";
-import { isRegExp } from 'util';
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { _Console } from '../Util/Salida';

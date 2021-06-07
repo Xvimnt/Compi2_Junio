@@ -30,8 +30,8 @@ const optimizer = require('./parser/Grammar/OptGrammar');
 export class EditorComponent {
   // Variables
   title = 'Compi2_Junio';
-  entrada = 'console.log("Hello World");';
-  salida = '[Xvimnt201700831]MatrioshTS Output: \n\n';
+  entrada = '<helloworld>\n</helloworld>';
+  salida = 'TytusX Output: \n\n';
   ast: any;
   reglas: Array<Rule>;
   env: Environment;

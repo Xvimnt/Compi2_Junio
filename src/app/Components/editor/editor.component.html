@@ -6,12 +6,12 @@
             <div class="col-md-12">
                 <button (click)="ejecutar()" type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104);">
                     <fa-icon [icon]="faCoffee"></fa-icon>
-                    Compilar
+                    XML
                 </button>
                 &nbsp;
                 <button (click)="translate()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
                     <fa-icon [icon]="faGlobe"></fa-icon>
-                    Traducir
+                    XQuery
                 </button>
                 &nbsp;
                 <button (click)="optimizar()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
@@ -27,7 +27,15 @@
                     <div ngbDropdownMenu aria-labelledby="dropdownBasic1" style="background-color: rgb(8, 101, 104)" class="btn btn-info dropdown-toggle" >
                         <button (click)="printAst()" type="button" class="dropdown-item">
                             <fa-icon [icon]="faPencilRuler"></fa-icon>
-                            Graficar
+                            AST
+                        </button>
+                        <button (click)="printAst()" type="button" class="dropdown-item">
+                            <fa-icon [icon]="faPencilRuler"></fa-icon>
+                            CST
+                        </button>
+                        <button (click)="printAst()" type="button" class="dropdown-item">
+                            <fa-icon [icon]="faPencilRuler"></fa-icon>
+                            DAG
                         </button>
                         <button (click)="tokenTable()" type="button" class="dropdown-item">
                             <fa-icon [icon]="faLanguage"></fa-icon>
@@ -52,16 +60,26 @@
                     <ngx-codemirror [(ngModel)]="entrada" [options]="{
               lineNumbers: true,
               theme: 'material-ocean',
-              mode: 'javascript'
+              mode: 'xml'
             }"></ngx-codemirror>
                 </div>
             </div>
             <div class="col-md-6">
                 <div class="terminal" id="output">
-                    <ngx-codemirror disabled [(ngModel)]="salida" [options]="{
-                lineNumbers: false,
-                theme: 'blackboard'
+                    <ngx-codemirror [(ngModel)]="entrada" [options]="{
+                lineNumbers: true,
+                theme: 'material-ocean'
               }"></ngx-codemirror>
+                </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-md-12">
+                <div class="terminal" >
+                    <ngx-codemirror disabled [(ngModel)]="salida" [options]="{
+                        lineNumbers: false,
+                        theme: 'blackboard'
+            }"></ngx-codemirror>
                 </div>
             </div>
         </div>
