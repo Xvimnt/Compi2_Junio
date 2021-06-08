@@ -1,92 +1,198 @@
 <!-- Body -->
 <div class="content" role="main">
-    <div class="container-fluid">
-        <!-- Botones de Accion -->
-        <div class="row">
-            <div class="col-md-12">
-                <button (click)="ejecutar()" type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104);">
-                    <fa-icon [icon]="faCoffee"></fa-icon>
-                    XML
-                </button>
-                &nbsp;
-                <button (click)="translate()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
-                    <fa-icon [icon]="faGlobe"></fa-icon>
-                    XQuery
-                </button>
-                &nbsp;
-                <button (click)="optimizar()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
-                    <fa-icon [icon]="faSpinner"></fa-icon>
-                    Optimizar
-                </button>
-                &nbsp;
-                <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-dark" style="background-color: rgb(8, 101, 104)" id="dropdownBasic1" ngbDropdownToggle>
-                        <fa-icon [icon]="faFileAlt"></fa-icon>
-                        Reportes
-                    </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" style="background-color: rgb(8, 101, 104)" class="btn btn-info dropdown-toggle" >
-                        <button (click)="printAst()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faPencilRuler"></fa-icon>
-                            AST
-                        </button>
-                        <button (click)="printAst()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faPencilRuler"></fa-icon>
-                            CST
-                        </button>
-                        <button (click)="printAst()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faPencilRuler"></fa-icon>
-                            DAG
-                        </button>
-                        <button (click)="tokenTable()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faLanguage"></fa-icon>
-                            Tabla de Simbolos
-                        </button>
-                        <button (click)="errorTable()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faEraser"></fa-icon>
-                            Tabla de Errores
-                        </button>
-                        <button (click)="optTable()" type="button" class="dropdown-item">
-                            <fa-icon [icon]="faSpinner"></fa-icon>
-                            Tabla de Optimizacion
-                        </button>
-                    </div>
-                </div>
-            </div>
+  <div class="container-fluid">
+    <!-- Botones de Accion -->
+    <div class="row">
+      <div class="col-md-12">
+        <div ngbDropdown class="d-inline-block">
+          <button
+            class="btn btn-dark"
+            style="background-color: rgb(8, 101, 104)"
+            id="dropdownBasic1"
+            ngbDropdownToggle
+          >
+            <fa-icon [icon]="faFileAlt"></fa-icon>
+            XML
+          </button>
+          <div
+            ngbDropdownMenu
+            aria-labelledby="dropdownBasic1"
+            style="background-color: rgb(8, 101, 104)"
+            class="btn btn-info dropdown-toggle"
+          >
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Nuevo
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Abrir
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Guardar
+            </button>
+            <button (click)="tokenTable()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faLanguage"></fa-icon>
+              Limpiar
+            </button>
+          </div>
         </div>
-        <!-- Editores -->
-        <div class="row">
-            <div class="col-md-6">
-                <div class="terminal" >
-                    <ngx-codemirror [(ngModel)]="entrada" [options]="{
+        &nbsp;
+        <div ngbDropdown class="d-inline-block">
+          <button
+            class="btn btn-dark"
+            style="background-color: rgb(8, 101, 104)"
+            id="dropdownBasic1"
+            ngbDropdownToggle
+          >
+            <fa-icon [icon]="faFileAlt"></fa-icon>
+            XPath
+          </button>
+          <div
+            ngbDropdownMenu
+            aria-labelledby="dropdownBasic1"
+            style="background-color: rgb(8, 101, 104)"
+            class="btn btn-info dropdown-toggle"
+          >
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Nuevo
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Abrir
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              Guardar
+            </button>
+            <button (click)="tokenTable()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faLanguage"></fa-icon>
+              Limpiar
+            </button>
+          </div>
+        </div>
+        &nbsp;
+        <button
+          (click)="ejecutar()"
+          type="button"
+          class="btn btn-dark"
+          style="background-color: rgb(8, 101, 104)"
+        >
+          <fa-icon [icon]="faCoffee"></fa-icon>
+          Ejecutar
+        </button>
+        &nbsp;
+        <button
+          (click)="translate()"
+          type="button"
+          class="btn btn-dark"
+          style="background-color: rgb(8, 101, 104)"
+        >
+          <fa-icon [icon]="faGlobe"></fa-icon>
+          XQuery
+        </button>
+        &nbsp;
+        <button
+          (click)="optimizar()"
+          type="button"
+          class="btn btn-dark"
+          style="background-color: rgb(8, 101, 104)"
+        >
+          <fa-icon [icon]="faSpinner"></fa-icon>
+          Optimizar
+        </button>
+        &nbsp;
+        <div ngbDropdown class="d-inline-block">
+          <button
+            class="btn btn-dark"
+            style="background-color: rgb(8, 101, 104)"
+            id="dropdownBasic1"
+            ngbDropdownToggle
+          >
+            <fa-icon [icon]="faFileAlt"></fa-icon>
+            Reportes
+          </button>
+          <div
+            ngbDropdownMenu
+            aria-labelledby="dropdownBasic1"
+            style="background-color: rgb(8, 101, 104)"
+            class="btn btn-info dropdown-toggle"
+          >
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              AST
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              CST
+            </button>
+            <button (click)="printAst()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faPencilRuler"></fa-icon>
+              DAG
+            </button>
+            <button (click)="tokenTable()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faLanguage"></fa-icon>
+              Tabla de Simbolos
+            </button>
+            <button (click)="errorTable()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faEraser"></fa-icon>
+              Tabla de Errores
+            </button>
+            <button (click)="optTable()" type="button" class="dropdown-item">
+              <fa-icon [icon]="faSpinner"></fa-icon>
+              Tabla de Optimizacion
+            </button>
+          </div>
+        </div>
+      </div>
+    </div>
+    <!-- Editores -->
+    <div class="row">
+      <div class="col-md-6">
+        <div class="terminal">
+          <h2 class="term-title">XML</h2>
+          <ngx-codemirror
+            [(ngModel)]="entrada"
+            [options]="{
               lineNumbers: true,
               theme: 'material-ocean',
               mode: 'xml'
-            }"></ngx-codemirror>
-                </div>
-            </div>
-            <div class="col-md-6">
-                <div class="terminal" id="output">
-                    <ngx-codemirror [(ngModel)]="entrada" [options]="{
-                lineNumbers: true,
-                theme: 'material-ocean'
-              }"></ngx-codemirror>
-                </div>
-            </div>
+            }"
+          ></ngx-codemirror>
         </div>
-        <div class="row">
-            <div class="col-md-12">
-                <div class="terminal" >
-                    <ngx-codemirror disabled [(ngModel)]="salida" [options]="{
-                        lineNumbers: false,
-                        theme: 'blackboard'
-            }"></ngx-codemirror>
-                </div>
-            </div>
+      </div>
+      <div class="col-md-6">
+        <div class="terminal" id="output">
+          <h2 class="term-title">XPath</h2>
+          <ngx-codemirror
+            [(ngModel)]="entrada"
+            [options]="{
+              lineNumbers: true,
+              theme: 'material-ocean'
+            }"
+          ></ngx-codemirror>
         </div>
-        <div class="row">
-            <div class="col-md-12 text-center" id="graph">
-
-            </div>
-        </div>
+      </div>
     </div>
+    <div class="row">
+      <div class="col-md-12">
+        <div class="terminal">
+          <h2 class="term-title">Result</h2>
+          <ngx-codemirror
+            disabled
+            [(ngModel)]="salida"
+            [options]="{
+              lineNumbers: false,
+              theme: 'blackboard'
+            }"
+          ></ngx-codemirror>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col-md-12 text-center" id="graph"></div>
+    </div>
+  </div>
 </div>
