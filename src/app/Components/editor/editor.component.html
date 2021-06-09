@@ -4,27 +4,56 @@
         <!-- Botones de Accion -->
         <div class="row">
             <div class="col-md-12">
-                <button (click)="ejecutar()" type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104);">
+                <div ngbDropdown class="d-inline-block">
+                    <button class="btn btn-dark" style="background-color: rgb(8, 101, 104)" id="dropdownBasic1"
+                        ngbDropdownToggle>
+                        <fa-icon [icon]="faFileAlt"></fa-icon>
+                        Archivo
+                    </button>
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" style="background-color: rgb(8, 101, 104)"
+                        class="btn btn-info dropdown-toggle">
+                        <input type="file" (change)="onFileSelected($event)" #fileUpload hidden>
+                        <button type="button" class="dropdown-item" (click)="fileUpload.click()">
+                            <fa-icon [icon]="faFileAlt"></fa-icon>
+                            Abrir Archivo
+                        </button>
+                        <button (click)="saveFile()" type="button" class="dropdown-item">
+                            <fa-icon [icon]="faPencilRuler"></fa-icon>
+                            Guardar Archivo
+                        </button>
+                        <button (click)="cleanText()" type="button" class="dropdown-item">
+                            <fa-icon [icon]="faPencilRuler"></fa-icon>
+                            Limpiar
+                        </button>
+                    </div>
+                </div>
+                &nbsp;
+                <button (click)="ejecutar()" type="button" class="btn btn-dark"
+                    style="background-color: rgb(8, 101, 104);">
                     <fa-icon [icon]="faCoffee"></fa-icon>
                     XML
                 </button>
                 &nbsp;
-                <button (click)="translate()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
+                <button (click)="translate()" type="button" class="btn btn-dark"
+                    style="background-color: rgb(8, 101, 104)">
                     <fa-icon [icon]="faGlobe"></fa-icon>
                     XQuery
                 </button>
                 &nbsp;
-                <button (click)="optimizar()"  type="button" class="btn btn-dark" style="background-color: rgb(8, 101, 104)">
+                <button (click)="optimizar()" type="button" class="btn btn-dark"
+                    style="background-color: rgb(8, 101, 104)">
                     <fa-icon [icon]="faSpinner"></fa-icon>
                     Optimizar
                 </button>
                 &nbsp;
                 <div ngbDropdown class="d-inline-block">
-                    <button class="btn btn-dark" style="background-color: rgb(8, 101, 104)" id="dropdownBasic1" ngbDropdownToggle>
+                    <button class="btn btn-dark" style="background-color: rgb(8, 101, 104)" id="dropdownBasic1"
+                        ngbDropdownToggle>
                         <fa-icon [icon]="faFileAlt"></fa-icon>
                         Reportes
                     </button>
-                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" style="background-color: rgb(8, 101, 104)" class="btn btn-info dropdown-toggle" >
+                    <div ngbDropdownMenu aria-labelledby="dropdownBasic1" style="background-color: rgb(8, 101, 104)"
+                        class="btn btn-info dropdown-toggle">
                         <button (click)="printAst()" type="button" class="dropdown-item">
                             <fa-icon [icon]="faPencilRuler"></fa-icon>
                             AST
@@ -56,7 +85,7 @@
         <!-- Editores -->
         <div class="row">
             <div class="col-md-6">
-                <div class="terminal" >
+                <div class="terminal">
                     <ngx-codemirror [(ngModel)]="entrada" [options]="{
               lineNumbers: true,
               theme: 'material-ocean',
@@ -66,7 +95,7 @@
             </div>
             <div class="col-md-6">
                 <div class="terminal" id="output">
-                    <ngx-codemirror [(ngModel)]="entrada" [options]="{
+                    <ngx-codemirror [(ngModel)]="consulta" [options]="{
                 lineNumbers: true,
                 theme: 'material-ocean'
               }"></ngx-codemirror>
@@ -75,7 +104,7 @@
         </div>
         <div class="row">
             <div class="col-md-12">
-                <div class="terminal" >
+                <div class="terminal">
                     <ngx-codemirror disabled [(ngModel)]="salida" [options]="{
                         lineNumbers: false,
                         theme: 'blackboard'
