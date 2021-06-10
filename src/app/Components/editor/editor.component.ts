@@ -72,11 +72,11 @@ export class EditorComponent {
     this.clean();
   }
 
-  cleanText(){
-    this.consulta = '';
-    this.salida = '[TytusX] Output: \n\n';
-    this.entrada = '';
-  }
+  // cleanText(){
+  //   this.consulta = '';
+  //   this.salida = '[TytusX] Output: \n\n';
+  //   this.entrada = '';
+  // }
   // Metodos
   clean() {
     this.ast = null;
@@ -119,69 +119,68 @@ export class EditorComponent {
     this.salida += '}\n\n';
   }
 
+  // onFileSelected(event) {
+  //   const file: File = event.target.files[0];
+  //   if (file) {
+  //     var reader = new FileReader();
+  //     Swal.fire({
+  //       title: '¡Carga Correcta! ¿En que area de texto desea cargar?',
+  //       showDenyButton: true,
+  //       showCancelButton: true,
+  //       confirmButtonText: `Area 1`,
+  //       denyButtonText: `Area 2`,
+  //       confirmButtonColor: 'rgb(8, 101, 104)',
+  //       background: 'black',
+  //       icon: 'info'
+  //     }).then((result) => {
+  //       if (result.isConfirmed) {
+  //         reader.onload = () => {
+  //           this.entrada = reader.result.toString();
+  //         };
+  //         reader.readAsText(file);
+  //       }
+  //       else if (result.isDenied) {
+  //         reader.onload = () => {
+  //           this.consulta = reader.result.toString();
+  //         };
+  //         reader.readAsText(file);
+  //       }
+  //     });
+  //   }
+  // }
 
-  onFileSelected(event) {
-    const file: File = event.target.files[0];
-    if (file) {
-      var reader = new FileReader();
-      Swal.fire({
-        title: '¡Carga Correcta! ¿En que area de texto desea cargar?',
-        showDenyButton: true,
-        showCancelButton: true,
-        confirmButtonText: `Area 1`,
-        denyButtonText: `Area 2`,
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-        icon: 'info'
-      }).then((result) => {
-        if (result.isConfirmed) {
-          reader.onload = () => {
-            this.entrada = reader.result.toString();
-          };
-          reader.readAsText(file);
-        }
-        else if (result.isDenied) {
-          reader.onload = () => {
-            this.consulta = reader.result.toString();
-          };
-          reader.readAsText(file);
-        }
-      });
-    }
-  }
-
-  saveFile() {
-    var reader = new FileReader();
-    Swal.fire({
-      title: '¿Que area de texto desea descargar?',
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: `Area 1`,
-      denyButtonText: `Area 2`,
-      confirmButtonColor: 'rgb(8, 101, 104)',
-      background: 'black',
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) {
-        const blob = new Blob([this.entrada], { type: 'text/txt' });
-        const url = window.URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "TytusX.txt";
-        // start download
-        a.click();
-      }
-      else if (result.isDenied) {
-        const blob = new Blob([this.consulta], { type: 'text/txt' });
-        const url = window.URL.createObjectURL(blob);
-        var a = document.createElement("a");
-        a.href = url;
-        a.download = "TytusX.txt";
-        // start download
-        a.click();
-      }
-    });
-  }
+  // saveFile() {
+  //   var reader = new FileReader();
+  //   Swal.fire({
+  //     title: '¿Que area de texto desea descargar?',
+  //     showDenyButton: true,
+  //     showCancelButton: true,
+  //     confirmButtonText: `Area 1`,
+  //     denyButtonText: `Area 2`,
+  //     confirmButtonColor: 'rgb(8, 101, 104)',
+  //     background: 'black',
+  //     icon: 'info'
+  //   }).then((result) => {
+  //     if (result.isConfirmed) {
+  //       const blob = new Blob([this.entrada], { type: 'text/txt' });
+  //       const url = window.URL.createObjectURL(blob);
+  //       var a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = "TytusX.txt";
+  //       // start download
+  //       a.click();
+  //     }
+  //     else if (result.isDenied) {
+  //       const blob = new Blob([this.consulta], { type: 'text/txt' });
+  //       const url = window.URL.createObjectURL(blob);
+  //       var a = document.createElement("a");
+  //       a.href = url;
+  //       a.download = "TytusX.txt";
+  //       // start download
+  //       a.click();
+  //     }
+  //   });
+  // }
 
   executeOpt(entrada: string) {
     try {
