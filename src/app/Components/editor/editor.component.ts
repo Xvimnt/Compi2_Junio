@@ -1,36 +1,52 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 // Imports para el parser
-import { Environment } from "./parser/Symbol/Environment";
-import { Function } from "./parser/Instruction/Function";
-import { _Console } from "./parser/Util/Salida";
+import { Environment } from './parser/Symbol/Environment';
+import { Function } from './parser/Instruction/Function';
+import { _Console } from './parser/Util/Salida';
 // Imports para los reportes
-import { Plotter } from "./parser/Report/plotter";
-import { Table } from "./parser/Report/Table";
+import { Plotter } from './parser/Report/plotter';
+import { Table } from './parser/Report/Table';
 // Import para el servicio
-import { DotService } from "../../services/dot.service"
+import { DotService } from '../../services/dot.service';
 // Import para las alertas
-import Swal from 'sweetalert2'
+import Swal from 'sweetalert2';
 // Imports para los iconos
-import { faCoffee, faPencilRuler, faGlobe, faFileAlt, faLanguage, faEraser, faSpinner } from '@fortawesome/free-solid-svg-icons';
+import {
+  faCoffee,
+  faPencilRuler,
+  faGlobe,
+  faFileAlt,
+  faLanguage,
+  faEraser,
+  faSpinner,
+  faList,
+  faFile,
+  faExternalLinkAlt,
+  faFileDownload,
+  faPlay,
+} from '@fortawesome/free-solid-svg-icons';
 import { errores } from './parser/Errores';
 import { isString } from 'util';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
-declare var require: any
+import { XmlParser } from '@angular/compiler';
+declare var require: any;
 const parser = require('./parser/Grammar/Grammar');
 const optimizer = require('./parser/Grammar/OptGrammar');
 // cd src/app/parser/Grammar
+const parserXML = require('./parser/Grammar/XmlGrammarASC.js');
 
 @Component({
   selector: 'editor-root',
   templateUrl: './editor.component.html',
   styleUrls: ['./editor.component.css'],
-  encapsulation: ViewEncapsulation.None
+  encapsulation: ViewEncapsulation.None,
 })
 export class EditorComponent {
   // Variables
   title = 'Compi2_Junio';
-  entrada = '<helloworld>\n</helloworld>';
+  entradaXml = '<helloworld>\n</helloworld>';
+  entradaXpath = '/helloworld';
   salida = 'TytusX Output: \n\n';
   ast: any;
   reglas: Array<Rule>;
@@ -45,8 +61,13 @@ export class EditorComponent {
   faFileAlt = faFileAlt;
   faLanguage = faLanguage;
   faEraser = faEraser;
+  faList = faList;
+  faFile = faFile;
+  faExternalLinkAlt = faExternalLinkAlt;
+  faFileDownload = faFileDownload;
+  faPlay = faPlay;
 
-  constructor(private dotService: DotService) { }
+  constructor(private dotService: DotService) {}
   ngOnInit() {
     this.clean();
   }
@@ -54,8 +75,8 @@ export class EditorComponent {
   clean() {
     this.ast = null;
     this.env = null;
-    this.salida = '[Xvimnt201700831]MatrioshTS Output: \n\n';
-    _Console.salida = "";
+    this.salida = '[Grupo18_TitusX]Output: \n\n';
+    _Console.salida = '';
     _Console.count = 0;
     _Console.labels = 0;
     _Console.stackPointer = 0;
@@ -76,17 +97,20 @@ export class EditorComponent {
     for (let index = 0; index < _Console.count; index++) {
       if (index > 0 && index % 8 == 0) {
         this.salida = this.salida.substring(0, this.salida.length - 2);
-        this.salida += ";\nfloat "
+        this.salida += ';\nfloat ';
       }
-      this.salida += "t" + index + ", ";
+      this.salida += 't' + index + ', ';
     }
-    this.salida = (_Console.count != 0) ? this.salida.substring(0, this.salida.length - 2) : this.salida + "t0";
-    this.salida += ";\n\n";
+    this.salida =
+      _Console.count != 0
+        ? this.salida.substring(0, this.salida.length - 2)
+        : this.salida + 't0';
+    this.salida += ';\n\n';
     this.salida += _Console.salida;
-    this.salida += "void main() {\n"
+    this.salida += 'void main() {\n';
     this.salida += body;
-    this.salida += "\nreturn;\n"
-    this.salida += "}\n\n";
+    this.salida += '\nreturn;\n';
+    this.salida += '}\n\n';
   }
 
   executeOpt(entrada: string) {
@@ -155,7 +179,7 @@ export class EditorComponent {
         icon: 'success',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
+        background: 'black',
       }).then(() => {
         this.cOutput(env.salida);
       });
@@ -167,99 +191,117 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
+        background: 'black',
       });
     }
   }
 
   optimizar() {
-    Swal.fire({
-      title: 'En donde se encuentra el codigo a optimizar?',
-      showDenyButton: true,
-      showCancelButton: true,
-      confirmButtonText: `Entrada`,
-      denyButtonText: `Salida`,
-      confirmButtonColor: 'rgb(8, 101, 104)',
-      background: 'black',
-      icon: 'info'
-    }).then((result) => {
-      if (result.isConfirmed) this.executeOpt(this.entrada.toString());
-      else if (result.isDenied) this.executeOpt(this.salida.toString());
-    });
+    // Swal.fire({
+    //   title: 'En donde se encuentra el codigo a optimizar?',
+    //   showDenyButton: true,
+    //   showCancelButton: true,
+    //   confirmButtonText: `Entrada`,
+    //   denyButtonText: `Salida`,
+    //   confirmButtonColor: 'rgb(8, 101, 104)',
+    //   background: 'black',
+    //   icon: 'info',
+    // }).then((result) => {
+    //   if (result.isConfirmed) this.executeOpt(this.entrada.toString());
+    //   else if (result.isDenied) this.executeOpt(this.salida.toString());
+    // });
   }
 
   ejecutar() {
     this.clean();
     try {
-      this.ast = parser.parse(this.entrada.toString());
-      this.env = new Environment(null);
-
-      for (const instr of this.ast) {
-        try {
-          if (instr instanceof Function)
-            instr.execute(this.env);
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      for (const instr of this.ast) {
-        if (instr instanceof Function || isString(instr))
-          continue;
-        try {
-          instr.execute(this.env);
-          // TODO validar return break continue fuera de ciclos
-        } catch (error) {
-          console.log(error);
-        }
-      }
-      if (errores.length == 0) {
-        // Muestra el resultado en la pagina
-        this.salida += _Console.salida;
-      } else {
-        if (errores.length != 0) {
-          errores.forEach(error => {
-            this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
-          });
-        }
-      }
+      this.ast = parserXML.parse(this.entradaXml.toString());
+      console.log(this.ast);
+    } catch (e) {
+      console.error(e.message);
     }
-    catch (error) {
-      console.log(error);
-    }
-    this.flag = false;
+    // this.flag = false;
+    // try {
+    //   this.ast = parser.parse(this.entrada.toString());
+    //   this.env = new Environment(null);
+    //   for (const instr of this.ast) {
+    //     try {
+    //       if (instr instanceof Function) instr.execute(this.env);
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   for (const instr of this.ast) {
+    //     if (instr instanceof Function || isString(instr)) continue;
+    //     try {
+    //       instr.execute(this.env);
+    //       // TODO validar return break continue fuera de ciclos
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   if (errores.length == 0) {
+    //     // Muestra el resultado en la pagina
+    //     this.salida += _Console.salida;
+    //   } else {
+    //     if (errores.length != 0) {
+    //       errores.forEach((error) => {
+    //         this.salida +=
+    //           'Error ' +
+    //           error.getTipo() +
+    //           ' (linea: ' +
+    //           error.getLinea() +
+    //           ', columna: ' +
+    //           error.getColumna() +
+    //           '): ' +
+    //           error.getDescripcion() +
+    //           '.  \n';
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // this.flag = false;
   }
 
   translate() {
-    this.clean();
-    try {
-      this.ast = parser.parse(this.entrada.toString());
-      this.env = new Environment(null);
-      this.salida = '';
-      try {
-        for (const instr of this.ast) {
-          this.salida += instr.translate(this.env);
-        }
-      }
-      catch (e) {
-        console.log(e);
-      }
-      if (errores.length == 0) {
-        this.cOutput(this.salida);
-      } else {
-        if (errores.length != 0) {
-          errores.forEach(error => {
-            this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
-          });
-        }
-      }
-    }
-    catch (error) {
-      console.log(error);
-    }
-    this.flag = false;
-    _Console.showSystem();
+    // this.clean();
+    // try {
+    //   this.ast = parser.parse(this.entrada.toString());
+    //   this.env = new Environment(null);
+    //   this.salida = '';
+    //   try {
+    //     for (const instr of this.ast) {
+    //       this.salida += instr.translate(this.env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   if (errores.length == 0) {
+    //     this.cOutput(this.salida);
+    //   } else {
+    //     if (errores.length != 0) {
+    //       errores.forEach((error) => {
+    //         this.salida +=
+    //           'Error ' +
+    //           error.getTipo() +
+    //           ' (linea: ' +
+    //           error.getLinea() +
+    //           ', columna: ' +
+    //           error.getColumna() +
+    //           '): ' +
+    //           error.getDescripcion() +
+    //           '.  \n';
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // this.flag = false;
+    // _Console.showSystem();
   }
-
 
   printAst() {
     if (this.flag) {
@@ -269,8 +311,8 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
+        background: 'black',
+      });
     } else if (errores.length != 0) {
       Swal.fire({
         title: 'Oops...!',
@@ -278,10 +320,10 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
+        background: 'black',
+      });
     } else {
-      //alert(new Plotter().makeDot(this.ast));
+      // alert(new Plotter().makeDot(this.ast));
       //return;
       this.dotService.setDot(new Plotter().makeDot(this.ast));
       window.open('/Compi2_Junio/ast');
@@ -297,18 +339,17 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else if (_Console.symbols.size == 0) {
+        background: 'black',
+      });
+    } else if (_Console.symbols.size == 0) {
       Swal.fire({
         title: 'Oops...',
         text: 'No se encontro ninguna variable o funcion guardada',
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
+        background: 'black',
+      });
     } else if (errores.length != 0) {
       Swal.fire({
         title: 'Oops...!',
@@ -316,18 +357,17 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else {
+        background: 'black',
+      });
+    } else {
       Swal.fire({
         title: 'Tabla de Simbolos',
         html: new Table().symbols(_Console.symbols),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
-        width: 800
-      })
+        width: 800,
+      });
     }
   }
 
@@ -339,28 +379,26 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else if (this.reglas.length == 0) {
+        background: 'black',
+      });
+    } else if (this.reglas.length == 0) {
       Swal.fire({
         title: 'Cool!',
         text: 'No se encontraron optimizaciones en su codigo',
         icon: 'success',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else {
+        background: 'black',
+      });
+    } else {
       Swal.fire({
         title: 'Tabla de Reglas',
         html: new Table().rules(this.reglas),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
-        width: 800
-      })
+        width: 800,
+      });
     }
   }
 
@@ -372,28 +410,108 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else if (errores.length == 0) {
+        background: 'black',
+      });
+    } else if (errores.length == 0) {
       Swal.fire({
         title: 'Cool!',
         text: 'No se encontraron errores en su codigo',
         icon: 'success',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else {
+        background: 'black',
+      });
+    } else {
       Swal.fire({
         title: 'Tabla de Errores',
         html: new Table().errors(errores),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
-        width: 800
-      })
+        width: 800,
+      });
     }
+  }
+
+  newXML() {
+    //New File
+    this.entradaXml = '';
+  }
+
+  newXPath() {
+    //New File
+    this.entradaXpath = '';
+  }
+
+  openXML() {
+    //Open file
+    let fileSelector = document.createElement('input');
+    fileSelector.setAttribute('type', 'file');
+    fileSelector.onchange = (e) => {
+      let file = fileSelector.files[0];
+      if (!file) return false;
+      let reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+        this.entradaXml = event.target.result.toString();
+      });
+      reader.readAsText(file);
+    };
+
+    fileSelector.click();
+    return false;
+  }
+
+  openXPath() {
+    //Open file
+    let fileSelector = document.createElement('input');
+    fileSelector.setAttribute('type', 'file');
+    fileSelector.onchange = (e) => {
+      let file = fileSelector.files[0];
+      if (!file) return false;
+      let reader = new FileReader();
+      reader.addEventListener('load', (event) => {
+        this.entradaXpath = event.target.result.toString();
+      });
+      reader.readAsText(file);
+    };
+
+    fileSelector.click();
+    return false;
+  }
+
+  saveXML() {
+    var element = document.createElement('a');
+    element.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(this.entradaXml)
+    );
+    element.setAttribute('download', 'Compi2.xml');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  saveXPath() {
+    var element = document.createElement('a');
+    element.setAttribute(
+      'href',
+      'data:text/plain;charset=utf-8,' + encodeURIComponent(this.entradaXpath)
+    );
+    element.setAttribute('download', 'Compi2.xpath');
+
+    element.style.display = 'none';
+    document.body.appendChild(element);
+
+    element.click();
+
+    document.body.removeChild(element);
+  }
+
+  clearConsole() {
+    this.salida = '[Grupo18_TitusX]Output: \n\n';
   }
 }
