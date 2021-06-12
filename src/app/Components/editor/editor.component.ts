@@ -283,55 +283,55 @@ export class EditorComponent {
 
   ejecutar() {
     this.clean();
-    try {
-      this.ast = parserXML.parse(this.entradaXml.toString());
-      console.log(this.ast);
-    } catch (e) {
-      console.error(e.message);
-    }
-    // this.flag = false;
     // try {
-    //   this.ast = parser.parse(this.entrada.toString());
-    //   this.env = new Environment(null);
-    //   for (const instr of this.ast) {
-    //     try {
-    //       if (instr instanceof Function) instr.execute(this.env);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   for (const instr of this.ast) {
-    //     if (instr instanceof Function || isString(instr)) continue;
-    //     try {
-    //       instr.execute(this.env);
-    //       // TODO validar return break continue fuera de ciclos
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   if (errores.length == 0) {
-    //     // Muestra el resultado en la pagina
-    //     this.salida += _Console.salida;
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
+    //   this.ast = parserXML.parse(this.entradaXml.toString());
+    //   console.log(this.ast);
+    // } catch (e) {
+    //   console.error(e.message);
     // }
-    // this.flag = false;
+    this.flag = false;
+    try {
+      this.ast = parser.parse(this.entradaXml.toString());
+      this.env = new Environment(null);
+      for (const instr of this.ast) {
+        try {
+          if (instr instanceof Function) instr.execute(this.env);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      for (const instr of this.ast) {
+        if (instr instanceof Function || isString(instr)) continue;
+        try {
+          instr.execute(this.env);
+          // TODO validar return break continue fuera de ciclos
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      if (errores.length == 0) {
+        // Muestra el resultado en la pagina
+        this.salida += _Console.salida;
+      } else {
+        if (errores.length != 0) {
+          errores.forEach((error) => {
+            this.salida +=
+              'Error ' +
+              error.getTipo() +
+              ' (linea: ' +
+              error.getLinea() +
+              ', columna: ' +
+              error.getColumna() +
+              '): ' +
+              error.getDescripcion() +
+              '.  \n';
+          });
+        }
+      }
+    } catch (error) {
+      console.log(error);
+    }
+    this.flag = false;
   }
 
   translate() {
@@ -395,7 +395,8 @@ export class EditorComponent {
       // alert(new Plotter().makeDot(this.ast));
       //return;
       this.dotService.setDot(new Plotter().makeDot(this.ast));
-      window.open('/Compi2_Junio/ast');
+      // window.open('/Compi2_Junio/ast');
+      window.open('/ast');
       return;
     }
   }
