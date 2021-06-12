@@ -73,9 +73,20 @@
 */
 var XmlGrammarASC = (function () {
   var o = function (k, v, o, l) {
-    for (o = o || {}, l = k.length; l--; o[k[l]] = v);
-    return o;
-  };
+      for (o = o || {}, l = k.length; l--; o[k[l]] = v);
+      return o;
+    },
+    $V0 = [1, 5],
+    $V1 = [1, 6],
+    $V2 = [1, 12],
+    $V3 = [1, 13],
+    $V4 = [1, 14],
+    $V5 = [1, 15],
+    $V6 = [6, 10, 14],
+    $V7 = [10, 14],
+    $V8 = [1, 23],
+    $V9 = [1, 29],
+    $Va = [11, 12];
   var parser = {
     trace: function trace() {},
     yy: {},
@@ -83,24 +94,51 @@ var XmlGrammarASC = (function () {
       error: 2,
       S: 3,
       tk_xmldec: 4,
-      EOF: 5,
-      tk_id: 6,
-      tk_openingtag: 7,
-      tk_tag_id: 8,
-      tk_closingtag: 9,
+      I: 5,
+      EOF: 6,
+      OTAG: 7,
+      CONTENIDO: 8,
+      CTAG: 9,
+      tk_starttag: 10,
+      tk_id: 11,
+      tk_endtag: 12,
+      ARGUMENTOS: 13,
+      tk_valin: 14,
+      tk_igual: 15,
+      tk_tagval: 16,
+      tk_closetag: 17,
       $accept: 0,
       $end: 1,
     },
     terminals_: {
       2: "error",
       4: "tk_xmldec",
-      5: "EOF",
-      6: "tk_id",
-      7: "tk_openingtag",
-      8: "tk_tag_id",
-      9: "tk_closingtag",
+      6: "EOF",
+      10: "tk_starttag",
+      11: "tk_id",
+      12: "tk_endtag",
+      14: "tk_valin",
+      15: "tk_igual",
+      16: "tk_tagval",
+      17: "tk_closetag",
     },
-    productions_: [0, [3, 2], [3, 2], [3, 4], [3, 1]],
+    productions_: [
+      0,
+      [3, 3],
+      [3, 2],
+      [5, 3],
+      [5, 2],
+      [7, 3],
+      [7, 4],
+      [7, 3],
+      [7, 4],
+      [13, 4],
+      [13, 3],
+      [8, 2],
+      [8, 1],
+      [9, 4],
+      [9, 4],
+    ],
     performAction: function anonymous(
       yytext,
       yyleng,
@@ -114,22 +152,129 @@ var XmlGrammarASC = (function () {
 
       var $0 = $$.length - 1;
       switch (yystate) {
+        case 1:
+          var s = new NodoXML(
+            "S",
+            "S",
+            +yylineno + 1,
+            +_$[$0 - 2].first_column + 1,
+            null
+          );
+          var dec = new NodoXML(
+            "DEC",
+            "DEC",
+            +yylineno + 1,
+            +_$[$0 - 2].first_column + 1,
+            $$[$0 - 2]
+          );
+          // s.addHijo(dec);
+          // s.addHijo($$[$0-1]);
+          return s;
+
+          break;
+        case 2:
+          var s = new NodoXML(
+            "S",
+            "S",
+            +yylineno + 1,
+            +_$[$0 - 1].first_column + 1,
+            null
+          );
+          // s.addHijo($$[$0-1]);
+          return s;
+
+          break;
+        case 3:
+          var i = new NodoXML(
+            "I",
+            "I",
+            +yylineno + 1,
+            +_$[$0 - 2].first_column + 1,
+            null
+          );
+          i.addHijo($$[$0 - 2]);
+          i.addHijo($$[$0 - 1]);
+          i.addHijo($$[$0]);
+          this.$ = i;
+
+          break;
+        case 4:
+          var i = new NodoXML(
+            "I",
+            "I",
+            +yylineno + 1,
+            +_$[$0 - 1].first_column + 1,
+            null
+          );
+          i.addHijo($$[$0 - 1]);
+          i.addHijo($$[$0]);
+          this.$ = i;
+
+          break;
+        case 5:
+          this.$ = tag = new NodoXML(
+            $$[$0 - 2],
+            "OTAG",
+            +yylineno + 1,
+            +_$[$0 - 2].first_column + 1,
+            null
+          );
+
+          break;
+        case 6:
+          var tag = new NodoXML(
+            $$[$0 - 3],
+            "OTAG",
+            +yylineno + 1,
+            +_$[$0 - 3].first_column + 1,
+            null
+          );
+          tag.addHijo($$[$0 - 3]);
+          this.$ = tag;
+
+          break;
       }
     },
     table: [
-      { 3: 1, 4: [1, 2], 5: [1, 5], 6: [1, 3], 7: [1, 4] },
+      { 3: 1, 4: [1, 2], 5: 3, 7: 4, 10: $V0, 14: $V1 },
       { 1: [3] },
-      { 5: [1, 6] },
-      { 5: [1, 7] },
-      { 8: [1, 8] },
-      { 1: [2, 4] },
-      { 1: [2, 1] },
+      { 5: 7, 7: 4, 10: $V0, 14: $V1 },
+      { 6: [1, 8] },
+      { 5: 11, 7: 4, 8: 9, 9: 10, 10: $V2, 14: $V3 },
+      { 11: $V4 },
+      { 11: $V5 },
+      { 6: [1, 16] },
       { 1: [2, 2] },
-      { 9: [1, 9] },
-      { 5: [1, 10] },
-      { 1: [2, 3] },
+      { 5: 18, 7: 4, 9: 17, 10: $V2, 14: $V3 },
+      o($V6, [2, 4]),
+      o($V7, [2, 12]),
+      { 11: $V4, 17: [1, 19] },
+      { 11: $V5, 17: [1, 20] },
+      { 11: $V8, 12: [1, 21], 13: 22 },
+      { 11: $V8, 12: [1, 24], 13: 25 },
+      { 1: [2, 1] },
+      o($V6, [2, 3]),
+      o($V7, [2, 11]),
+      { 11: [1, 26] },
+      { 11: [1, 27] },
+      o($V7, [2, 5]),
+      { 11: $V9, 12: [1, 28] },
+      { 15: [1, 30] },
+      o($V7, [2, 7]),
+      { 11: $V9, 12: [1, 31] },
+      { 12: [1, 32] },
+      { 12: [1, 33] },
+      o($V7, [2, 6]),
+      { 15: [1, 34] },
+      { 16: [1, 35] },
+      o($V7, [2, 8]),
+      o($V6, [2, 13]),
+      o($V6, [2, 14]),
+      { 16: [1, 36] },
+      o($Va, [2, 10]),
+      o($Va, [2, 9]),
     ],
-    defaultActions: { 5: [2, 4], 6: [2, 1], 7: [2, 2], 10: [2, 3] },
+    defaultActions: { 8: [2, 2], 16: [2, 1] },
     parseError: function parseError(str, hash) {
       if (hash.recoverable) {
         this.trace(str);
@@ -322,6 +467,12 @@ var XmlGrammarASC = (function () {
   };
 
   let valDeclaration = "";
+  let valTag = "";
+  let valInside = "";
+
+  const { Error_ } = require("../Error");
+  const { errores } = require("../Errores");
+  const { NodoXML } = require("../Nodes/NodoXml");
   /* generated by jison-lex 0.3.4 */
   var lexer = (function () {
     var lexer = {
@@ -688,6 +839,7 @@ var XmlGrammarASC = (function () {
             break;
           case 1:
             this.popState();
+            console.log("xmloptions: " + valDeclaration);
             yy_.yytext = valDeclaration;
             valDeclaration = "";
             return 4;
@@ -698,37 +850,120 @@ var XmlGrammarASC = (function () {
             break;
           case 3:
             this.popState();
-            return 5;
+            return 6;
             break;
           case 4:
-            this.begin("tag");
-            console.log(`tk_openingtag -> ${yy_.yytext}`);
-            return 7;
+            this.begin("tagval1");
             break;
           case 5:
             this.popState();
-            console.log(`tk_closingtag -> ${yy_.yytext}`);
-            return 9;
+            console.log("valtag: " + valTag);
+            yy_.yytext = valTag;
+            valTag = "";
+            return 16;
+
             break;
           case 6:
-            console.log("tag id:" + yy_.yytext);
-            return 8;
+            valTag += "\n";
             break;
           case 7:
-            console.log(`tk_slash -> ${yy_.yytext}`);
-            return "tk_slash";
+            valTag += "\t";
             break;
           case 8:
+            valTag += "\\";
             break;
-          case 9 /*se ignoran*/:
+          case 9:
+            valTag += "\r";
             break;
           case 10:
-            return 5;
+            valTag += '"';
             break;
           case 11:
-            /*errores.push(new Error_(yy_.yylloc.first_line, yy_.yylloc.first_column, 'Lexico','Valor inesperado ' + yy_.yytext));*/ console.error(
-              `Error Lexico -> ${yy_.yytext}`
+            valTag += yy_.yytext;
+            break;
+          case 12:
+            this.begin("tagval2");
+            break;
+          case 13:
+            this.popState();
+            console.log("valtag: " + valTag);
+            yy_.yytext = valTag;
+            valTag = "";
+            return 16;
+
+            break;
+          case 14:
+            valTag += "<";
+            break;
+          case 15:
+            valTag += ">";
+            break;
+          case 16:
+            valTag += "&";
+            break;
+          case 17:
+            valTag += "'";
+            break;
+          case 18:
+            valTag += '"';
+            break;
+          case 19:
+            valTag += yy_.yytext;
+            break;
+          case 20:
+            this.begin("valin");
+            return 12;
+            break;
+          case 21:
+            this.popState();
+            console.log("value Inside: " + valInside);
+            yy_.yytext = valInside;
+            valInside = "";
+            return 14;
+
+            break;
+          case 22:
+            valInside += yy_.yytext;
+            break;
+          case 23:
+            this.popState();
+            return 6;
+            break;
+          case 24:
+            console.log(yy_.yytext);
+            return 12;
+            break;
+          case 25:
+            console.log(yy_.yytext);
+            return 10;
+            break;
+          case 26:
+            console.log(yy_.yytext);
+            return 17;
+            break;
+          case 27:
+            console.log(yy_.yytext);
+            return 15;
+            break;
+          case 28:
+            console.log("id:" + yy_.yytext);
+            return 11;
+            break;
+          case 29 /*se ignoran*/:
+            break;
+          case 30:
+            return 6;
+            break;
+          case 31:
+            errores.push(
+              new Error_(
+                yy_.yylloc.first_line,
+                yy_.yylloc.first_column,
+                "Lexico",
+                "Valor inesperado " + yy_.yytext
+              )
             );
+            console.error(errores);
             break;
         }
       },
@@ -737,19 +972,44 @@ var XmlGrammarASC = (function () {
         /^(?:\?>)/,
         /^(?:[^(\?>)])/,
         /^(?:$)/,
+        /^(?:["])/,
+        /^(?:["])/,
+        /^(?:\\n)/,
+        /^(?:\\t)/,
+        /^(?:\\\\)/,
+        /^(?:\\r)/,
+        /^(?:\\")/,
+        /^(?:.)/,
+        /^(?:['])/,
+        /^(?:['])/,
+        /^(?:&lt;)/,
+        /^(?:&gt;)/,
+        /^(?:&amp;)/,
+        /^(?:&apos;)/,
+        /^(?:&quot;)/,
+        /^(?:.)/,
+        /^(?:>[^<])/,
         /^(?:<)/,
+        /^(?:[^<])/,
+        /^(?:$)/,
         /^(?:>)/,
-        /^(?:[[a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|["_""-"]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*)/,
+        /^(?:<)/,
         /^(?:\/)/,
-        /^(?:[^>])/,
+        /^(?:=)/,
+        /^(?:[[a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|["_""-"]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*)/,
         /^(?:[ \t\n\r\f])/,
         /^(?:$)/,
         /^(?:.)/,
       ],
       conditions: {
-        tag: { rules: [5, 6, 7, 8], inclusive: false },
+        valin: { rules: [21, 22, 23], inclusive: false },
+        tagval2: { rules: [13, 14, 15, 16, 17, 18, 19], inclusive: false },
+        tagval1: { rules: [5, 6, 7, 8, 9, 10, 11], inclusive: false },
         xmloptions: { rules: [1, 2, 3], inclusive: false },
-        INITIAL: { rules: [0, 4, 9, 10, 11], inclusive: true },
+        INITIAL: {
+          rules: [0, 4, 12, 20, 24, 25, 26, 27, 28, 29, 30, 31],
+          inclusive: true,
+        },
       },
     };
     return lexer;

@@ -25,15 +25,12 @@ import {
   faFileDownload,
   faPlay,
 } from '@fortawesome/free-solid-svg-icons';
+
 import { errores } from './parser/Errores';
-import { isString } from 'util';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
-import { XmlParser } from '@angular/compiler';
+
 declare var require: any;
-const parser = require('./parser/Grammar/Grammar');
-const optimizer = require('./parser/Grammar/OptGrammar');
-// cd src/app/parser/Grammar
 const parserXML = require('./parser/Grammar/XmlGrammarASC.js');
 
 @Component({
@@ -183,86 +180,86 @@ export class EditorComponent {
   // }
 
   executeOpt(entrada: string) {
-    try {
-      this.ast = optimizer.parse(entrada);
-      let env = new _Optimizer();
-      try {
-        for (const instr of this.ast[0]) {
-          instr.regla1(env);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      this.cOutput(env.salida);
-      this.ast = optimizer.parse(this.salida);
-      this.reglas = env.reglas;
-      env = new _Optimizer();
-      env.reglas = this.reglas;
-      try {
-        for (const instr of this.ast[0]) {
-          instr.regla2(env);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      this.cOutput(env.salida);
-      this.ast = optimizer.parse(this.salida);
-      this.reglas = env.reglas;
-      env = new _Optimizer();
-      env.reglas = this.reglas;
-      try {
-        for (const instr of this.ast[0]) {
-          instr.regla3(env);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      this.cOutput(env.salida);
-      this.ast = optimizer.parse(this.salida);
-      this.reglas = env.reglas;
-      env = new _Optimizer();
-      env.reglas = this.reglas;
-      try {
-        for (const instr of this.ast[0]) {
-          instr.regla4(env);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      this.cOutput(env.salida);
-      this.ast = optimizer.parse(this.salida);
-      this.reglas = env.reglas;
-      env = new _Optimizer();
-      env.reglas = this.reglas;
-      try {
-        for (const instr of this.ast[0]) {
-          instr.regla5(env);
-        }
-      } catch (e) {
-        console.log(e);
-      }
-      this.reglas = env.reglas;
-      Swal.fire({
-        title: 'Cool!',
-        text: 'Su codigo intermedio se ha optimizado correctamente...',
-        icon: 'success',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      }).then(() => {
-        this.cOutput(env.salida);
-      });
-    } catch (e) {
-      console.log(e);
-      Swal.fire({
-        title: 'Error',
-        text: 'Ocurrieron errores en la optimizacion...',
-        icon: 'error',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-    }
+    // try {
+    //   this.ast = optimizer.parse(entrada);
+    //   let env = new _Optimizer();
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla1(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla2(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla3(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla4(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla5(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.reglas = env.reglas;
+    //   Swal.fire({
+    //     title: 'Cool!',
+    //     text: 'Su codigo intermedio se ha optimizado correctamente...',
+    //     icon: 'success',
+    //     confirmButtonText: 'Entendido',
+    //     confirmButtonColor: 'rgb(8, 101, 104)',
+    //     background: 'black',
+    //   }).then(() => {
+    //     this.cOutput(env.salida);
+    //   });
+    // } catch (e) {
+    //   console.log(e);
+    //   Swal.fire({
+    //     title: 'Error',
+    //     text: 'Ocurrieron errores en la optimizacion...',
+    //     icon: 'error',
+    //     confirmButtonText: 'Entendido',
+    //     confirmButtonColor: 'rgb(8, 101, 104)',
+    //     background: 'black',
+    //   });
+    // }
   }
 
   optimizar() {
@@ -280,9 +277,26 @@ export class EditorComponent {
     //   else if (result.isDenied) this.executeOpt(this.salida.toString());
     // });
   }
+  ejecutarXmlAsc() {
+    this.clean();
+ try {
+      this.ast = parserXML.parse(this.entradaXml.toString());
+      console.log(this.ast);
+    } catch (e) {
+      console.error(e.message);
+    }
+    this.flag = false;
+  }
 
   ejecutar() {
-    this.clean();
+    // this.clean();
+    // try {
+    //   this.ast = parserXML.parse(this.entradaXml.toString());
+    //   console.log(this.ast);
+    // } catch (e) {
+    //   console.error(e.message);
+    // }
+    // this.flag = false;
     // try {
     //   this.ast = parserXML.parse(this.entradaXml.toString());
     //   console.log(this.ast);
@@ -395,7 +409,6 @@ export class EditorComponent {
       // alert(new Plotter().makeDot(this.ast));
       //return;
       this.dotService.setDot(new Plotter().makeDot(this.ast));
-      // window.open('/Compi2_Junio/ast');
       window.open('/ast');
       return;
     }
