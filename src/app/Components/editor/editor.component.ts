@@ -280,8 +280,7 @@ export class EditorComponent {
     //   else if (result.isDenied) this.executeOpt(this.salida.toString());
     // });
   }
-
-  ejecutar() {
+  ejecutarXmlAsc() {
     this.clean();
     try {
       this.ast = parserXML.parse(this.entradaXml.toString());
@@ -289,6 +288,16 @@ export class EditorComponent {
     } catch (e) {
       console.error(e.message);
     }
+  }
+
+  ejecutar() {
+    // this.clean();
+    // try {
+    //   this.ast = parserXML.parse(this.entradaXml.toString());
+    //   console.log(this.ast);
+    // } catch (e) {
+    //   console.error(e.message);
+    // }
     // this.flag = false;
     // try {
     //   this.ast = parser.parse(this.entrada.toString());
