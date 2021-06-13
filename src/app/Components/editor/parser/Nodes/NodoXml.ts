@@ -1,6 +1,20 @@
 import { Nodo } from '../Abstract/Nodo';
 
 export class NodoXML extends Nodo {
+
+  public plotCst(count: number): string {
+    let result = `node${count} [label="(${this.line},${this.column}) ${this.name} (${this.type})"];\n`;
+    this.getHijos().forEach(element => {
+      result += "node${count} -> node${count}1;\n";
+      result += element.plotCst((Number(count + "1")));
+    });
+    // Flechas
+    return result;
+  }
+
+  public plotAst(count: number): string {
+    throw new Error('Method not implemented.');
+  }
   constructor(
     id: string,
     tipo: string,
@@ -19,10 +33,6 @@ export class NodoXML extends Nodo {
     return this.val;
   }
 
-  public plot(count: number): string {
-    let result = `node${count} [label="(${this.line},${this.column}) ${this.name} (${this.type})"]`;
-    return result;
-  }
 
   public addHijo(nodo: NodoXML): void {
     this.listaNodos.push(nodo);

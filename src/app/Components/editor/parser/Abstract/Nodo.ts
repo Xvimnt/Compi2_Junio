@@ -3,7 +3,7 @@ export abstract class Nodo {
   public column: number;
   public name: string;
   public type: string;
-  public listaNodos;
+  public listaNodos: Array<Nodo>;
 
   constructor(name: string, type: string, line: number, column: number) {
     this.name = name;
@@ -15,5 +15,7 @@ export abstract class Nodo {
 
   public abstract addHijo(nodo: any): void;
 
-  public abstract plot(count: number): string;
+  public abstract plotCst(count: number): string;
+
+  public abstract plotAst(count: number): string;
 }
