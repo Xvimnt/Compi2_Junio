@@ -77,16 +77,12 @@ var XmlGrammarASC = (function () {
       return o;
     },
     $V0 = [1, 5],
-    $V1 = [1, 6],
-    $V2 = [1, 12],
+    $V1 = [1, 12],
+    $V2 = [1, 11],
     $V3 = [1, 13],
-    $V4 = [1, 14],
-    $V5 = [1, 15],
-    $V6 = [6, 10, 14],
-    $V7 = [10, 14],
-    $V8 = [1, 23],
-    $V9 = [1, 29],
-    $Va = [11, 12];
+    $V4 = [1, 17],
+    $V5 = [10, 16],
+    $V6 = [11, 12];
   var parser = {
     trace: function trace() {},
     yy: {},
@@ -103,9 +99,9 @@ var XmlGrammarASC = (function () {
       tk_id: 11,
       tk_endtag: 12,
       ARGUMENTOS: 13,
-      tk_valin: 14,
-      tk_igual: 15,
-      tk_tagval: 16,
+      tk_igual: 14,
+      tk_tagval: 15,
+      tk_valin: 16,
       tk_closetag: 17,
       $accept: 0,
       $end: 1,
@@ -117,9 +113,9 @@ var XmlGrammarASC = (function () {
       10: "tk_starttag",
       11: "tk_id",
       12: "tk_endtag",
-      14: "tk_valin",
-      15: "tk_igual",
-      16: "tk_tagval",
+      14: "tk_igual",
+      15: "tk_tagval",
+      16: "tk_valin",
       17: "tk_closetag",
     },
     productions_: [
@@ -130,13 +126,14 @@ var XmlGrammarASC = (function () {
       [5, 2],
       [7, 3],
       [7, 4],
-      [7, 3],
-      [7, 4],
       [13, 4],
       [13, 3],
+      [8, 4],
+      [8, 3],
+      [8, 2],
+      [8, 3],
       [8, 2],
       [8, 1],
-      [9, 4],
       [9, 4],
     ],
     performAction: function anonymous(
@@ -156,19 +153,17 @@ var XmlGrammarASC = (function () {
           var s = new NodoXML(
             "S",
             "S",
-            +yylineno + 1,
-            +_$[$0 - 2].first_column + 1,
-            null
+            _$[$0 - 1].first_line + 1,
+            _$[$0 - 1].first_column + 1
           );
           var dec = new NodoXML(
+            $$[$0 - 2],
             "DEC",
-            "DEC",
-            +yylineno + 1,
-            +_$[$0 - 2].first_column + 1,
-            $$[$0 - 2]
+            _$[$0 - 2].first_line + 1,
+            _$[$0 - 2].first_column + 1
           );
-          // s.addHijo(dec);
-          // s.addHijo($$[$0-1]);
+          s.addHijo(dec);
+          s.addHijo($$[$0 - 1]);
           return s;
 
           break;
@@ -176,11 +171,10 @@ var XmlGrammarASC = (function () {
           var s = new NodoXML(
             "S",
             "S",
-            +yylineno + 1,
-            +_$[$0 - 1].first_column + 1,
-            null
+            _$[$0 - 1].first_line + 1,
+            +_$[$0 - 1].first_column + 1
           );
-          // s.addHijo($$[$0-1]);
+          s.addHijo($$[$0 - 1]);
           return s;
 
           break;
@@ -188,9 +182,8 @@ var XmlGrammarASC = (function () {
           var i = new NodoXML(
             "I",
             "I",
-            +yylineno + 1,
-            +_$[$0 - 2].first_column + 1,
-            null
+            _$[$0 - 2].first_line + 1,
+            +_$[$0 - 2].first_column + 1
           );
           i.addHijo($$[$0 - 2]);
           i.addHijo($$[$0 - 1]);
@@ -202,9 +195,8 @@ var XmlGrammarASC = (function () {
           var i = new NodoXML(
             "I",
             "I",
-            +yylineno + 1,
-            +_$[$0 - 1].first_column + 1,
-            null
+            _$[$0 - 1].first_line + 1,
+            +_$[$0 - 1].first_column + 1
           );
           i.addHijo($$[$0 - 1]);
           i.addHijo($$[$0]);
@@ -212,69 +204,185 @@ var XmlGrammarASC = (function () {
 
           break;
         case 5:
-          this.$ = tag = new NodoXML(
-            $$[$0 - 2],
+          this.$ = new NodoXML(
+            $$[$0 - 1],
             "OTAG",
-            +yylineno + 1,
-            +_$[$0 - 2].first_column + 1,
-            null
+            _$[$0 - 2].first_line + 1,
+            +_$[$0 - 2].first_column + 1
           );
 
           break;
         case 6:
           var tag = new NodoXML(
-            $$[$0 - 3],
+            $$[$0 - 2],
             "OTAG",
-            +yylineno + 1,
-            +_$[$0 - 3].first_column + 1,
-            null
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
           );
           tag.addHijo($$[$0 - 3]);
           this.$ = tag;
 
           break;
+        case 7:
+          var args = new NodoXML(
+            "ARGS",
+            "ARGS",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          var arg = new NodoXML(
+            $$[$0 - 2],
+            "ARG",
+            _$[$0 - 2].first_line + 1,
+            +_$[$0 - 2].first_column + 1
+          );
+          var val = new NodoXML(
+            $$[$0],
+            "VAL",
+            _$[$0].first_line + 1,
+            +_$[$0].first_column + 1
+          );
+          arg.addHijo(val);
+          args.addHijo($$[$0 - 3]);
+          args.addHijo(arg);
+          this.$ = args;
+
+          break;
+        case 8:
+          var arg = new NodoXML(
+            $$[$0 - 2],
+            "ARG",
+            _$[$0 - 2].first_line + 1,
+            +_$[$0 - 2].first_column + 1
+          );
+          var val = new NodoXML(
+            $$[$0],
+            "VAL",
+            _$[$0].first_line + 1,
+            +_$[$0].first_column + 1
+          );
+          arg.addHijo(val);
+          this.$ = arg;
+
+          break;
+        case 9:
+          var content = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          content.addHijo($$[$0 - 3]);
+          content.addHijo($$[$0 - 2]);
+          content.addHijo($$[$0 - 1]);
+          content.addHijo($$[$0]);
+          this.$ = content;
+
+          break;
+        case 10:
+        case 12:
+          var content = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 2].first_line + 1,
+            +_$[$0 - 2].first_column + 1
+          );
+          content.addHijo($$[$0 - 2]);
+          content.addHijo($$[$0 - 1]);
+          content.addHijo($$[$0]);
+          this.$ = content;
+
+          break;
+        case 11:
+          var content = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 1].first_line + 1,
+            +_$[$0 - 1].first_column + 1
+          );
+          var val = new NodoXML(
+            $$[$0],
+            "CONTENT",
+            _$[$0].first_line + 1,
+            +_$[$0].first_column + 1
+          );
+          content.addHijo($$[$0 - 1]);
+          content.addHijo(val);
+          this.$ = content;
+
+          break;
+        case 13:
+          var content = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 1].first_line + 1,
+            +_$[$0 - 1].first_column + 1
+          );
+          content.addHijo($$[$0 - 1]);
+          content.addHijo($$[$0]);
+          this.$ = content;
+
+          break;
+        case 14:
+          var val = new NodoXML(
+            $$[$0],
+            "CONTENT",
+            _$[$0].first_line + 1,
+            +_$[$0].first_column + 1
+          );
+          this.$ = val;
+
+          break;
+        case 15:
+          this.$ = new NodoXML(
+            $$[$0 - 1],
+            "CTAG",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+
+          break;
       }
     },
     table: [
-      { 3: 1, 4: [1, 2], 5: 3, 7: 4, 10: $V0, 14: $V1 },
+      { 3: 1, 4: [1, 2], 5: 3, 7: 4, 10: $V0 },
       { 1: [3] },
-      { 5: 7, 7: 4, 10: $V0, 14: $V1 },
-      { 6: [1, 8] },
-      { 5: 11, 7: 4, 8: 9, 9: 10, 10: $V2, 14: $V3 },
-      { 11: $V4 },
-      { 11: $V5 },
-      { 6: [1, 16] },
+      { 5: 6, 7: 4, 10: $V0 },
+      { 6: [1, 7] },
+      { 7: 10, 8: 8, 9: 9, 10: $V1, 16: $V2 },
+      { 11: $V3 },
+      { 6: [1, 14] },
       { 1: [2, 2] },
-      { 5: 18, 7: 4, 9: 17, 10: $V2, 14: $V3 },
-      o($V6, [2, 4]),
-      o($V7, [2, 12]),
-      { 11: $V4, 17: [1, 19] },
-      { 11: $V5, 17: [1, 20] },
-      { 11: $V8, 12: [1, 21], 13: 22 },
-      { 11: $V8, 12: [1, 24], 13: 25 },
+      { 7: 16, 9: 15, 10: $V1, 16: $V4 },
+      { 6: [2, 4] },
+      { 7: 10, 8: 18, 9: 19, 10: $V1, 16: $V2 },
+      o($V5, [2, 14]),
+      { 11: $V3, 17: [1, 20] },
+      { 11: [1, 23], 12: [1, 21], 13: 22 },
       { 1: [2, 1] },
-      o($V6, [2, 3]),
-      o($V7, [2, 11]),
-      { 11: [1, 26] },
+      { 6: [2, 3] },
+      { 7: 10, 8: 24, 9: 25, 10: $V1, 16: $V2 },
+      o($V5, [2, 11]),
+      { 7: 16, 9: 26, 10: $V1, 16: $V4 },
+      o($V5, [2, 13]),
       { 11: [1, 27] },
-      o($V7, [2, 5]),
-      { 11: $V9, 12: [1, 28] },
-      { 15: [1, 30] },
-      o($V7, [2, 7]),
-      { 11: $V9, 12: [1, 31] },
+      o($V5, [2, 5]),
+      { 11: [1, 29], 12: [1, 28] },
+      { 14: [1, 30] },
+      { 7: 16, 9: 31, 10: $V1, 16: $V4 },
+      o($V5, [2, 10]),
+      o($V5, [2, 12]),
       { 12: [1, 32] },
-      { 12: [1, 33] },
-      o($V7, [2, 6]),
+      o($V5, [2, 6]),
+      { 14: [1, 33] },
       { 15: [1, 34] },
-      { 16: [1, 35] },
-      o($V7, [2, 8]),
-      o($V6, [2, 13]),
-      o($V6, [2, 14]),
-      { 16: [1, 36] },
-      o($Va, [2, 10]),
-      o($Va, [2, 9]),
+      o($V5, [2, 9]),
+      o([6, 10, 16], [2, 15]),
+      { 15: [1, 35] },
+      o($V6, [2, 8]),
+      o($V6, [2, 7]),
     ],
-    defaultActions: { 8: [2, 2], 16: [2, 1] },
+    defaultActions: { 7: [2, 2], 9: [2, 4], 14: [2, 1], 15: [2, 3] },
     parseError: function parseError(str, hash) {
       if (hash.recoverable) {
         this.trace(str);
@@ -860,7 +968,7 @@ var XmlGrammarASC = (function () {
             console.log("valtag: " + valTag);
             yy_.yytext = valTag;
             valTag = "";
-            return 16;
+            return 15;
 
             break;
           case 6:
@@ -889,7 +997,7 @@ var XmlGrammarASC = (function () {
             console.log("valtag: " + valTag);
             yy_.yytext = valTag;
             valTag = "";
-            return 16;
+            return 15;
 
             break;
           case 14:
@@ -912,18 +1020,18 @@ var XmlGrammarASC = (function () {
             break;
           case 20:
             this.begin("valin");
+            console.log(yy_.yytext);
             return 12;
             break;
           case 21:
             this.popState();
-            console.log("value Inside: " + valInside);
-            yy_.yytext = valInside;
-            valInside = "";
-            return 14;
+            console.log("<");
+            return 10;
 
             break;
           case 22:
-            valInside += yy_.yytext;
+            console.log("valin: " + yy_.yytext);
+            return 16;
             break;
           case 23:
             this.popState();
@@ -943,7 +1051,7 @@ var XmlGrammarASC = (function () {
             break;
           case 27:
             console.log(yy_.yytext);
-            return 15;
+            return 14;
             break;
           case 28:
             console.log("id:" + yy_.yytext);
@@ -988,9 +1096,9 @@ var XmlGrammarASC = (function () {
         /^(?:&apos;)/,
         /^(?:&quot;)/,
         /^(?:.)/,
-        /^(?:>[^<])/,
+        /^(?:>)/,
         /^(?:<)/,
-        /^(?:[^<])/,
+        /^(?:[^<]+)/,
         /^(?:$)/,
         /^(?:>)/,
         /^(?:<)/,
