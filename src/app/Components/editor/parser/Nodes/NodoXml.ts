@@ -1,13 +1,7 @@
 import { Nodo } from '../Abstract/Nodo';
 
 export class NodoXML extends Nodo {
-  constructor(
-    id: string,
-    tipo: string,
-    line: number,
-    column: number,
-    public val: any
-  ) {
+  constructor(id: string, tipo: string, line: number, column: number) {
     super(id, tipo, line, column);
   }
 
@@ -15,12 +9,10 @@ export class NodoXML extends Nodo {
     return this.name;
   }
 
-  public getVAl() {
-    return this.val;
-  }
-
   public plot(count: number): string {
-    let result = `node${count} [label="(${this.line},${this.column}) ${this.name} (${this.type})"]`;
+    let result = `node${count} [label="(${this.line},${
+      this.column
+    }) ${this.name.replace(/["]/g, '')} (${this.type})"];`;
     return result;
   }
 
