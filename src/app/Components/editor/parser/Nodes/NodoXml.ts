@@ -23,4 +23,12 @@ export class NodoXML extends Nodo {
   public getHijos() {
     return this.listaNodos;
   }
+
+  public plotAst(count: number): string {
+    return '';
+  }
+
+  public plotCst(count: number): string {
+    return '';
+  }
 }

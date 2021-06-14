@@ -15,6 +15,8 @@ export abstract class Nodo {
 
   public abstract addHijo(nodo: any): void;
 
+  public abstract plot(count: number): string;
+
   public abstract plotCst(count: number): string;
 
   public abstract plotAst(count: number): string;

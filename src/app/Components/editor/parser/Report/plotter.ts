@@ -1,7 +1,3 @@
-// import { count } from 'console';
-
-import { ThrowStmt } from '@angular/compiler';
-
 export class Plotter {
   count: number;
   public makeDot(ast: any) {
