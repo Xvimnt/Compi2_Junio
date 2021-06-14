@@ -32,6 +32,8 @@ import { Rule } from './parser/Optimizer/Rule';
 
 declare var require: any;
 const parserXML = require('./parser/Grammar/XmlGrammarASC.js');
+const xPathASC = require('./parser/Grammar/xPathAsc.js');
+const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 
 @Component({
   selector: 'editor-root',
@@ -288,6 +290,28 @@ export class EditorComponent {
     this.flag = false;
   }
 
+  ejecutarXPathAsc() {
+    this.clean();
+ try {
+      this.ast = xPathASC.parse(this.entradaXpath.toString());
+      console.log(this.ast);
+    } catch (e) {
+      console.error(e.message);
+    }
+    this.flag = false;
+  }
+
+  ejecutarXPathDesc() {
+    this.clean();
+ try {
+      this.ast = xPathDESC.parse(this.entradaXpath.toString());
+      console.log(this.ast);
+    } catch (e) {
+      console.error(e.message);
+    }
+    this.flag = false;
+  }
+  
   ejecutar() {
     // this.clean();
     // try {
