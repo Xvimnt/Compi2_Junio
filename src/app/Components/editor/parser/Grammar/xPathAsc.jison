@@ -3,6 +3,7 @@
 number  [0-9]+
 divsign ('/')('/')?
 dir     ('.')('.')?
+orsign ('|')('|')?
 decimal [0-9]+("."[0-9]+)?
 string  ([\"][^"]*[\"])
 string2  ([\'][^\']*[\'])
@@ -22,8 +23,8 @@ preceding ('preceding')('-sibling')?
 {ancestor}                  return 'ANCESTOR'
 {following}                  return 'FOLLOWING'
 {preceding}                return 'PRECEDING'
+{orsign}                return 'ORSIGN'
 
-"|"                     return '|'
 "@"                     return '@'
 "*"                     return '*'
 "::"                     return '::'
@@ -53,6 +54,7 @@ preceding ('preceding')('-sibling')?
 "parent"                     return 'PARENT'
 'self'                           return 'SELF'
 "text"                         return 'TEXT'
+"last"                         return 'LAST'
 "position"                 return 'POSITION'
 "node"                       return 'NODE'
 
@@ -78,7 +80,7 @@ Init : Exp EOF ;
 Exp : DIVSIGN Lexp
    | Lexp;
 
-Lexp : Lexp '|' DIVSIGN Syntfin
+Lexp : Lexp ORSIGN DIVSIGN Syntfin
          | Lexp DIVSIGN Syntfin
          | Syntfin; 
 
@@ -93,6 +95,7 @@ Fin :  Valor Opc
     | TEXT   '('   ')'
     | NODE  '('   ')'
     | POSITION '('   ')'
+    | LAST '(' ')'
     | Preservada Opc 
     |'*' Opc ;
 
@@ -110,7 +113,8 @@ Preservada:  CHILD
                 | FOLLOWING
                 | NAMESPACE
                 | SELF
-                | PARENT;
+                | PARENT
+                |ATTR;
 
 Opc : LPredicado
          |;
@@ -123,7 +127,7 @@ Predicado: '[' ExprLogica']';
 ExprLogica
          : Expr '<=' Expr
          | Expr '>=' Expr   
-         | Expr '==' Expr   
+         | Expr '=' Expr   
          | Expr '!=' Expr    
          | Expr '>' Expr
          | Expr '<' Expr
