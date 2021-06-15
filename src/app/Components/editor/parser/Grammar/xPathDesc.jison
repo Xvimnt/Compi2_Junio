@@ -3,6 +3,7 @@
 number  [0-9]+
 divsign ('/')('/')?
 dir     ('.')('.')?
+orsign ('|')('|')?
 decimal [0-9]+("."[0-9]+)?
 string  ([\"][^"]*[\"])
 string2  ([\'][^\']*[\'])
@@ -22,8 +23,8 @@ preceding ('preceding')('-sibling')?
 {ancestor}                  return 'ANCESTOR'
 {following}                  return 'FOLLOWING'
 {preceding}                return 'PRECEDING'
+{orsign}                return 'ORSIGN'
 
-"|"                     return '|'
 "@"                     return '@'
 "*"                     return '*'
 "::"                     return '::'
@@ -54,6 +55,7 @@ preceding ('preceding')('-sibling')?
 'self'                           return 'SELF'
 "text"                         return 'TEXT'
 "position"                 return 'POSITION'
+"last"                         return 'LAST'
 "node"                       return 'NODE'
 
 ([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'ID';
@@ -80,7 +82,7 @@ Exp : DIVSIGN Lexp
 
 Lexp : Syntfin Lexp_prima; 
 
-Lexp_prima : '|' DIVSIGN Syntfin Lexp_prima
+Lexp_prima : ORSIGN DIVSIGN Syntfin Lexp_prima
                      | DIVSIGN Syntfin Lexp_prima
                      |;
 
@@ -95,6 +97,7 @@ Fin :  Valor Opc
     | TEXT   '('   ')'
     | NODE  '('   ')'
     | POSITION '('   ')'
+	| LAST '(' ')'
     | Preservada Opc 
     |'*' Opc ;
 
@@ -112,7 +115,8 @@ Preservada:  CHILD
                 | FOLLOWING
                 | NAMESPACE
                 | SELF
-                | PARENT;
+                | PARENT
+				|ATTR;
 
 Opc : LPredicado
          |;
@@ -127,7 +131,7 @@ Predicado: '[' ExprLogica']';
 ExprLogica
          : Expr '<=' Expr
          | Expr '>=' Expr   
-         | Expr '==' Expr   
+         | Expr '=' Expr   
          | Expr '!=' Expr    
          | Expr '>' Expr
          | Expr '<' Expr
