@@ -296,6 +296,7 @@ export class EditorComponent {
       ejecutor.ejecutar(this.ast);
       this.envXML = ejecutor.getEntorno();
       this.envXML.printEntornos();
+      this.envXML.printTablaSimbolos();
     } catch (e) {
       console.error(e.message);
     }
@@ -304,7 +305,7 @@ export class EditorComponent {
 
   ejecutarXPathAsc() {
     this.clean();
- try {
+    try {
       this.ast = xPathASC.parse(this.entradaXpath.toString());
       console.log(this.ast);
     } catch (e) {
@@ -315,7 +316,7 @@ export class EditorComponent {
 
   ejecutarXPathDesc() {
     this.clean();
- try {
+    try {
       this.ast = xPathDESC.parse(this.entradaXpath.toString());
       console.log(this.ast);
     } catch (e) {
@@ -323,7 +324,7 @@ export class EditorComponent {
     }
     this.flag = false;
   }
-  
+
   ejecutar() {
     // this.clean();
     // try {

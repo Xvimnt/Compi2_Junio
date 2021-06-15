@@ -41,7 +41,7 @@
 <tagval1>"&amp;"                %{ valTag +='&'; %}
 <tagval1>"&apos;"               %{ valTag +='\''; %}
 <tagval1>"&quot;"               %{ valTag +='\"'; %}
-<tagval2>.                      %{ valTag += yytext; %}
+<tagval1>.                      %{ valTag += yytext; %}
 
 [']                             %{ this.begin("tagval2"); %}   
 <tagval2>[']                    %{ 
@@ -123,7 +123,7 @@ OTAG: tk_starttag tk_id tk_endtag   {
                                     }
 |tk_starttag tk_id ARGUMENTOS tk_endtag {
                                             var tag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
-                                            tag.addHijo($1);
+                                            tag.addHijo($3);
                                             $$ = tag;
                                         }
 ;
@@ -162,7 +162,7 @@ CONTENIDO: CONTENIDO OTAG CONTENIDO CTAG{
                         }
 | CONTENIDO tk_valin{
                         var content = new NodoXML('CONTENT','CONTENT',@1.first_line+1,+@1.first_column+1);
-                        var val = new NodoXML($2,'CONTENT',@2.first_line+1,+@2.first_column+1);
+                        var val = new NodoXML($2,'VAL',@2.first_line+1,+@2.first_column+1);
                         content.addHijo($1);
                         content.addHijo(val);
                         $$ = content;
@@ -181,7 +181,7 @@ CONTENIDO: CONTENIDO OTAG CONTENIDO CTAG{
                 $$ = content;
             }
 | tk_valin  {
-                var val = new NodoXML($1,'CONTENT',@1.first_line+1,+@1.first_column+1);
+                var val = new NodoXML($1,'VAL',@1.first_line+1,+@1.first_column+1);
                 $$ = val;
             }
 ;
