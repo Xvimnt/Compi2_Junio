@@ -6,6 +6,8 @@ import { _Console } from './parser/Util/Salida';
 // Imports para los reportes
 import { Plotter } from './parser/Report/plotter';
 import { Table } from './parser/Report/Table';
+import Viz from 'viz.js';
+import { Module, render } from 'viz.js/full.render.js';
 // Import para el servicio
 import { DotService } from '../../services/dot.service';
 // Import para las alertas
@@ -35,6 +37,9 @@ const parserXML = require('./parser/Grammar/XmlGrammarASC.js');
 const xPathASC = require('./parser/Grammar/xPathAsc.js');
 const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 
+import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
+import { EjecutorXML } from './ejecutor/ejecutorXML';
+
 @Component({
   selector: 'editor-root',
   templateUrl: './editor.component.html',
@@ -51,6 +56,7 @@ export class EditorComponent {
   reglas: Array<Rule>;
   env: Environment;
   flag: boolean;
+  envXML = new EnvironmentXML('global', null);
 
   // Iconos
   faSpinner = faSpinner;
@@ -279,11 +285,17 @@ export class EditorComponent {
     //   else if (result.isDenied) this.executeOpt(this.salida.toString());
     // });
   }
+
   ejecutarXmlAsc() {
     this.clean();
- try {
+    try {
       this.ast = parserXML.parse(this.entradaXml.toString());
       console.log(this.ast);
+      console.log('ejecutando');
+      let ejecutor = new EjecutorXML();
+      ejecutor.ejecutar(this.ast);
+      this.envXML = ejecutor.getEntorno();
+      this.envXML.printEntornos();
     } catch (e) {
       console.error(e.message);
     }
@@ -430,10 +442,20 @@ export class EditorComponent {
         background: 'black',
       });
     } else {
-      // alert(new Plotter().makeDot(this.ast));
-      //return;
-      this.dotService.setDot(new Plotter().makeDot(this.ast));
-      window.open('/ast');
+      let dot = new Plotter().makeDot(this.ast);
+      let viz = new Viz({ Module, render });
+      viz
+        .renderSVGElement(dot)
+        .then(function (element) {
+          document.getElementById('reportes').innerHTML =
+            '<h3>Reporte AST</h3>';
+          document.getElementById('reportes').appendChild(element);
+        })
+        .catch((error) => {
+          viz = new Viz({ Module, render });
+          console.error(error);
+        });
+
       return;
     }
   }

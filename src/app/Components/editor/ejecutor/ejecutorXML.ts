@@ -1,28 +1,73 @@
 import { NodoXML } from '../parser/Nodes/NodoXml';
 import { EnvironmentXML } from '../parser/Symbol/EnviromentXML';
+import { Error_ } from '../parser/Error';
+import { errores } from '../parser/Errores';
 
-export class EjecutarXML {
-  public ast: NodoXML;
-  public entorno: EnvironmentXML;
-
-  constructor(ast, entorno) {
-    this.ast = ast;
-    this.entorno = entorno;
+export class EjecutorXML {
+  entorno: EnvironmentXML;
+  constructor() {
+    this.entorno = new EnvironmentXML('global', null);
   }
 
-  ejecutar(ast, entorno) {
+  ejecutar(ast: NodoXML) {
+    console.log(ast);
     if (ast != null) {
       let tipo = ast.getTipo();
       console.log(tipo);
       switch (tipo) {
         case 'S':
-          this.ejecutar(ast.getListaNodos()[0], entorno);
+          this.ejecutar(ast.getHijos()[0]);
+          break;
         case 'I':
-          ast.getListaNodos().forEach((element) => {
-            this.ejecutar(element, entorno);
-          });
+          this.ejecutarInicio(ast);
+          break;
+        // case 'OTAG':
+        //   this.ejecutarOtag(ast, entorno);
+        //   break;
+        default:
       }
     }
     return null;
+  }
+
+  private ejecutarInicio(ast: NodoXML) {
+    // opening tag; contenido ; closing tag
+    // opening tag; closing tag
+    //verificar que la tag inicial sea el mismo id que la del final
+    let nodos = ast.getHijos();
+    console.log(nodos);
+    console.log(nodos[0]);
+    console.log(nodos[1]);
+    console.log(nodos[2]);
+    if (nodos[0].getID() === nodos[2].getID()) {
+      console.log('todo bien');
+      //ejecutar opening tag
+      this.ejecutarOtag(nodos[0], nodos[1]);
+      //ejecutar content
+    } else {
+      errores.push(
+        new Error_(
+          nodos[0].getLine(),
+          nodos[0].getColumn(),
+          'Semantico',
+          `La Etiqueta de entrada => ${nodos[0].getID()} no es igual que la etiqueta de salida => ${nodos[2].getID()}`
+        )
+      );
+    }
+    //ejecutar opening tag
+    //ejecutar contenido
+  }
+
+  private ejecutarOtag(etiqueta: NodoXML, contenido: NodoXML) {
+    //nuevo entorno
+    console.log('nuevo env');
+    let env = new EnvironmentXML(etiqueta.getID(), this.entorno);
+    this.entorno = env;
+    // ejecutarAtributos(etiqueta.getHijos()[0], env);
+    // ejecutarContenido(contenido,env);
+  }
+
+  public getEntorno() {
+    return this.entorno;
   }
 }
