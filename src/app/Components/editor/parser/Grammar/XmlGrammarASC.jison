@@ -36,12 +36,12 @@
                                     yytext=valTag; valTag=""; 
                                     return 'tk_tagval';
                                 %} 
-<tagval1>"\\n"                  %{ valTag +='\n'; %}
-<tagval1>"\\t"                  %{ valTag +='\t'; %}
-<tagval1>"\\\\"                 %{ valTag +='\\'; %}
-<tagval1>"\\r"                  %{ valTag +='\r'; %}
-<tagval1>"\\\""                 %{ valTag +='\"'; %}
-<tagval1>.                      %{ valTag += yytext; %}
+<tagval1>"&lt;"                 %{ valTag +='<'; %}
+<tagval1>"&gt;"                 %{ valTag +='>'; %}
+<tagval1>"&amp;"                %{ valTag +='&'; %}
+<tagval1>"&apos;"               %{ valTag +='\''; %}
+<tagval1>"&quot;"               %{ valTag +='\"'; %}
+<tagval2>.                      %{ valTag += yytext; %}
 
 [']                             %{ this.begin("tagval2"); %}   
 <tagval2>[']                    %{ 
@@ -71,7 +71,6 @@
 "/"                             %{ console.log(yytext); return 'tk_closetag'; %}                
 "="                             %{ console.log(yytext); return 'tk_igual'; %}                                
 
-// [^<&]* - ([^<&]* ']]>' [^<&]*)                     %{ console.log("tag: "+yytext); return 'tk_tag'; %}
 
 [[a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|["_""-"]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*] %{  console.log("id:"+yytext); return 'tk_id'; %}
 

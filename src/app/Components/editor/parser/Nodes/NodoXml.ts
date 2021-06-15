@@ -3,10 +3,23 @@ import { Nodo } from '../Abstract/Nodo';
 export class NodoXML extends Nodo {
   constructor(id: string, tipo: string, line: number, column: number) {
     super(id, tipo, line, column);
+    this.listaNodos = new Array<NodoXML>();
   }
 
   public getID() {
     return this.name;
+  }
+
+  public getTipo() {
+    return this.type;
+  }
+
+  public getLine() {
+    return this.line;
+  }
+
+  public getColumn() {
+    return this.column;
   }
 
   public plot(count: number): string {
