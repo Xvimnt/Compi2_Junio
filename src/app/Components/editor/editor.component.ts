@@ -39,6 +39,7 @@ const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
+import { If } from './parser/Instruction/If';
 
 @Component({
   selector: 'editor-root',
@@ -72,7 +73,7 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) {}
+  constructor(private dotService: DotService) { }
   ngOnInit() {
     this.clean();
   }
@@ -290,12 +291,14 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXML.parse(this.entradaXml.toString());
-      console.log(this.ast);
-      console.log('ejecutando');
+      // console.log('ejecutando');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast);
       this.envXML = ejecutor.getEntorno();
-      this.envXML.printEntornos();
+      console.log("--- Imprimiendo XML Tree ---");
+      console.log(this.ast);
+      // this.envXML.printEntornos();
+      console.log("------");
     } catch (e) {
       console.error(e.message);
     }
@@ -303,10 +306,23 @@ export class EditorComponent {
   }
 
   ejecutarXPathAsc() {
+    if (this.ast == null) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+      return;
+    }
     this.clean();
- try {
-      this.ast = xPathASC.parse(this.entradaXpath.toString());
-      console.log(this.ast);
+    try {
+      let queryTree = xPathASC.parse(this.entradaXpath.toString());
+      console.log("--- Imprimiendo Arbol de Consultas ---");
+      console.log(queryTree);
+      console.log("------");
     } catch (e) {
       console.error(e.message);
     }
@@ -314,8 +330,19 @@ export class EditorComponent {
   }
 
   ejecutarXPathDesc() {
+    if (this.ast == null) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+      return;
+    }
     this.clean();
- try {
+    try {
       this.ast = xPathDESC.parse(this.entradaXpath.toString());
       console.log(this.ast);
     } catch (e) {
@@ -323,7 +350,7 @@ export class EditorComponent {
     }
     this.flag = false;
   }
-  
+
   ejecutar() {
     // this.clean();
     // try {
