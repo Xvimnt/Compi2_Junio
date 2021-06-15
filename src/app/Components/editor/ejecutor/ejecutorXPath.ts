@@ -1,12 +1,15 @@
 import { NodoXML } from '../parser/Nodes/NodoXml';
+import { EnvironmentXPath } from '../parser/Symbol/EnviromentXPath';
 import { EnvironmentXML } from '../parser/Symbol/EnviromentXML';
 import { Error_ } from '../parser/Error';
 import { errores } from '../parser/Errores';
 
-export class EjecutorXML {
-  entorno: EnvironmentXML;
-  constructor() {
-    this.entorno = new EnvironmentXML('global', null);
+export class EjecutorXPath {
+  entorno: EnvironmentXPath;
+  environmentXML: EnvironmentXML;
+  constructor(xmlEnvironment: EnvironmentXML) {
+    this.entorno = new EnvironmentXPath('global', null);
+    this.environmentXML = xmlEnvironment; // El entorno de xml donde busca la consulta
   }
 
   ejecutar(ast: NodoXML) {
@@ -61,7 +64,7 @@ export class EjecutorXML {
   private ejecutarOtag(etiqueta: NodoXML, contenido: NodoXML) {
     //nuevo entorno
     console.log('nuevo env');
-    let env = new EnvironmentXML(etiqueta.getID(), this.entorno);
+    let env = new EnvironmentXPath(etiqueta.getID(), this.entorno);
     this.entorno = env;
     // ejecutarAtributos(etiqueta.getHijos()[0], env);
     // ejecutarContenido(contenido,env);
