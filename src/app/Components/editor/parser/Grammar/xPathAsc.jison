@@ -87,7 +87,8 @@ Lexp : Lexp ORSIGN DIVSIGN Syntfin
 Syntfin    : Fin
                 |  '@' Valor Opc
                 |  Preservada '::' Fin
-                | '@' Preservada Opc;
+                | '@' Preservada Opc
+                | '@' '*';
 
 
 Fin :  Valor Opc 
@@ -140,4 +141,5 @@ Expr : Expr '+' Expr
          | Expr  MOD Expr
          | Expr  OR Expr
          | Expr  AND Expr
+         |'(' Expr ')'
          | Exp;
