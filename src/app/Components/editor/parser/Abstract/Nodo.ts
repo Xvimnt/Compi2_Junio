@@ -3,7 +3,7 @@ export abstract class Nodo {
   public column: number;
   public name: string;
   public type: string;
-  public listaNodos: Array<Nodo>;
+  public listaNodos: Array<any>;
 
   constructor(name: string, type: string, line: number, column: number) {
     this.name = name;
