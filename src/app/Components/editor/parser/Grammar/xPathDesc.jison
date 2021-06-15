@@ -1,3 +1,4 @@
+
 %lex
 %options case-sensitive
 number  [0-9]+
@@ -89,7 +90,8 @@ Lexp_prima : ORSIGN DIVSIGN Syntfin Lexp_prima
 Syntfin    : Fin
                 |  '@' Valor Opc
                 |  Preservada '::' Fin
-                | '@' Preservada Opc;
+                | '@' Preservada Opc
+				| '@' '*';
 
 
 Fin :  Valor Opc 
@@ -137,7 +139,8 @@ ExprLogica
          | Expr '<' Expr
          | Expr;
 
-Expr : Exp Expr_prima;
+Expr : Exp Expr_prima
+         | '(' Expr ')' Expr_prima;
 
 Expr_prima: '+' Exp  Expr_prima
          | '-' Exp  Expr_prima
