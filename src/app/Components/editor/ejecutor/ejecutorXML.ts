@@ -40,7 +40,7 @@ export class EjecutorXML {
     console.log(nodos[1]);
     console.log(nodos[2]);
     if (nodos[0].getID() === nodos[2].getID()) {
-      console.log('todo bien');
+      // console.log('todo bien');
       //ejecutar opening tag
       this.ejecutarOtag(nodos[0], nodos[1]);
       //ejecutar content

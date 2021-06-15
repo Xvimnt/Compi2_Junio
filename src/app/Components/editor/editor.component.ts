@@ -40,6 +40,7 @@ const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { If } from './parser/Instruction/If';
+import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 
 @Component({
   selector: 'editor-root',
@@ -295,8 +296,8 @@ export class EditorComponent {
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast);
       this.envXML = ejecutor.getEntorno();
-      console.log("--- Imprimiendo XML Tree ---");
-      console.log(this.ast);
+      // console.log("--- Imprimiendo XML Tree ---");
+      // console.log(this.ast);
       // this.envXML.printEntornos();
       console.log("------");
     } catch (e) {
@@ -320,9 +321,14 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathASC.parse(this.entradaXpath.toString());
-      console.log("--- Imprimiendo Arbol de Consultas ---");
-      console.log(queryTree);
-      console.log("------");
+      // se pasa el env xml 
+      let ejecutor = new EjecutorXPath(this.envXML);
+      ejecutor.ejecutar(queryTree);
+      let envXPath = ejecutor.getEntorno();
+      
+      // console.log("--- Imprimiendo Entorno de Consultas ---");
+      // console.log(envXPath);
+      // console.log("------");
       this.ast=queryTree;
     } catch (e) {
       console.error(e.message);
