@@ -323,6 +323,7 @@ export class EditorComponent {
       console.log("--- Imprimiendo Arbol de Consultas ---");
       console.log(queryTree);
       console.log("------");
+      this.ast=queryTree;
     } catch (e) {
       console.error(e.message);
     }
