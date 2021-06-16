@@ -242,8 +242,9 @@ export class EditorComponent {
       this.ast = parserXML.parse(this.entradaXml.toString());
       // console.log('ejecutando');
       let ejecutor = new EjecutorXML();
-      ejecutor.ejecutar(this.ast);
-      this.envXML = ejecutor.getEntorno();
+      this.envXML = new EnvironmentXML('global');
+      ejecutor.ejecutar(this.ast, this.envXML);
+      // this.envXML = ejecutor.getEntorno();
       // console.log("--- Imprimiendo XML Tree ---");
       // console.log(this.ast);
       // this.envXML.printEntornos();
