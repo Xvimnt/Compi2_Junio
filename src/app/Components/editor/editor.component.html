@@ -63,11 +63,19 @@
             style="background-color: rgb(8, 101, 104)"
             class="btn btn-info dropdown-toggle"
           >
-            <button (click)="ejecutarXPathAsc()" type="button" class="dropdown-item">
+            <button
+              (click)="ejecutarXPathAsc()"
+              type="button"
+              class="dropdown-item"
+            >
               <fa-icon [icon]="faPlay"></fa-icon>
               Ejecutar Ascendente
             </button>
-            <button (click)="ejecutarXPathDesc()" type="button" class="dropdown-item">
+            <button
+              (click)="ejecutarXPathDesc()"
+              type="button"
+              class="dropdown-item"
+            >
               <fa-icon [icon]="faPlay"></fa-icon>
               Ejecutar Descendente
             </button>
@@ -137,6 +145,14 @@
             <button (click)="tokenTable()" type="button" class="dropdown-item">
               <fa-icon [icon]="faLanguage"></fa-icon>
               Tabla de Simbolos
+            </button>
+            <button
+              (click)="xmlTokenTable()"
+              type="button"
+              class="dropdown-item"
+            >
+              <fa-icon [icon]="faLanguage"></fa-icon>
+              Tabla de SimbolosXML
             </button>
             <button (click)="errorTable()" type="button" class="dropdown-item">
               <fa-icon [icon]="faEraser"></fa-icon>

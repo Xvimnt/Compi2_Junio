@@ -57,7 +57,7 @@ export class EditorComponent {
   reglas: Array<Rule>;
   env: Environment;
   flag: boolean;
-  envXML = new EnvironmentXML('global', null);
+  envXML = new EnvironmentXML('global');
 
   // Iconos
   faSpinner = faSpinner;
@@ -223,14 +223,13 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXML.parse(this.entradaXml.toString());
-      // console.log('ejecutando');
+      console.log(this.ast);
+      console.log('ejecutando');
+      this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
-      ejecutor.ejecutar(this.ast);
-      this.envXML = ejecutor.getEntorno();
-      // console.log("--- Imprimiendo XML Tree ---");
-      // console.log(this.ast);
-      // this.envXML.printEntornos();
-      console.log("------");
+      ejecutor.ejecutar(this.ast, this.envXML);
+      this.envXML.printEntornos();
+      console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -397,6 +396,46 @@ export class EditorComponent {
       Swal.fire({
         title: 'Tabla de Simbolos',
         html: new Table().symbols(_Console.symbols),
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+        width: 800,
+      });
+    }
+  }
+
+  xmlTokenTable() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (this.envXML.getTablaSimbolos().length == 0) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se encontro ninguna variable o funcion guardada',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede mostrar tabla de variables',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      Swal.fire({
+        title: 'Tabla de Simbolos',
+        html: new Table().xmlTable(this.envXML.getTablaSimbolos()),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
