@@ -39,7 +39,6 @@ const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
-import { If } from './parser/Instruction/If';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 
 @Component({
@@ -79,11 +78,6 @@ export class EditorComponent {
     this.clean();
   }
 
-  // cleanText(){
-  //   this.consulta = '';
-  //   this.salida = '[TytusX] Output: \n\n';
-  //   this.entrada = '';
-  // }
   // Metodos
   clean() {
     this.ast = null;
@@ -125,69 +119,6 @@ export class EditorComponent {
     this.salida += '\nreturn;\n';
     this.salida += '}\n\n';
   }
-
-  // onFileSelected(event) {
-  //   const file: File = event.target.files[0];
-  //   if (file) {
-  //     var reader = new FileReader();
-  //     Swal.fire({
-  //       title: '¡Carga Correcta! ¿En que area de texto desea cargar?',
-  //       showDenyButton: true,
-  //       showCancelButton: true,
-  //       confirmButtonText: `Area 1`,
-  //       denyButtonText: `Area 2`,
-  //       confirmButtonColor: 'rgb(8, 101, 104)',
-  //       background: 'black',
-  //       icon: 'info'
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         reader.onload = () => {
-  //           this.entrada = reader.result.toString();
-  //         };
-  //         reader.readAsText(file);
-  //       }
-  //       else if (result.isDenied) {
-  //         reader.onload = () => {
-  //           this.consulta = reader.result.toString();
-  //         };
-  //         reader.readAsText(file);
-  //       }
-  //     });
-  //   }
-  // }
-
-  // saveFile() {
-  //   var reader = new FileReader();
-  //   Swal.fire({
-  //     title: '¿Que area de texto desea descargar?',
-  //     showDenyButton: true,
-  //     showCancelButton: true,
-  //     confirmButtonText: `Area 1`,
-  //     denyButtonText: `Area 2`,
-  //     confirmButtonColor: 'rgb(8, 101, 104)',
-  //     background: 'black',
-  //     icon: 'info'
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       const blob = new Blob([this.entrada], { type: 'text/txt' });
-  //       const url = window.URL.createObjectURL(blob);
-  //       var a = document.createElement("a");
-  //       a.href = url;
-  //       a.download = "TytusX.txt";
-  //       // start download
-  //       a.click();
-  //     }
-  //     else if (result.isDenied) {
-  //       const blob = new Blob([this.consulta], { type: 'text/txt' });
-  //       const url = window.URL.createObjectURL(blob);
-  //       var a = document.createElement("a");
-  //       a.href = url;
-  //       a.download = "TytusX.txt";
-  //       // start download
-  //       a.click();
-  //     }
-  //   });
-  // }
 
   executeOpt(entrada: string) {
     // try {
@@ -306,6 +237,24 @@ export class EditorComponent {
     this.flag = false;
   }
 
+  ejecutarXmlDesc() {
+    this.clean();
+    try {
+      this.ast = parserXML.parse(this.entradaXml.toString());
+      // console.log('ejecutando');
+      let ejecutor = new EjecutorXML();
+      ejecutor.ejecutar(this.ast);
+      this.envXML = ejecutor.getEntorno();
+      // console.log("--- Imprimiendo XML Tree ---");
+      // console.log(this.ast);
+      // this.envXML.printEntornos();
+      console.log("------");
+    } catch (e) {
+      console.error(e.message);
+    }
+    this.flag = false;
+  }
+
   ejecutarXPathAsc() {
     if (this.ast == null) {
       Swal.fire({
@@ -356,66 +305,6 @@ export class EditorComponent {
       console.error(e.message);
     }
     this.flag = false;
-  }
-
-  ejecutar() {
-    // this.clean();
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parser.parse(this.entradaXml.toString());
-    //   this.env = new Environment(null);
-    //   for (const instr of this.ast) {
-    //     try {
-    //       if (instr instanceof Function) instr.execute(this.env);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   for (const instr of this.ast) {
-    //     if (instr instanceof Function || isString(instr)) continue;
-    //     try {
-    //       instr.execute(this.env);
-    //       // TODO validar return break continue fuera de ciclos
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   if (errores.length == 0) {
-    //     // Muestra el resultado en la pagina
-    //     this.salida += _Console.salida;
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // this.flag = false;
   }
 
   translate() {
@@ -495,28 +384,10 @@ export class EditorComponent {
   }
 
   tokenTable() {
-    if (this.flag) {
+    if (this.ast == null) {
       Swal.fire({
         title: 'Oops...',
         text: 'No se ha analizado el codigo aun',
-        icon: 'error',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-    } else if (_Console.symbols.size == 0) {
-      Swal.fire({
-        title: 'Oops...',
-        text: 'No se encontro ninguna variable o funcion guardada',
-        icon: 'error',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-    } else if (errores.length != 0) {
-      Swal.fire({
-        title: 'Oops...!',
-        text: 'Se encontraron errores en su codigo, no puede mostrar tabla de variables',
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
