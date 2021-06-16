@@ -341,7 +341,7 @@ export class EditorComponent {
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      this.salida = _Console.salida;
+      this.salida = 'TytusX Output: \n\n' +_Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
@@ -366,10 +366,18 @@ export class EditorComponent {
     }
     this.clean();
     try {
-      this.ast = xPathDESC.parse(this.entradaXpath.toString());
-      console.log(this.ast);
+      let queryTree = xPathDESC.parse(this.entradaXpath.toString());
+      // se pasa el env xml 
+      let ejecutor = new EjecutorXPath(this.envXML);
+      ejecutor.ejecutar(queryTree);
+      let envXPath = ejecutor.getEntorno();
+      this.salida = 'TytusX Output: \n\n' +_Console.salida;
+      // console.log("--- Imprimiendo Entorno de Consultas ---");
+      // console.log(envXPath);
+      // console.log("------");
+      this.ast=queryTree;
     } catch (e) {
-      console.error(e.message);
+      console.error(e);
     }
     this.flag = false;
   }
