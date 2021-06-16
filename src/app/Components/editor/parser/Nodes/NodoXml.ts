@@ -7,7 +7,7 @@ export class NodoXML extends Nodo {
   }
 
   public getID() {
-    return this.name;
+    return this.name.trim();
   }
 
   public getTipo() {

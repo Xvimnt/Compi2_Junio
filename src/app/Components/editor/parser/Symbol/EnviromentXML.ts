@@ -4,12 +4,13 @@ import { XMLSymbol } from '../Symbol/xmlSymbol';
 
 export class EnvironmentXML {
   public nombre: string;
-  public anterior: EnvironmentXML;
+  // public anterior: EnvironmentXML;
+  public hijos: Array<EnvironmentXML>;
   public tablaSimbolos: Array<XMLSymbol>;
 
-  constructor(nombre, anterior) {
+  constructor(nombre) {
     this.nombre = nombre;
-    this.anterior = anterior;
+    this.hijos = new Array<EnvironmentXML>();
     this.tablaSimbolos = new Array<XMLSymbol>();
   }
 
@@ -38,68 +39,46 @@ export class EnvironmentXML {
         }
       }
       this.tablaSimbolos.push(simbolo);
-      return;
+    } else if (simbolo.getTipo() === 'Valor') {
+      this.tablaSimbolos.push(simbolo);
     }
+    return;
   }
 
-  // getSimbolo(nombre) {
-  //   var ent = this;
-  //   while (ent != null) {
-  //     var tmp = ent.tablaSimbolos.getTabla();
-  //     for (let index = 0; index < tmp.length; index++) {
-  //       if (tmp[index].getNombre() === nombre) {
-  //         return tmp[index];
-  //       }
-  //     }
-  //     ent = ent.anterior;
-  //   }
-  //   return false;
-  // }
-
-  // updateSimbolo(simbol) {
-  //   var ent = this;
-  //   while (ent != null) {
-  //     var tmp = ent.tablaSimbolos.getTabla();
-  //     for (let index = 0; index < tmp.length; index++) {
-  //       if (tmp[index].getNombre() === simbol.getNombre()) {
-  //         tmp[index] = simbol;
-  //         return true;
-  //       }
-  //     }
-  //     ent = ent.anterior;
-  //   }
-  //   return false;
-  // }
+  addHijo(ent: EnvironmentXML) {
+    this.hijos.push(ent);
+  }
 
   printEntornos() {
     let ent: EnvironmentXML = this;
-    while (ent != null) {
-      console.log(ent.nombre);
-      ent = ent.anterior;
-    }
+    this.printEntornos2(ent);
   }
 
-  printTablaSimbolos() {
-    let ent: EnvironmentXML = this;
-    while (ent != null) {
-      var tmp = ent.tablaSimbolos;
-      tmp.forEach((element) => {
-        console.log(element);
-      });
-      ent = ent.anterior;
-    }
+  private printEntornos2(ent: EnvironmentXML) {
+    console.log(ent.nombre);
+    ent.hijos.forEach((element) => {
+      this.printEntornos2(element);
+    });
   }
 
   getTablaSimbolos() {
     let ent: EnvironmentXML = this;
     let simb = new Array();
-    while (ent != null) {
-      let tmp = ent.tablaSimbolos;
-      tmp.forEach((element) => {
-        simb.push(element);
-      });
-      ent = ent.anterior;
-    }
+    this.tablaSimbolos.forEach((element) => {
+      simb.push(element);
+    });
+    ent.hijos.forEach((element) => {
+      this.getSimbolos(element, simb);
+    });
     return simb;
+  }
+
+  private getSimbolos(ent: EnvironmentXML, list: any) {
+    ent.tablaSimbolos.forEach((element) => {
+      list.push(element);
+    });
+    ent.hijos.forEach((element) => {
+      this.getSimbolos(element, list);
+    });
   }
 }
