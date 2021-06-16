@@ -41,6 +41,7 @@ import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { If } from './parser/Instruction/If';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
+import { Error_ } from './parser/Error';
 
 @Component({
   selector: 'editor-root',

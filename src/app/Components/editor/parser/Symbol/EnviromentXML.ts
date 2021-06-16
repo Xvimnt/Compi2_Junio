@@ -47,6 +47,7 @@ export class EnvironmentXML {
 
   getValor(ambito: string): string{
     let response = "";
+    // console.log("env",this);
     this.tablaSimbolos.forEach(element => {
       if(element.ambito == ambito){
         response = element.getValor();
