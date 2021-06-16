@@ -292,13 +292,13 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXML.parse(this.entradaXml.toString());
-      console.log(this.ast);
-      console.log('ejecutando');
+      // console.log(this.ast);
+      // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast, this.envXML);
       this.envXML.printEntornos();
-      console.log(this.envXML.getTablaSimbolos());
+      // console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -321,7 +321,7 @@ export class EditorComponent {
     }
     this.flag = false;
   }
-  
+
   ejecutarXPathAsc() {
     if (this.ast == null) {
       Swal.fire({
@@ -341,13 +341,13 @@ export class EditorComponent {
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      
+      this.salida = _Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
       this.ast=queryTree;
     } catch (e) {
-      console.error(e.message);
+      console.error(e);
     }
     this.flag = false;
   }

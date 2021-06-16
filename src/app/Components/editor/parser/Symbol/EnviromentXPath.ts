@@ -55,7 +55,7 @@ export class EnvironmentXPath {
     while (ent != null) {
       var tmp = ent.tablaSimbolos;
       tmp.forEach((element) => {
-        console.log(element);
+        // console.log(element);
       });
       ent = ent.anterior;
     }

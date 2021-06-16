@@ -45,6 +45,16 @@ export class EnvironmentXML {
     return;
   }
 
+  getValor(ambito: string): string{
+    let response = "";
+    this.tablaSimbolos.forEach(element => {
+      if(element.ambito == ambito){
+        response = element.getValor();
+      }
+    });
+    return response;
+  }
+
   addHijo(ent: EnvironmentXML) {
     this.hijos.push(ent);
   }

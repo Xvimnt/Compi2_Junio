@@ -8,7 +8,7 @@ export class EjecutorXML {
   constructor() {}
 
   ejecutar(ast: NodoXML, env: EnvironmentXML) {
-    console.log(ast);
+    // console.log(ast);
     if (ast != null) {
       let tipo = ast.getTipo();
       // console.log(tipo);
@@ -28,7 +28,7 @@ export class EjecutorXML {
           this.ejecutarArg(ast, env);
           break;
         case 'CONTENT':
-          console.log('ejecutando contenido');
+          // console.log('ejecutando contenido');
           this.ejecutarContenido(ast, env);
           break;
         default:
@@ -88,16 +88,15 @@ export class EjecutorXML {
     contenido: NodoXML,
     env: EnvironmentXML
   ) {
-    console.log(etiqueta, contenido);
+    // console.log(etiqueta, contenido);
     if (etiqueta != null && contenido != null) {
       //nuevo entorno
-      console.log('nuevo env 1');
       let nuevo = new EnvironmentXML(etiqueta.getID());
       env.addHijo(nuevo);
       this.ejecutar(etiqueta.getHijos()[0], nuevo);
       this.ejecutarContenido(contenido, nuevo);
     } else if (etiqueta != null && contenido == null) {
-      console.log('nuevo env 2');
+      // console.log('nuevo env 2');
       let nuevo = new EnvironmentXML(etiqueta.getID());
       env.addHijo(nuevo);
     }
