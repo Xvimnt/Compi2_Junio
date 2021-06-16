@@ -219,7 +219,7 @@ var XmlGrammarASC = (function () {
             _$[$0 - 3].first_line + 1,
             +_$[$0 - 3].first_column + 1
           );
-          tag.addHijo($$[$0 - 3]);
+          tag.addHijo($$[$0 - 1]);
           this.$ = tag;
 
           break;
@@ -302,7 +302,7 @@ var XmlGrammarASC = (function () {
           );
           var val = new NodoXML(
             $$[$0],
-            "CONTENT",
+            "VAL",
             _$[$0].first_line + 1,
             +_$[$0].first_column + 1
           );
@@ -326,7 +326,7 @@ var XmlGrammarASC = (function () {
         case 14:
           var val = new NodoXML(
             $$[$0],
-            "CONTENT",
+            "VAL",
             _$[$0].first_line + 1,
             +_$[$0].first_column + 1
           );
@@ -1111,8 +1111,8 @@ var XmlGrammarASC = (function () {
       ],
       conditions: {
         valin: { rules: [21, 22, 23], inclusive: false },
-        tagval2: { rules: [11, 13, 14, 15, 16, 17, 18, 19], inclusive: false },
-        tagval1: { rules: [5, 6, 7, 8, 9, 10], inclusive: false },
+        tagval2: { rules: [13, 14, 15, 16, 17, 18, 19], inclusive: false },
+        tagval1: { rules: [5, 6, 7, 8, 9, 10, 11], inclusive: false },
         xmloptions: { rules: [1, 2, 3], inclusive: false },
         INITIAL: {
           rules: [0, 4, 12, 20, 24, 25, 26, 27, 28, 29, 30, 31],
