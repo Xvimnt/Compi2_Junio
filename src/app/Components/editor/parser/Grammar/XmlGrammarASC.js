@@ -76,13 +76,19 @@ var XmlGrammarASC = (function () {
       for (o = o || {}, l = k.length; l--; o[k[l]] = v);
       return o;
     },
-    $V0 = [1, 5],
-    $V1 = [1, 12],
-    $V2 = [1, 11],
-    $V3 = [1, 13],
-    $V4 = [1, 17],
-    $V5 = [10, 16],
-    $V6 = [11, 12];
+    $V0 = [1, 7],
+    $V1 = [1, 8],
+    $V2 = [1, 16],
+    $V3 = [1, 17],
+    $V4 = [1, 15],
+    $V5 = [1, 24],
+    $V6 = [12, 19],
+    $V7 = [1, 30],
+    $V8 = [1, 33],
+    $V9 = [2, 12, 19],
+    $Va = [1, 40],
+    $Vb = [1, 42],
+    $Vc = [11, 13, 15];
   var parser = {
     trace: function trace() {},
     yy: {},
@@ -95,14 +101,16 @@ var XmlGrammarASC = (function () {
       OTAG: 7,
       CONTENIDO: 8,
       CTAG: 9,
-      tk_starttag: 10,
-      tk_id: 11,
-      tk_endtag: 12,
-      ARGUMENTOS: 13,
-      tk_igual: 14,
-      tk_tagval: 15,
-      tk_valin: 16,
-      tk_closetag: 17,
+      SIMPLETAG1: 10,
+      tk_endtag: 11,
+      tk_starttag: 12,
+      tk_id: 13,
+      ARGUMENTOS: 14,
+      tk_closetag: 15,
+      tk_igual: 16,
+      tk_tagval: 17,
+      SIMPLETAG2: 18,
+      tk_valin: 19,
       $accept: 0,
       $end: 1,
     },
@@ -110,30 +118,40 @@ var XmlGrammarASC = (function () {
       2: "error",
       4: "tk_xmldec",
       6: "EOF",
-      10: "tk_starttag",
-      11: "tk_id",
-      12: "tk_endtag",
-      14: "tk_igual",
-      15: "tk_tagval",
-      16: "tk_valin",
-      17: "tk_closetag",
+      11: "tk_endtag",
+      12: "tk_starttag",
+      13: "tk_id",
+      15: "tk_closetag",
+      16: "tk_igual",
+      17: "tk_tagval",
+      19: "tk_valin",
     },
     productions_: [
       0,
       [3, 3],
       [3, 2],
+      [3, 1],
       [5, 3],
       [5, 2],
+      [5, 1],
+      [5, 2],
+      [10, 5],
+      [10, 4],
       [7, 3],
       [7, 4],
-      [13, 4],
-      [13, 3],
+      [14, 4],
+      [14, 3],
       [8, 4],
       [8, 3],
+      [8, 2],
       [8, 2],
       [8, 3],
       [8, 2],
       [8, 1],
+      [8, 1],
+      [8, 2],
+      [18, 5],
+      [18, 4],
       [9, 4],
     ],
     performAction: function anonymous(
@@ -179,6 +197,15 @@ var XmlGrammarASC = (function () {
 
           break;
         case 3:
+          return new NodoXML(
+            "S",
+            "S",
+            _$[$0].first_line + 1,
+            +_$[$0].first_column + 1
+          );
+
+          break;
+        case 4:
           var i = new NodoXML(
             "I",
             "I",
@@ -191,7 +218,7 @@ var XmlGrammarASC = (function () {
           this.$ = i;
 
           break;
-        case 4:
+        case 5:
           var i = new NodoXML(
             "I",
             "I",
@@ -203,7 +230,72 @@ var XmlGrammarASC = (function () {
           this.$ = i;
 
           break;
-        case 5:
+        case 6:
+          this.$ = $$[$0];
+
+          break;
+        case 7:
+        case 22:
+          errores.push(
+            new Error_(
+              _$[$0 - 1].first_line + 1,
+              +_$[$0 - 1].first_column + 1,
+              "Sintactico",
+              "Valor esperado " + yytext
+            )
+          );
+
+          break;
+        case 8:
+          var i = new NodoXML(
+            "I",
+            "I",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          var otag = new NodoXML(
+            $$[$0 - 3],
+            "OTAG",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          var ctag = new NodoXML(
+            $$[$0 - 3],
+            "CTAG",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          otag.addHijo($$[$0 - 2]);
+          i.addHijo(otag);
+          i.addHijo(ctag);
+          this.$ = i;
+
+          break;
+        case 9:
+          var i = new NodoXML(
+            "I",
+            "I",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          var otag = new NodoXML(
+            $$[$0 - 2],
+            "OTAG",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          var ctag = new NodoXML(
+            $$[$0 - 2],
+            "CTAG",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          i.addHijo(otag);
+          i.addHijo(ctag);
+          this.$ = i;
+
+          break;
+        case 10:
           this.$ = new NodoXML(
             $$[$0 - 1],
             "OTAG",
@@ -212,7 +304,7 @@ var XmlGrammarASC = (function () {
           );
 
           break;
-        case 6:
+        case 11:
           var tag = new NodoXML(
             $$[$0 - 2],
             "OTAG",
@@ -223,7 +315,7 @@ var XmlGrammarASC = (function () {
           this.$ = tag;
 
           break;
-        case 7:
+        case 12:
           var args = new NodoXML(
             "ARGS",
             "ARGS",
@@ -248,7 +340,7 @@ var XmlGrammarASC = (function () {
           this.$ = args;
 
           break;
-        case 8:
+        case 13:
           var arg = new NodoXML(
             $$[$0 - 2],
             "ARG",
@@ -265,7 +357,7 @@ var XmlGrammarASC = (function () {
           this.$ = arg;
 
           break;
-        case 9:
+        case 14:
           var content = new NodoXML(
             "CONTENT",
             "CONTENT",
@@ -279,8 +371,8 @@ var XmlGrammarASC = (function () {
           this.$ = content;
 
           break;
-        case 10:
-        case 12:
+        case 15:
+        case 18:
           var content = new NodoXML(
             "CONTENT",
             "CONTENT",
@@ -293,7 +385,20 @@ var XmlGrammarASC = (function () {
           this.$ = content;
 
           break;
-        case 11:
+        case 16:
+          var content = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 1].first_line + 1,
+            +_$[$0 - 1].first_column + 1
+          );
+          content.addHijo($$[$0 - 1]);
+          content.addHijo($$[$0].getHijos()[0]);
+          content.addHijo($$[$0].getHijos()[1]);
+          this.$ = content;
+
+          break;
+        case 17:
           var content = new NodoXML(
             "CONTENT",
             "CONTENT",
@@ -311,7 +416,7 @@ var XmlGrammarASC = (function () {
           this.$ = content;
 
           break;
-        case 13:
+        case 19:
           var content = new NodoXML(
             "CONTENT",
             "CONTENT",
@@ -323,7 +428,11 @@ var XmlGrammarASC = (function () {
           this.$ = content;
 
           break;
-        case 14:
+        case 20:
+          this.$ = $$[$0];
+
+          break;
+        case 21:
           var val = new NodoXML(
             $$[$0],
             "VAL",
@@ -333,7 +442,56 @@ var XmlGrammarASC = (function () {
           this.$ = val;
 
           break;
-        case 15:
+        case 23:
+          var i = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          var otag = new NodoXML(
+            $$[$0 - 3],
+            "OTAG",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          var ctag = new NodoXML(
+            $$[$0 - 3],
+            "CTAG",
+            _$[$0 - 4].first_line + 1,
+            +_$[$0 - 4].first_column + 1
+          );
+          otag.addHijo($$[$0 - 2]);
+          i.addHijo(otag);
+          i.addHijo(ctag);
+          this.$ = i;
+
+          break;
+        case 24:
+          var i = new NodoXML(
+            "CONTENT",
+            "CONTENT",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          var otag = new NodoXML(
+            $$[$0 - 2],
+            "OTAG",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          var ctag = new NodoXML(
+            $$[$0 - 2],
+            "CTAG",
+            _$[$0 - 3].first_line + 1,
+            +_$[$0 - 3].first_column + 1
+          );
+          i.addHijo(otag);
+          i.addHijo(ctag);
+          this.$ = i;
+
+          break;
+        case 25:
           this.$ = new NodoXML(
             $$[$0 - 1],
             "CTAG",
@@ -345,44 +503,72 @@ var XmlGrammarASC = (function () {
       }
     },
     table: [
-      { 3: 1, 4: [1, 2], 5: 3, 7: 4, 10: $V0 },
+      { 2: $V0, 3: 1, 4: [1, 2], 5: 3, 6: [1, 4], 7: 5, 10: 6, 12: $V1 },
       { 1: [3] },
-      { 5: 6, 7: 4, 10: $V0 },
-      { 6: [1, 7] },
-      { 7: 10, 8: 8, 9: 9, 10: $V1, 16: $V2 },
-      { 11: $V3 },
-      { 6: [1, 14] },
+      { 2: $V0, 5: 9, 7: 5, 10: 6, 12: $V1 },
+      { 6: [1, 10] },
+      { 1: [2, 3] },
+      { 2: $V2, 7: 13, 8: 11, 9: 12, 12: $V3, 18: 14, 19: $V4 },
+      { 6: [2, 6] },
+      { 11: [1, 18] },
+      { 13: [1, 19] },
+      { 6: [1, 20] },
       { 1: [2, 2] },
-      { 7: 16, 9: 15, 10: $V1, 16: $V4 },
-      { 6: [2, 4] },
-      { 7: 10, 8: 18, 9: 19, 10: $V1, 16: $V2 },
-      o($V5, [2, 14]),
-      { 11: $V3, 17: [1, 20] },
-      { 11: [1, 23], 12: [1, 21], 13: 22 },
-      { 1: [2, 1] },
-      { 6: [2, 3] },
-      { 7: 10, 8: 24, 9: 25, 10: $V1, 16: $V2 },
-      o($V5, [2, 11]),
-      { 7: 16, 9: 26, 10: $V1, 16: $V4 },
-      o($V5, [2, 13]),
+      { 7: 22, 9: 21, 12: $V3, 18: 23, 19: $V5 },
+      { 6: [2, 5] },
+      { 2: $V2, 7: 13, 8: 25, 9: 26, 12: $V3, 18: 14, 19: $V4 },
+      o($V6, [2, 20]),
+      o($V6, [2, 21]),
       { 11: [1, 27] },
-      o($V5, [2, 5]),
-      { 11: [1, 29], 12: [1, 28] },
-      { 14: [1, 30] },
-      { 7: 16, 9: 31, 10: $V1, 16: $V4 },
-      o($V5, [2, 10]),
-      o($V5, [2, 12]),
-      { 12: [1, 32] },
-      o($V5, [2, 6]),
-      { 14: [1, 33] },
-      { 15: [1, 34] },
-      o($V5, [2, 9]),
-      o([6, 10, 16], [2, 15]),
-      { 15: [1, 35] },
-      o($V6, [2, 8]),
-      o($V6, [2, 7]),
+      { 13: [1, 29], 15: [1, 28] },
+      { 6: [2, 7] },
+      { 11: $V7, 13: $V8, 14: 31, 15: [1, 32] },
+      { 1: [2, 1] },
+      { 6: [2, 4] },
+      { 2: $V2, 7: 13, 8: 34, 9: 35, 12: $V3, 18: 14, 19: $V4 },
+      o($V6, [2, 16]),
+      o($V6, [2, 17]),
+      { 7: 22, 9: 36, 12: $V3, 18: 23, 19: $V5 },
+      o($V6, [2, 19]),
+      o($V6, [2, 22]),
+      { 13: [1, 37] },
+      { 11: $V7, 13: $V8, 14: 38, 15: [1, 39] },
+      o($V9, [2, 10]),
+      { 11: $Va, 13: $Vb, 15: [1, 41] },
+      { 11: [1, 43] },
+      { 16: [1, 44] },
+      { 7: 22, 9: 45, 12: $V3, 18: 23, 19: $V5 },
+      o($V6, [2, 15]),
+      o($V6, [2, 18]),
+      { 11: [1, 46] },
+      { 11: $Va, 13: $Vb, 15: [1, 47] },
+      { 11: [1, 48] },
+      o($V9, [2, 11]),
+      { 11: [1, 49] },
+      { 16: [1, 50] },
+      { 6: [2, 9] },
+      { 17: [1, 51] },
+      o($V6, [2, 14]),
+      o([6, 12, 19], [2, 25]),
+      { 11: [1, 52] },
+      o($V6, [2, 24]),
+      { 6: [2, 8] },
+      { 17: [1, 53] },
+      o($Vc, [2, 13]),
+      o($V6, [2, 23]),
+      o($Vc, [2, 12]),
     ],
-    defaultActions: { 7: [2, 2], 9: [2, 4], 14: [2, 1], 15: [2, 3] },
+    defaultActions: {
+      4: [2, 3],
+      6: [2, 6],
+      10: [2, 2],
+      12: [2, 5],
+      18: [2, 7],
+      20: [2, 1],
+      21: [2, 4],
+      43: [2, 9],
+      49: [2, 8],
+    },
     parseError: function parseError(str, hash) {
       if (hash.recoverable) {
         this.trace(str);
@@ -395,9 +581,9 @@ var XmlGrammarASC = (function () {
     parse: function parse(input) {
       var self = this,
         stack = [0],
-        tstack = [],
-        vstack = [null],
-        lstack = [],
+        tstack = [], // token stack
+        vstack = [null], // semantic value stack
+        lstack = [], // location stack
         table = this.table,
         yytext = "",
         yylineno = 0,
@@ -405,14 +591,20 @@ var XmlGrammarASC = (function () {
         recovering = 0,
         TERROR = 2,
         EOF = 1;
+
       var args = lstack.slice.call(arguments, 1);
+
+      //this.reductionCount = this.shiftCount = 0;
+
       var lexer = Object.create(this.lexer);
       var sharedState = { yy: {} };
+      // copy state
       for (var k in this.yy) {
         if (Object.prototype.hasOwnProperty.call(this.yy, k)) {
           sharedState.yy[k] = this.yy[k];
         }
       }
+
       lexer.setInput(input, sharedState.yy);
       sharedState.yy.lexer = lexer;
       sharedState.yy.parser = this;
@@ -421,25 +613,31 @@ var XmlGrammarASC = (function () {
       }
       var yyloc = lexer.yylloc;
       lstack.push(yyloc);
+
       var ranges = lexer.options && lexer.options.ranges;
+
       if (typeof sharedState.yy.parseError === "function") {
         this.parseError = sharedState.yy.parseError;
       } else {
         this.parseError = Object.getPrototypeOf(this).parseError;
       }
+
       function popStack(n) {
         stack.length = stack.length - 2 * n;
         vstack.length = vstack.length - n;
         lstack.length = lstack.length - n;
       }
+
       _token_stack: var lex = function () {
         var token;
         token = lexer.lex() || EOF;
+        // if token isn't its numeric value, convert
         if (typeof token !== "number") {
           token = self.symbols_[token] || token;
         }
         return token;
       };
+
       var symbol,
         preErrorSymbol,
         state,
@@ -452,51 +650,127 @@ var XmlGrammarASC = (function () {
         newState,
         expected;
       while (true) {
+        // retreive state number from top of stack
         state = stack[stack.length - 1];
+
+        // use default actions if available
         if (this.defaultActions[state]) {
           action = this.defaultActions[state];
         } else {
           if (symbol === null || typeof symbol == "undefined") {
             symbol = lex();
           }
+          // read action for current state and first input
           action = table[state] && table[state][symbol];
         }
-        if (typeof action === "undefined" || !action.length || !action[0]) {
+
+        // handle parse error
+        _handle_error: if (
+          typeof action === "undefined" ||
+          !action.length ||
+          !action[0]
+        ) {
+          var error_rule_depth;
           var errStr = "";
-          expected = [];
-          for (p in table[state]) {
-            if (this.terminals_[p] && p > TERROR) {
-              expected.push("'" + this.terminals_[p] + "'");
+
+          // Return the rule stack depth where the nearest error rule can be found.
+          // Return FALSE when no error recovery rule was found.
+          function locateNearestErrorRecoveryRule(state) {
+            var stack_probe = stack.length - 1;
+            var depth = 0;
+
+            // try to recover from error
+            for (;;) {
+              // check for error recovery rule in this state
+              if (TERROR.toString() in table[state]) {
+                return depth;
+              }
+              if (state === 0 || stack_probe < 2) {
+                return false; // No suitable error recovery rule available.
+              }
+              stack_probe -= 2; // popStack(1): [symbol, action]
+              state = stack[stack_probe];
+              ++depth;
             }
           }
-          if (lexer.showPosition) {
-            errStr =
-              "Parse error on line " +
-              (yylineno + 1) +
-              ":\n" +
-              lexer.showPosition() +
-              "\nExpecting " +
-              expected.join(", ") +
-              ", got '" +
-              (this.terminals_[symbol] || symbol) +
-              "'";
-          } else {
-            errStr =
-              "Parse error on line " +
-              (yylineno + 1) +
-              ": Unexpected " +
-              (symbol == EOF
-                ? "end of input"
-                : "'" + (this.terminals_[symbol] || symbol) + "'");
+
+          if (!recovering) {
+            // first see if there's any chance at hitting an error recovery rule:
+            error_rule_depth = locateNearestErrorRecoveryRule(state);
+
+            // Report error
+            expected = [];
+            for (p in table[state]) {
+              if (this.terminals_[p] && p > TERROR) {
+                expected.push("'" + this.terminals_[p] + "'");
+              }
+            }
+            if (lexer.showPosition) {
+              errStr =
+                "Parse error on line " +
+                (yylineno + 1) +
+                ":\n" +
+                lexer.showPosition() +
+                "\nExpecting " +
+                expected.join(", ") +
+                ", got '" +
+                (this.terminals_[symbol] || symbol) +
+                "'";
+            } else {
+              errStr =
+                "Parse error on line " +
+                (yylineno + 1) +
+                ": Unexpected " +
+                (symbol == EOF
+                  ? "end of input"
+                  : "'" + (this.terminals_[symbol] || symbol) + "'");
+            }
+            this.parseError(errStr, {
+              text: lexer.match,
+              token: this.terminals_[symbol] || symbol,
+              line: lexer.yylineno,
+              loc: yyloc,
+              expected: expected,
+              recoverable: error_rule_depth !== false,
+            });
+          } else if (preErrorSymbol !== EOF) {
+            error_rule_depth = locateNearestErrorRecoveryRule(state);
           }
-          this.parseError(errStr, {
-            text: lexer.match,
-            token: this.terminals_[symbol] || symbol,
-            line: lexer.yylineno,
-            loc: yyloc,
-            expected: expected,
-          });
+
+          // just recovered from another error
+          if (recovering == 3) {
+            if (symbol === EOF || preErrorSymbol === EOF) {
+              throw new Error(
+                errStr ||
+                  "Parsing halted while starting to recover from another error."
+              );
+            }
+
+            // discard current lookahead and grab another
+            yyleng = lexer.yyleng;
+            yytext = lexer.yytext;
+            yylineno = lexer.yylineno;
+            yyloc = lexer.yylloc;
+            symbol = lex();
+          }
+
+          // try to recover from error
+          if (error_rule_depth === false) {
+            throw new Error(
+              errStr ||
+                "Parsing halted. No suitable error recovery rule available."
+            );
+          }
+          popStack(error_rule_depth);
+
+          preErrorSymbol = symbol == TERROR ? null : symbol; // save the lookahead token
+          symbol = TERROR; // insert generic error symbol as new lookahead
+          state = stack[stack.length - 1];
+          action = table[state] && table[state][TERROR];
+          recovering = 3; // allow 3 real symbols to be shifted before reporting a new error
         }
+
+        // this shouldn't happen, unless resolve defaults are off
         if (action[0] instanceof Array && action.length > 1) {
           throw new Error(
             "Parse Error: multiple actions possible at state: " +
@@ -505,14 +779,18 @@ var XmlGrammarASC = (function () {
               symbol
           );
         }
+
         switch (action[0]) {
-          case 1:
+          case 1: // shift
+            //this.shiftCount++;
+
             stack.push(symbol);
             vstack.push(lexer.yytext);
             lstack.push(lexer.yylloc);
-            stack.push(action[1]);
+            stack.push(action[1]); // push state
             symbol = null;
             if (!preErrorSymbol) {
+              // normal execution/no error
               yyleng = lexer.yyleng;
               yytext = lexer.yytext;
               yylineno = lexer.yylineno;
@@ -521,13 +799,21 @@ var XmlGrammarASC = (function () {
                 recovering--;
               }
             } else {
+              // error just occurred, resume old lookahead f/ before error
               symbol = preErrorSymbol;
               preErrorSymbol = null;
             }
             break;
+
           case 2:
+            // reduce
+            //this.reductionCount++;
+
             len = this.productions_[action[1]][1];
-            yyval.$ = vstack[vstack.length - len];
+
+            // perform semantic action
+            yyval.$ = vstack[vstack.length - len]; // default to $$ = $1
+            // default location, uses first token for firsts, last for lasts
             yyval._$ = {
               first_line: lstack[lstack.length - (len || 1)].first_line,
               last_line: lstack[lstack.length - 1].last_line,
@@ -552,24 +838,32 @@ var XmlGrammarASC = (function () {
                 lstack,
               ].concat(args)
             );
+
             if (typeof r !== "undefined") {
               return r;
             }
+
+            // pop off stack
             if (len) {
               stack = stack.slice(0, -1 * len * 2);
               vstack = vstack.slice(0, -1 * len);
               lstack = lstack.slice(0, -1 * len);
             }
-            stack.push(this.productions_[action[1]][0]);
+
+            stack.push(this.productions_[action[1]][0]); // push nonterminal (reduce)
             vstack.push(yyval.$);
             lstack.push(yyval._$);
+            // goto new state = table[STATE][NONTERMINAL]
             newState = table[stack[stack.length - 2]][stack[stack.length - 1]];
             stack.push(newState);
             break;
+
           case 3:
+            // accept
             return true;
         }
       }
+
       return true;
     },
   };
@@ -943,126 +1237,128 @@ var XmlGrammarASC = (function () {
         var YYSTATE = YY_START;
         switch ($avoiding_name_collisions) {
           case 0:
-            this.begin("xmloptions");
+            this.begin("comment");
             break;
           case 1:
             this.popState();
-            console.log("xmloptions: " + valDeclaration);
+            break;
+          case 2:
+            break;
+          case 3:
+            break;
+          case 4:
+            this.begin("xmloptions");
+            break;
+          case 5:
+            this.popState();
             yy_.yytext = valDeclaration;
             valDeclaration = "";
             return 4;
 
             break;
-          case 2:
+          case 6:
             valDeclaration += yy_.yytext;
             break;
-          case 3:
+          case 7:
             this.popState();
             return 6;
-            break;
-          case 4:
-            this.begin("tagval1");
-            break;
-          case 5:
-            this.popState();
-            console.log("valtag: " + valTag);
-            yy_.yytext = valTag;
-            valTag = "";
-            return 15;
-
-            break;
-          case 6:
-            valTag += "<";
-            break;
-          case 7:
-            valTag += ">";
             break;
           case 8:
-            valTag += "&";
+            this.begin("tagval1");
             break;
           case 9:
-            valTag += "'";
-            break;
-          case 10:
-            valTag += '"';
-            break;
-          case 11:
-            valTag += yy_.yytext;
-            break;
-          case 12:
-            this.begin("tagval2");
-            break;
-          case 13:
             this.popState();
-            console.log("valtag: " + valTag);
             yy_.yytext = valTag;
             valTag = "";
-            return 15;
+            return 17;
 
             break;
-          case 14:
+          case 10:
             valTag += "<";
             break;
-          case 15:
+          case 11:
             valTag += ">";
             break;
-          case 16:
+          case 12:
             valTag += "&";
             break;
-          case 17:
+          case 13:
             valTag += "'";
             break;
-          case 18:
+          case 14:
             valTag += '"';
             break;
-          case 19:
+          case 15:
             valTag += yy_.yytext;
             break;
-          case 20:
-            this.begin("valin");
-            console.log(yy_.yytext);
-            return 12;
+          case 16:
+            this.begin("tagval2");
             break;
-          case 21:
+          case 17:
             this.popState();
-            console.log("<");
-            return 10;
+            yy_.yytext = valTag;
+            valTag = "";
+            return 17;
 
             break;
+          case 18:
+            valTag += "<";
+            break;
+          case 19:
+            valTag += ">";
+            break;
+          case 20:
+            valTag += "&";
+            break;
+          case 21:
+            valTag += "'";
+            break;
           case 22:
-            console.log("valin: " + yy_.yytext);
-            return 16;
+            valTag += '"';
             break;
           case 23:
+            valTag += yy_.yytext;
+            break;
+          case 24:
+            this.begin("valin");
+            return 11;
+            break;
+          case 25:
+            this.begin("comment");
+            break;
+          case 26:
+            this.popState();
+            return 12;
+
+            break;
+          case 27:
+            if (yy_.yytext.trim() != "") return 19;
+            break;
+          case 28:
             this.popState();
             return 6;
             break;
-          case 24:
-            console.log(yy_.yytext);
-            return 12;
-            break;
-          case 25:
-            console.log(yy_.yytext);
-            return 10;
-            break;
-          case 26:
-            console.log(yy_.yytext);
-            return 17;
-            break;
-          case 27:
-            console.log(yy_.yytext);
-            return 14;
-            break;
-          case 28:
-            console.log("id:" + yy_.yytext);
+          case 29:
             return 11;
             break;
-          case 29 /*se ignoran*/:
-            break;
           case 30:
-            return 6;
+            return 12;
             break;
           case 31:
+            return 15;
+            break;
+          case 32:
+            return 16;
+            break;
+          case 33:
+            return 13;
+            break;
+          case 34 /*se ignoran*/:
+            break;
+          case 35:
+            return 6;
+            break;
+          case 36:
             errores.push(
               new Error_(
                 yy_.yylloc.first_line,
@@ -1071,11 +1367,14 @@ var XmlGrammarASC = (function () {
                 "Valor inesperado " + yy_.yytext
               )
             );
-            console.error(errores);
             break;
         }
       },
       rules: [
+        /^(?:<!--)/,
+        /^(?:-->)/,
+        /^(?:.)/,
+        /^(?:[ \t\r\n\f])/,
         /^(?:<\?xml\b)/,
         /^(?:\?>)/,
         /^(?:[^(\?>)])/,
@@ -1097,6 +1396,7 @@ var XmlGrammarASC = (function () {
         /^(?:&quot;)/,
         /^(?:.)/,
         /^(?:>)/,
+        /^(?:<!--)/,
         /^(?:<)/,
         /^(?:[^<]+)/,
         /^(?:$)/,
@@ -1104,18 +1404,19 @@ var XmlGrammarASC = (function () {
         /^(?:<)/,
         /^(?:\/)/,
         /^(?:=)/,
-        /^(?:[[a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|["_""-"]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*)/,
+        /^(?:[[a-zA-ZñÑáéíóúÁÉÍÓÚ][\_\-0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|[\_\-]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ][\_\-0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*)/,
         /^(?:[ \t\n\r\f])/,
         /^(?:$)/,
         /^(?:.)/,
       ],
       conditions: {
-        valin: { rules: [21, 22, 23], inclusive: false },
-        tagval2: { rules: [13, 14, 15, 16, 17, 18, 19], inclusive: false },
-        tagval1: { rules: [5, 6, 7, 8, 9, 10, 11], inclusive: false },
-        xmloptions: { rules: [1, 2, 3], inclusive: false },
+        comment: { rules: [1, 2, 3], inclusive: false },
+        valin: { rules: [25, 26, 27, 28], inclusive: false },
+        tagval2: { rules: [17, 18, 19, 20, 21, 22, 23], inclusive: false },
+        tagval1: { rules: [9, 10, 11, 12, 13, 14, 15], inclusive: false },
+        xmloptions: { rules: [5, 6, 7], inclusive: false },
         INITIAL: {
-          rules: [0, 4, 12, 20, 24, 25, 26, 27, 28, 29, 30, 31],
+          rules: [0, 4, 8, 16, 24, 29, 30, 31, 32, 33, 34, 35, 36],
           inclusive: true,
         },
       },

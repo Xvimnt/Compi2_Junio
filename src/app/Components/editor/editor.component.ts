@@ -1,7 +1,6 @@
 import { Component, ViewEncapsulation } from '@angular/core';
 // Imports para el parser
 import { Environment } from './parser/Symbol/Environment';
-import { Function } from './parser/Instruction/Function';
 import { _Console } from './parser/Util/Salida';
 // Imports para los reportes
 import { Plotter } from './parser/Report/plotter';
@@ -33,13 +32,13 @@ import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
 
 declare var require: any;
-const parserXML = require('./parser/Grammar/XmlGrammarASC.js');
+const parserXMLASC = require('./parser/Grammar/XmlGrammarASC.js');
+const parserXMLDESC = require('./parser/Grammar/XmlGrammarDESC.js');
 const xPathASC = require('./parser/Grammar/xPathAsc.js');
 const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
-import { If } from './parser/Instruction/If';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 import { Error_ } from './parser/Error';
 
@@ -75,17 +74,11 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) { }
+  constructor(private dotService: DotService) {}
   ngOnInit() {
     this.clean();
   }
 
-  // cleanText(){
-  //   this.consulta = '';
-  //   this.salida = '[TytusX] Output: \n\n';
-  //   this.entrada = '';
-  // }
-  // Metodos
   clean() {
     this.ast = null;
     this.env = null;
@@ -127,172 +120,10 @@ export class EditorComponent {
     this.salida += '}\n\n';
   }
 
-  // onFileSelected(event) {
-  //   const file: File = event.target.files[0];
-  //   if (file) {
-  //     var reader = new FileReader();
-  //     Swal.fire({
-  //       title: '¡Carga Correcta! ¿En que area de texto desea cargar?',
-  //       showDenyButton: true,
-  //       showCancelButton: true,
-  //       confirmButtonText: `Area 1`,
-  //       denyButtonText: `Area 2`,
-  //       confirmButtonColor: 'rgb(8, 101, 104)',
-  //       background: 'black',
-  //       icon: 'info'
-  //     }).then((result) => {
-  //       if (result.isConfirmed) {
-  //         reader.onload = () => {
-  //           this.entrada = reader.result.toString();
-  //         };
-  //         reader.readAsText(file);
-  //       }
-  //       else if (result.isDenied) {
-  //         reader.onload = () => {
-  //           this.consulta = reader.result.toString();
-  //         };
-  //         reader.readAsText(file);
-  //       }
-  //     });
-  //   }
-  // }
-
-  // saveFile() {
-  //   var reader = new FileReader();
-  //   Swal.fire({
-  //     title: '¿Que area de texto desea descargar?',
-  //     showDenyButton: true,
-  //     showCancelButton: true,
-  //     confirmButtonText: `Area 1`,
-  //     denyButtonText: `Area 2`,
-  //     confirmButtonColor: 'rgb(8, 101, 104)',
-  //     background: 'black',
-  //     icon: 'info'
-  //   }).then((result) => {
-  //     if (result.isConfirmed) {
-  //       const blob = new Blob([this.entrada], { type: 'text/txt' });
-  //       const url = window.URL.createObjectURL(blob);
-  //       var a = document.createElement("a");
-  //       a.href = url;
-  //       a.download = "TytusX.txt";
-  //       // start download
-  //       a.click();
-  //     }
-  //     else if (result.isDenied) {
-  //       const blob = new Blob([this.consulta], { type: 'text/txt' });
-  //       const url = window.URL.createObjectURL(blob);
-  //       var a = document.createElement("a");
-  //       a.href = url;
-  //       a.download = "TytusX.txt";
-  //       // start download
-  //       a.click();
-  //     }
-  //   });
-  // }
-
-  executeOpt(entrada: string) {
-    // try {
-    //   this.ast = optimizer.parse(entrada);
-    //   let env = new _Optimizer();
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla1(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla2(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla3(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla4(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla5(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.reglas = env.reglas;
-    //   Swal.fire({
-    //     title: 'Cool!',
-    //     text: 'Su codigo intermedio se ha optimizado correctamente...',
-    //     icon: 'success',
-    //     confirmButtonText: 'Entendido',
-    //     confirmButtonColor: 'rgb(8, 101, 104)',
-    //     background: 'black',
-    //   }).then(() => {
-    //     this.cOutput(env.salida);
-    //   });
-    // } catch (e) {
-    //   console.log(e);
-    //   Swal.fire({
-    //     title: 'Error',
-    //     text: 'Ocurrieron errores en la optimizacion...',
-    //     icon: 'error',
-    //     confirmButtonText: 'Entendido',
-    //     confirmButtonColor: 'rgb(8, 101, 104)',
-    //     background: 'black',
-    //   });
-    // }
-  }
-
-  optimizar() {
-    // Swal.fire({
-    //   title: 'En donde se encuentra el codigo a optimizar?',
-    //   showDenyButton: true,
-    //   showCancelButton: true,
-    //   confirmButtonText: `Entrada`,
-    //   denyButtonText: `Salida`,
-    //   confirmButtonColor: 'rgb(8, 101, 104)',
-    //   background: 'black',
-    //   icon: 'info',
-    // }).then((result) => {
-    //   if (result.isConfirmed) this.executeOpt(this.entrada.toString());
-    //   else if (result.isDenied) this.executeOpt(this.salida.toString());
-    // });
-  }
-
   ejecutarXmlAsc() {
     this.clean();
     try {
-      this.ast = parserXML.parse(this.entradaXml.toString());
+      this.ast = parserXMLASC.parse(this.entradaXml.toString());
       // console.log(this.ast);
       // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
@@ -309,14 +140,14 @@ export class EditorComponent {
   ejecutarXmlDesc() {
     this.clean();
     try {
-      this.ast = parserXML.parse(this.entradaXml.toString());
-      console.log(this.ast);
-      console.log('ejecutando');
+      this.ast = parserXMLDESC.parse(this.entradaXml.toString());
+      // console.log(this.ast);
+      // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast, this.envXML);
       this.envXML.printEntornos();
-      console.log(this.envXML.getTablaSimbolos());
+      // console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -338,15 +169,15 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathASC.parse(this.entradaXpath.toString());
-      // se pasa el env xml 
+      // se pasa el env xml
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      this.salida = 'TytusX Output: \n\n' +_Console.salida;
+      this.salida = 'TytusX Output: \n\n' + _Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
-      this.ast=queryTree;
+      this.ast = queryTree;
     } catch (e) {
       console.error(e);
     }
@@ -368,120 +199,22 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathDESC.parse(this.entradaXpath.toString());
-      // se pasa el env xml 
+      // se pasa el env xml
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      this.salida = 'TytusX Output: \n\n' +_Console.salida;
+      this.salida = 'TytusX Output: \n\n' + _Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
-      this.ast=queryTree;
+      this.ast = queryTree;
     } catch (e) {
       console.error(e);
     }
     this.flag = false;
   }
 
-  ejecutar() {
-    // this.clean();
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parser.parse(this.entradaXml.toString());
-    //   this.env = new Environment(null);
-    //   for (const instr of this.ast) {
-    //     try {
-    //       if (instr instanceof Function) instr.execute(this.env);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   for (const instr of this.ast) {
-    //     if (instr instanceof Function || isString(instr)) continue;
-    //     try {
-    //       instr.execute(this.env);
-    //       // TODO validar return break continue fuera de ciclos
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   if (errores.length == 0) {
-    //     // Muestra el resultado en la pagina
-    //     this.salida += _Console.salida;
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // this.flag = false;
-  }
-
-  translate() {
-    // this.clean();
-    // try {
-    //   this.ast = parser.parse(this.entrada.toString());
-    //   this.env = new Environment(null);
-    //   this.salida = '';
-    //   try {
-    //     for (const instr of this.ast) {
-    //       this.salida += instr.translate(this.env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   if (errores.length == 0) {
-    //     this.cOutput(this.salida);
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // this.flag = false;
-    // _Console.showSystem();
-  }
-
-  printAst() {
+  printAST() {
     if (this.flag) {
       Swal.fire({
         title: 'Oops...',
@@ -501,14 +234,87 @@ export class EditorComponent {
         background: 'black',
       });
     } else {
-      let dot = new Plotter().makeDot(this.ast);
+      let dot = new Plotter().makeDotAST(this.ast);
       let viz = new Viz({ Module, render });
       viz
         .renderSVGElement(dot)
         .then(function (element) {
-          document.getElementById('reportes').innerHTML =
-            '<h3>Reporte AST</h3>';
-          document.getElementById('reportes').appendChild(element);
+          document.getElementById('reporteAST').innerHTML = '';
+          document.getElementById('reporteAST').appendChild(element);
+        })
+        .catch((error) => {
+          viz = new Viz({ Module, render });
+          console.error(error);
+        });
+
+      return;
+    }
+  }
+
+  printCST() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede graficar',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      let dot = new Plotter().makeDotCST(this.ast);
+      let viz = new Viz({ Module, render });
+      viz
+        .renderSVGElement(dot)
+        .then(function (element) {
+          document.getElementById('reporteCST').innerHTML = '';
+          document.getElementById('reporteCST').appendChild(element);
+        })
+        .catch((error) => {
+          viz = new Viz({ Module, render });
+          console.error(error);
+        });
+
+      return;
+    }
+  }
+
+  printArbolXML() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede graficar',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      let dot = new Plotter().makeDotXML(this.envXML);
+      let viz = new Viz({ Module, render });
+      viz
+        .renderSVGElement(dot)
+        .then(function (element) {
+          document.getElementById('reporteXML').innerHTML = '';
+          document.getElementById('reporteXML').appendChild(element);
         })
         .catch((error) => {
           viz = new Viz({ Module, render });
@@ -741,5 +547,202 @@ export class EditorComponent {
 
   clearConsole() {
     this.salida = '[Grupo18_TitusX]Output: \n\n';
+  }
+
+  executeOpt(entrada: string) {
+    // try {
+    //   this.ast = optimizer.parse(entrada);
+    //   let env = new _Optimizer();
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla1(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla2(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla3(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla4(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   this.reglas = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = this.reglas;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla5(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   this.reglas = env.reglas;
+    //   Swal.fire({
+    //     title: 'Cool!',
+    //     text: 'Su codigo intermedio se ha optimizado correctamente...',
+    //     icon: 'success',
+    //     confirmButtonText: 'Entendido',
+    //     confirmButtonColor: 'rgb(8, 101, 104)',
+    //     background: 'black',
+    //   }).then(() => {
+    //     this.cOutput(env.salida);
+    //   });
+    // } catch (e) {
+    //   console.log(e);
+    //   Swal.fire({
+    //     title: 'Error',
+    //     text: 'Ocurrieron errores en la optimizacion...',
+    //     icon: 'error',
+    //     confirmButtonText: 'Entendido',
+    //     confirmButtonColor: 'rgb(8, 101, 104)',
+    //     background: 'black',
+    //   });
+    // }
+  }
+
+  optimizar() {
+    // Swal.fire({
+    //   title: 'En donde se encuentra el codigo a optimizar?',
+    //   showDenyButton: true,
+    //   showCancelButton: true,
+    //   confirmButtonText: `Entrada`,
+    //   denyButtonText: `Salida`,
+    //   confirmButtonColor: 'rgb(8, 101, 104)',
+    //   background: 'black',
+    //   icon: 'info',
+    // }).then((result) => {
+    //   if (result.isConfirmed) this.executeOpt(this.entrada.toString());
+    //   else if (result.isDenied) this.executeOpt(this.salida.toString());
+    // });
+  }
+
+  ejecutar() {
+    // this.clean();
+    // try {
+    //   this.ast = parserXML.parse(this.entradaXml.toString());
+    //   console.log(this.ast);
+    // } catch (e) {
+    //   console.error(e.message);
+    // }
+    // this.flag = false;
+    // try {
+    //   this.ast = parserXML.parse(this.entradaXml.toString());
+    //   console.log(this.ast);
+    // } catch (e) {
+    //   console.error(e.message);
+    // }
+    // this.flag = false;
+    // try {
+    //   this.ast = parser.parse(this.entradaXml.toString());
+    //   this.env = new Environment(null);
+    //   for (const instr of this.ast) {
+    //     try {
+    //       if (instr instanceof Function) instr.execute(this.env);
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   for (const instr of this.ast) {
+    //     if (instr instanceof Function || isString(instr)) continue;
+    //     try {
+    //       instr.execute(this.env);
+    //       // TODO validar return break continue fuera de ciclos
+    //     } catch (error) {
+    //       console.log(error);
+    //     }
+    //   }
+    //   if (errores.length == 0) {
+    //     // Muestra el resultado en la pagina
+    //     this.salida += _Console.salida;
+    //   } else {
+    //     if (errores.length != 0) {
+    //       errores.forEach((error) => {
+    //         this.salida +=
+    //           'Error ' +
+    //           error.getTipo() +
+    //           ' (linea: ' +
+    //           error.getLinea() +
+    //           ', columna: ' +
+    //           error.getColumna() +
+    //           '): ' +
+    //           error.getDescripcion() +
+    //           '.  \n';
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // this.flag = false;
+  }
+
+  translate() {
+    // this.clean();
+    // try {
+    //   this.ast = parser.parse(this.entrada.toString());
+    //   this.env = new Environment(null);
+    //   this.salida = '';
+    //   try {
+    //     for (const instr of this.ast) {
+    //       this.salida += instr.translate(this.env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
+    //   if (errores.length == 0) {
+    //     this.cOutput(this.salida);
+    //   } else {
+    //     if (errores.length != 0) {
+    //       errores.forEach((error) => {
+    //         this.salida +=
+    //           'Error ' +
+    //           error.getTipo() +
+    //           ' (linea: ' +
+    //           error.getLinea() +
+    //           ', columna: ' +
+    //           error.getColumna() +
+    //           '): ' +
+    //           error.getDescripcion() +
+    //           '.  \n';
+    //       });
+    //     }
+    //   }
+    // } catch (error) {
+    //   console.log(error);
+    // }
+    // this.flag = false;
+    // _Console.showSystem();
   }
 }
