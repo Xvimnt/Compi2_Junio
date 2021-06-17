@@ -13,7 +13,7 @@ export class EjecutorXPath {
   constructor(xmlEnvironment: EnvironmentXML) {
     this.entorno = new EnvironmentXPath('global', null);
     this.nivel = 0;
-    this.indexCount = 0;
+    this.indexCount = 1;
     this.environmentXML = xmlEnvironment; // El entorno de xml donde busca la consulta
   }
 
@@ -77,19 +77,19 @@ export class EjecutorXPath {
     let nodes = this.environmentXML.hijos;
     let find = false;
     nodes.forEach(element => {
+      if(find) return; // si ya lo encuentra no valida a los demas elementos
       // console.log("validando",element.nombre,ruta);
       if (element.nombre == ruta) {
         // valida si tiene index
         if (hijos[1].listaNodos.length != 0) {
           let index = this.ejecutar(hijos[1]);
           if (index == this.indexCount) {
-            console.log("element",element);
             // avanza un nivel
             this.environmentXML = element;
             find = true;
             this.indexCount = 0;
           }
-          this.indexCount++;
+          else this.indexCount++;
         }
         else {
           // avanza un nivel
@@ -99,18 +99,19 @@ export class EjecutorXPath {
       }
     });
     if (!find) {
-      errores.push(
-        new Error_(
-          hijos[0].getLine(),
-          hijos[0].getColumn(),
-          'Semantico',
-          `No se encuentra $ruta`
-        )
-      );
+      // errores.push(
+      //   new Error_(
+      //     hijos[0].getLine(),
+      //     hijos[0].getColumn(),
+      //     'Semantico',
+      //     `No se encuentra $ruta`
+      //   )
+      // );
       return false;
     }
+    find = false;
     this.nivel++;
-
+    // console.log("se ejecuta fin con ",hijos[0]);
     return this.ejecutarFin(hijos[0]);
   }
 
