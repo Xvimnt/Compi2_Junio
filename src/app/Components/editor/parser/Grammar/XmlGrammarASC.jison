@@ -16,12 +16,17 @@
 %x tagval1
 %x tagval2
 %x valin
+%x comment
 
 %%
+"<!--"							%{ this.begin("comment"); %}
+<comment>"-->"		  	        %{ this.popState(); %}
+<comment>.				        %{ %}
+<comment>[ \t\r\n\f]	        %{ %}
+
 "<?xml"                        %{ this.begin("xmloptions");%}
 <xmloptions>"?>"               %{ 
                                     this.popState();
-                                    console.log("xmloptions: "+valDeclaration);
                                     yytext = valDeclaration;
                                     valDeclaration = '';
                                     return 'tk_xmldec';
@@ -32,7 +37,6 @@
 ["]                             %{ this.begin("tagval1"); %}   
 <tagval1>["]                    %{ 
                                     this.popState(); 
-                                    console.log("valtag: "+valTag); 
                                     yytext=valTag; valTag=""; 
                                     return 'tk_tagval';
                                 %} 
@@ -46,7 +50,6 @@
 [']                             %{ this.begin("tagval2"); %}   
 <tagval2>[']                    %{ 
                                     this.popState(); 
-                                    console.log("valtag: "+valTag); 
                                     yytext=valTag; valTag=""; 
                                     return 'tk_tagval';
                                 %} 
@@ -57,28 +60,30 @@
 <tagval2>"&quot;"               %{ valTag +='\"'; %}
 <tagval2>.                      %{ valTag += yytext; %}
 
-">"                             %{ this.begin("valin"); console.log(yytext); return 'tk_endtag';%}
+">"                             %{ this.begin("valin"); return 'tk_endtag';%}
+
+<valin>"<!--"					%{ this.begin("comment"); %}
+
 <valin>"<"                      %{ 
                                     this.popState();
-                                    console.log('<');
                                     return 'tk_starttag';
                                 %}
-<valin>[^<]+                    %{ console.log("valin: "+yytext); return 'tk_valin'; %}
+<valin>[^<]+                    %{ if(yytext.trim() != '') return 'tk_valin'; %}
 <valin><<EOF>>                  %{ this.popState(); return 'EOF'; %}
 
-">"                             %{ console.log(yytext); return 'tk_endtag'; %}
-"<"                             %{ console.log(yytext); return 'tk_starttag'; %}
-"/"                             %{ console.log(yytext); return 'tk_closetag'; %}                
-"="                             %{ console.log(yytext); return 'tk_igual'; %}                                
+">"                             %{ return 'tk_endtag'; %}
+"<"                             %{ return 'tk_starttag'; %}
+"/"                             %{ return 'tk_closetag'; %}                
+"="                             %{ return 'tk_igual'; %}                                
 
 
-[[a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|["_""-"]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]["_""-"0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*] %{  console.log("id:"+yytext); return 'tk_id'; %}
+[[a-zA-ZñÑáéíóúÁÉÍÓÚ][\_\-0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*|[\_\-]+[0-9a-zA-ZñÑáéíóúÁÉÍÓÚ][\_\-0-9a-zA-ZñÑáéíóúÁÉÍÓÚ]*] %{ return 'tk_id'; %}
 
 
 [ \t\n\r\f] 		%{ /*se ignoran*/ %}
 <<EOF>>             %{  return 'EOF';  %}
 
-.                   %{ errores.push(new Error_(yylloc.first_line, yylloc.first_column, 'Lexico','Valor inesperado ' + yytext)); console.error(errores); %}
+.                   %{ errores.push(new Error_(yylloc.first_line, yylloc.first_column, 'Lexico','Valor inesperado ' + yytext)); %}
 
 
 /lex
@@ -101,6 +106,9 @@ S: tk_xmldec I EOF  {
             s.addHijo($1);
             return s;
         }
+| EOF   {
+            return new NodoXML("S","S",@1.first_line+1,+@1.first_column+1); 
+        }
 ;
 
 I:OTAG CONTENIDO CTAG  {
@@ -116,7 +124,32 @@ I:OTAG CONTENIDO CTAG  {
                 i.addHijo($2);
                 $$ = i;
             }
+|SIMPLETAG1  {
+                $$ = $1; 
+            }
+| error tk_endtag   { 
+                        errores.push(new Error_(@1.first_line+1,+@1.first_column+1, 'Sintactico','Valor esperado ' + yytext)); 
+                    }
 ;
+
+SIMPLETAG1: tk_starttag tk_id ARGUMENTOS tk_closetag tk_endtag  { 
+                                                                var i = new NodoXML("I","I",@1.first_line+1,+@1.first_column+1); 
+                                                                var otag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
+                                                                var ctag = new NodoXML($2,'CTAG',@1.first_line+1,+@1.first_column+1);
+                                                                otag.addHijo($3);
+                                                                i.addHijo(otag);
+                                                                i.addHijo(ctag);
+                                                                $$ = i;
+                                                            }
+        | tk_starttag tk_id tk_closetag tk_endtag  {
+                                                    var i = new NodoXML("I","I",@1.first_line+1,+@1.first_column+1); 
+                                                    var otag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
+                                                    var ctag = new NodoXML($2,'CTAG',@1.first_line+1,+@1.first_column+1);
+                                                    i.addHijo(otag);
+                                                    i.addHijo(ctag);
+                                                    $$ = i;
+                                                }
+        ;
 
 OTAG: tk_starttag tk_id tk_endtag   {
                                         $$ = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
@@ -125,7 +158,7 @@ OTAG: tk_starttag tk_id tk_endtag   {
                                             var tag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
                                             tag.addHijo($3);
                                             $$ = tag;
-                                        }
+                                        }                
 ;
 
 ARGUMENTOS: ARGUMENTOS tk_id tk_igual tk_tagval {
@@ -142,7 +175,7 @@ ARGUMENTOS: ARGUMENTOS tk_id tk_igual tk_tagval {
                                 var val = new NodoXML($3,'VAL',@3.first_line+1,+@3.first_column+1);
                                 arg.addHijo(val);
                                 $$ = arg;
-                            }
+                            }        
 ;
 
 CONTENIDO: CONTENIDO OTAG CONTENIDO CTAG{
@@ -158,6 +191,13 @@ CONTENIDO: CONTENIDO OTAG CONTENIDO CTAG{
                             content.addHijo($1);
                             content.addHijo($2);
                             content.addHijo($3);
+                            $$ = content;
+                        }
+| CONTENIDO SIMPLETAG2  {
+                            var content = new NodoXML('CONTENT','CONTENT',@1.first_line+1,+@1.first_column+1);
+                            content.addHijo($1);
+                            content.addHijo($2.getHijos()[0]);
+                            content.addHijo($2.getHijos()[1]);
                             $$ = content;
                         }
 | CONTENIDO tk_valin{
@@ -180,11 +220,36 @@ CONTENIDO: CONTENIDO OTAG CONTENIDO CTAG{
                 content.addHijo($2);
                 $$ = content;
             }
+| SIMPLETAG2    {
+                    $$ = $1;
+                }
 | tk_valin  {
                 var val = new NodoXML($1,'VAL',@1.first_line+1,+@1.first_column+1);
                 $$ = val;
             }
+| error tk_endtag   { 
+                        errores.push(new Error_(@1.first_line+1,+@1.first_column+1, 'Sintactico','Valor esperado ' + yytext)); 
+                    }
 ;
+
+SIMPLETAG2: tk_starttag tk_id ARGUMENTOS tk_closetag tk_endtag  { 
+                                                                var i = new NodoXML("CONTENT","CONTENT",@1.first_line+1,+@1.first_column+1); 
+                                                                var otag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
+                                                                var ctag = new NodoXML($2,'CTAG',@1.first_line+1,+@1.first_column+1);
+                                                                otag.addHijo($3);
+                                                                i.addHijo(otag);
+                                                                i.addHijo(ctag);
+                                                                $$ = i;
+                                                            }
+        | tk_starttag tk_id tk_closetag tk_endtag  {
+                                                    var i = new NodoXML("CONTENT","CONTENT",@1.first_line+1,+@1.first_column+1); 
+                                                    var otag = new NodoXML($2,'OTAG',@1.first_line+1,+@1.first_column+1);
+                                                    var ctag = new NodoXML($2,'CTAG',@1.first_line+1,+@1.first_column+1);
+                                                    i.addHijo(otag);
+                                                    i.addHijo(ctag);
+                                                    $$ = i;
+                                                }
+        ;
 
 CTAG: tk_starttag tk_closetag tk_id tk_endtag   {
                                                     $$ = new NodoXML($3,'CTAG',@1.first_line+1,+@1.first_column+1);
