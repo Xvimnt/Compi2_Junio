@@ -4,6 +4,7 @@ import { EnvironmentXML } from '../parser/Symbol/EnviromentXML';
 import { Error_ } from '../parser/Error';
 import { errores } from '../parser/Errores';
 import { _Console } from '../parser/Util/Salida';
+import { Return } from '../parser/Instruction/Return';
 
 export class EjecutorXPath {
   entorno: EnvironmentXPath;
@@ -90,7 +91,7 @@ export class EjecutorXPath {
         if (hijos[1].listaNodos.length != 0) {
 
           let index = this.ejecutar(hijos[1]);
-          if(index.att != undefined){
+          if(index.search != undefined){
             // busca por atributo
             let nodeSearch = element.getByAttribute(index.att,index.search.replaceAll('"',''));
             if(nodeSearch != null){
@@ -100,7 +101,7 @@ export class EjecutorXPath {
             }
             console.log("find",find);
           }
-          else if (index == this.indexCount) {
+          else if (index.att == this.indexCount) {
             // avanza un nivel
             this.environmentXML = element;
             find = true;
@@ -116,19 +117,18 @@ export class EjecutorXPath {
       }
     });
     if (!find) {
-      // errores.push(
-      //   new Error_(
-      //     hijos[0].getLine(),
-      //     hijos[0].getColumn(),
-      //     'Semantico',
-      //     `No se encuentra $ruta`
-      //   )
-      // );
+      errores.push(
+        new Error_(
+          hijos[0].getLine(),
+          hijos[0].getColumn(),
+          'Semantico',
+          `No se encuentra $ruta`
+        )
+      );
       return false;
     }
     find = false;
     this.nivel++;
-    // console.log("se ejecuta fin con ",hijos[0]);
     return this.ejecutarFin(hijos[0]);
   }
 
