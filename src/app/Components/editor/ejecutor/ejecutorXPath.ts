@@ -46,8 +46,9 @@ export class EjecutorXPath {
     return response;
   }
 
-  ejecutarPredicado(ast: NodoXML): string {
-    let result = "";
+
+  ejecutarPredicado(ast: NodoXML) {
+    let result = null;
     if (ast != null) {
       let tipo = ast.getTipo();
       // console.log("tipo",tipo);
@@ -56,11 +57,17 @@ export class EjecutorXPath {
           let hijos = ast.getHijos();
           let index = hijos[0].name;
           return index;
+        case 'ExprLogica':
+          let hijos1 = ast.getHijos();
+          let att = this.ejecutarPredicado(hijos1[0]);
+          let search = this.ejecutarPredicado(hijos1[2]);
+          return {"att":att,"search":search}
         default:
           let nodos = ast.getHijos();
           nodos.forEach(element => {
             let retorno = this.ejecutarPredicado(element);
-            result = (retorno == "") ? result : retorno;
+            result = (retorno == null) ? result : retorno;
+            if(result != null) return;
           });
           break;
       }
@@ -70,20 +77,30 @@ export class EjecutorXPath {
 
   ejecutarFin(ast: NodoXML) {
     let hijos = ast.getHijos();
-    // console.log("hijos", hijos);
     if (hijos.length == 0) return true;
     let ruta = hijos[0].name;
     // console.log("validando",this.environmentXML,hijos[0]);
     let nodes = this.environmentXML.hijos;
     let find = false;
     nodes.forEach(element => {
-      if(find) return; // si ya lo encuentra no valida a los demas elementos
+      if (find) return; // si ya lo encuentra no valida a los demas elementos
       // console.log("validando",element.nombre,ruta);
       if (element.nombre == ruta) {
         // valida si tiene index
         if (hijos[1].listaNodos.length != 0) {
+
           let index = this.ejecutar(hijos[1]);
-          if (index == this.indexCount) {
+          if(index.att != undefined){
+            // busca por atributo
+            let nodeSearch = element.getByAttribute(index.att,index.search.replaceAll('"',''));
+            if(nodeSearch != null){
+              this.environmentXML = nodeSearch;
+              find = true;
+              this.indexCount = 0;
+            }
+            console.log("find",find);
+          }
+          else if (index == this.indexCount) {
             // avanza un nivel
             this.environmentXML = element;
             find = true;

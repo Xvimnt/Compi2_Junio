@@ -37,6 +37,7 @@ export class NodoXML extends Nodo {
     return this.listaNodos;
   }
 
+
   public plotAst(count: number): string {
     return '';
   }

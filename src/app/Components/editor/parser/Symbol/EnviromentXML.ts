@@ -56,6 +56,20 @@ export class EnvironmentXML {
     return response;
   }
 
+  public getByAttribute(att:string, value: string){
+    let find = false;
+    this.hijos.forEach(element => {
+      if(element.nombre == att) {
+        let valorAtt = element.getValor(element.nombre);
+        if(valorAtt == value){
+          find = true;
+          return;
+        }
+      }
+    });
+    return (find) ? this : null;
+  }
+
   addHijo(ent: EnvironmentXML) {
     this.hijos.push(ent);
   }
