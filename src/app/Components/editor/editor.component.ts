@@ -28,6 +28,8 @@ import {
 } from '@fortawesome/free-solid-svg-icons';
 
 import { errores } from './parser/Errores';
+import { reglas } from './parser/Reglas';
+
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
 
@@ -55,7 +57,7 @@ export class EditorComponent {
   entradaXpath = '/helloworld';
   salida = 'TytusX Output: \n\n';
   ast: any;
-  reglas: Array<Rule>;
+  reglas_: Array<Rule>;
   env: Environment;
   flag: boolean;
   envXML = new EnvironmentXML('global');
@@ -406,7 +408,7 @@ export class EditorComponent {
   }
 
   optTable() {
-    if (this.reglas == undefined) {
+    if (this.reglas_ == undefined) {
       Swal.fire({
         title: 'Oops...',
         text: 'No se ha analizado el codigo aun',
@@ -415,7 +417,7 @@ export class EditorComponent {
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
       });
-    } else if (this.reglas.length == 0) {
+    } else if (this.reglas_.length == 0) {
       Swal.fire({
         title: 'Cool!',
         text: 'No se encontraron optimizaciones en su codigo',
@@ -427,7 +429,7 @@ export class EditorComponent {
     } else {
       Swal.fire({
         title: 'Tabla de Reglas',
-        html: new Table().rules(this.reglas),
+        html: new Table().rules(this.reglas_),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
@@ -459,6 +461,37 @@ export class EditorComponent {
       Swal.fire({
         title: 'Tabla de Errores',
         html: new Table().errors(errores),
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+        width: 800,
+      });
+    }
+  }
+
+  RGTable() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (reglas.length == 0) {
+      Swal.fire({
+        title: 'Oops!',
+        text: 'No se entro a ninguna regla gramatical',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      Swal.fire({
+        title: 'Reporte Gramatical',
+        html: new Table().reglas(reglas),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
