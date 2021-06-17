@@ -62,6 +62,16 @@ export class EnvironmentXML {
     return response;
   }
 
+  getAttribute(att:string){
+    let valorAtt = "";
+    this.tablaSimbolos.forEach(element => {
+      if (element.nombre == att) {
+        valorAtt = element.valor;
+      }
+    });
+    return valorAtt;
+  }
+
   public getByAttribute(att: string, value: string) {
     let find = false;
     this.hijos.forEach(element => {
