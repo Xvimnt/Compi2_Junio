@@ -124,23 +124,6 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXMLASC.parse(this.entradaXml.toString());
-      console.log(this.ast);
-      console.log('ejecutando');
-      this.envXML = new EnvironmentXML('global');
-      let ejecutor = new EjecutorXML();
-      ejecutor.ejecutar(this.ast, this.envXML);
-      this.envXML.printEntornos();
-      console.log(this.envXML.getTablaSimbolos());
-    } catch (e) {
-      console.error(e.message);
-    }
-    this.flag = false;
-  }
-
-  ejecutarXmlDesc() {
-    this.clean();
-    try {
-      this.ast = parserXML.parse(this.entradaXml.toString());
       // console.log(this.ast);
       // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
@@ -157,14 +140,14 @@ export class EditorComponent {
   ejecutarXmlDesc() {
     this.clean();
     try {
-      this.ast = parserXML.parse(this.entradaXml.toString());
-      console.log(this.ast);
-      console.log('ejecutando');
+      this.ast = parserXMLDESC.parse(this.entradaXml.toString());
+      // console.log(this.ast);
+      // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast, this.envXML);
       this.envXML.printEntornos();
-      console.log(this.envXML.getTablaSimbolos());
+      // console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -190,7 +173,7 @@ export class EditorComponent {
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      this.salida = 'TytusX Output: \n\n' +_Console.salida;
+      this.salida = 'TytusX Output: \n\n' + _Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
@@ -216,22 +199,22 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathDESC.parse(this.entradaXpath.toString());
-      // se pasa el env xml 
+      // se pasa el env xml
       let ejecutor = new EjecutorXPath(this.envXML);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
-      this.salida = 'TytusX Output: \n\n' +_Console.salida;
+      this.salida = 'TytusX Output: \n\n' + _Console.salida;
       // console.log("--- Imprimiendo Entorno de Consultas ---");
       // console.log(envXPath);
       // console.log("------");
-      this.ast=queryTree;
+      this.ast = queryTree;
     } catch (e) {
       console.error(e);
     }
     this.flag = false;
   }
 
-  printAst() {
+  printAST() {
     if (this.flag) {
       Swal.fire({
         title: 'Oops...',
@@ -251,14 +234,87 @@ export class EditorComponent {
         background: 'black',
       });
     } else {
-      let dot = new Plotter().makeDot(this.ast);
+      let dot = new Plotter().makeDotAST(this.ast);
       let viz = new Viz({ Module, render });
       viz
         .renderSVGElement(dot)
         .then(function (element) {
-          document.getElementById('reportes').innerHTML =
-            '<h3>Reporte AST</h3>';
-          document.getElementById('reportes').appendChild(element);
+          document.getElementById('reporteAST').innerHTML = '';
+          document.getElementById('reporteAST').appendChild(element);
+        })
+        .catch((error) => {
+          viz = new Viz({ Module, render });
+          console.error(error);
+        });
+
+      return;
+    }
+  }
+
+  printCST() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede graficar',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      let dot = new Plotter().makeDotCST(this.ast);
+      let viz = new Viz({ Module, render });
+      viz
+        .renderSVGElement(dot)
+        .then(function (element) {
+          document.getElementById('reporteCST').innerHTML = '';
+          document.getElementById('reporteCST').appendChild(element);
+        })
+        .catch((error) => {
+          viz = new Viz({ Module, render });
+          console.error(error);
+        });
+
+      return;
+    }
+  }
+
+  printArbolXML() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede graficar',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      let dot = new Plotter().makeDotXML(this.envXML);
+      let viz = new Viz({ Module, render });
+      viz
+        .renderSVGElement(dot)
+        .then(function (element) {
+          document.getElementById('reporteXML').innerHTML = '';
+          document.getElementById('reporteXML').appendChild(element);
         })
         .catch((error) => {
           viz = new Viz({ Module, render });
