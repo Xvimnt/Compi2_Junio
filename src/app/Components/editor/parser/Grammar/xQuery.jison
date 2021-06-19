@@ -41,6 +41,7 @@ preceding ('preceding')('-sibling')?
 "@"                     return '@'
 "*"                     return '*'
 "::"                     return '::'
+":="                    return ':='
 "-"                     return '-'
 "+"                     return '+'
 ","                     return ','
@@ -84,6 +85,16 @@ preceding ('preceding')('-sibling')?
 "at"                           return 'AT'
 "in"                           return 'IN'
 "to"                           return 'TO'
+"let"                         return 'LET'
+"where"                  return 'WHERE'
+"order"                   return 'ORDER'
+"by"                         return 'BY'
+"if"                            return 'IF'
+"then"                      return 'THEN'
+"else"                       return 'ELSE'
+"data"                       return 'DATA'
+"upper-case"          return 'UPPERCASE'
+"substring"              return "SUBSTRING"
 
 ([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'ID';
 ('$')([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'VARIABLE';
@@ -94,6 +105,8 @@ preceding ('preceding')('-sibling')?
 %left 'AND'
 %left '=', '!='
 %left '>=', '<=', '<', '>'
+%left EQ,NE
+%left LT,LE,GT,GE
 %left '+' '-'
 %left '*' 'DIV' 'MOD'
 
@@ -102,11 +115,17 @@ preceding ('preceding')('-sibling')?
 
 %%
 
-Init : Expresiones EOF ;
+Init : LExpresiones EOF ;
 
-Expresiones : ExprLogica
-                     | For
-                     | Return;
+LExpresiones : LExpresiones  Expresiones
+                       | Expresiones;
+
+Expresiones : For
+                     | Return
+                     | Let
+                     | Where
+                     | OrderBy 
+                     | If;
 		
 
 Exp : DIVSIGN Lexp
@@ -122,7 +141,7 @@ Syntfin    :  Fin
            | '@' Valor Opc
            |  Preservada '::' Fin
            | '@' Preservada Opc
-		   | '@' '*';
+	   | '@' '*';
 
 
 Fin :  Valor Opc   
@@ -132,6 +151,9 @@ Fin :  Valor Opc
     | POSITION '('   ')'
     | LAST '('   ')'
     | DOC '(' STRING ')'
+    | DATA'(' ExprLogica ')'
+    | UPPERCASE'(' ExprLogica ')'
+    | SUBSTRING '(' ExprLogica ',' ExprLogica ',' ExprLogica ')'
     | Preservada Opc 
     |'*' Opc ;
 
@@ -141,7 +163,8 @@ Valor : ID
       | NUMBER
       | STRING
       | STRING2
-      | DECIMAL;
+      | DECIMAL
+      | VARIABLE;
 
 
 Preservada:  CHILD
@@ -158,25 +181,49 @@ Preservada:  CHILD
 Opc : '['ExprLogica ']'
         | ;
 
-For: FOR VARIABLE IN Exp;
 
-Return: RETURN ExprLogica;
+If: IF '(' ExprLogica ')' THEN Exp Else;
+
+Else : ELSE Exp
+       |;
+
+For: FOR  LFor ;
+
+LFor:LFor ','  VARIABLE IN ClauseExpr
+       | LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr
+       | VARIABLE IN ClauseExpr
+       | VARIABLE AT VARIABLE IN  ClauseExpr;
+
+Let: LET VARIABLE ':=' ClauseExpr;
+
+Where : WHERE ExprLogica;
+
+OrderBy: ORDER BY LExp;
+
+LExp : LExp ',' Exp
+         | Exp;
+
+ClauseExpr: ExprLogica
+                    | '('ExprLogica TO ExprLogica')'
+                    | '('ExprLogica',' ExprLogica')';
+
+Return: RETURN ExprLogica
+            | RETURN If;
 
 ExprLogica
-         : Expr '<=' Expr
-         | Expr '>=' Expr   
-         | Expr '=' Expr   
-         | Expr '!=' Expr  
-         | Expr '>' Expr
-         | Expr '<' Expr
-         | Expr 'EQ' Expr
-         | Expr 'NE' Expr   
-         | Expr 'LT' Expr   
-         | Expr 'LE' Expr  
-         | Expr 'GT' Expr
-         | Expr 'GE' Expr
+         : ExprLogica '<=' ExprLogica 
+         | ExprLogica '>=' ExprLogica 
+         | ExprLogica '=' ExprLogica 
+         | ExprLogica '!=' ExprLogica 
+         | ExprLogica '>' ExprLogica 
+         | ExprLogica '<' ExprLogica 
+         | ExprLogica 'EQ' ExprLogica 
+         | ExprLogica 'NE' ExprLogica 
+         | ExprLogica 'LT' ExprLogica 
+         | ExprLogica 'LE' ExprLogica 
+         | ExprLogica 'GT' ExprLogica 
+         | ExprLogica 'GE' ExprLogica 
          | Expr;
-
 
 Expr : Expr '+' Expr   
      | Expr '-' Expr
