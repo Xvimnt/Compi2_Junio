@@ -4,7 +4,6 @@ import { EnvironmentXML } from '../parser/Symbol/EnviromentXML';
 import { Error_ } from '../parser/Error';
 import { errores } from '../parser/Errores';
 import { _Console } from '../parser/Util/Salida';
-import { Return } from '../parser/Instruction/Return';
 
 export class EjecutorXPath {
   entorno: EnvironmentXPath;

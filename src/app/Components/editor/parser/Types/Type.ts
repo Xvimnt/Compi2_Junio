@@ -1,6 +1,5 @@
 import { Expression } from "../Abstract/Expression";
 import { Retorno, Type, getTypeName } from "../Abstract/Retorno";
-import { _Optimizer } from '../Optimizer/Optimizer';
 import { Environment } from '../Symbol/Environment';
 
 export class _Type extends Expression {

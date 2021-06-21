@@ -1,6 +1,5 @@
 import { Symbol } from "./Symbol";
 import { Type } from "../Abstract/Retorno";
-import { Function } from "../Instruction/Function";
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { _Console } from '../Util/Salida';
@@ -37,11 +36,11 @@ export class Environment {
     }
 
     public guardarFuncion(id: string, funcion: Function) {
-        if (this.funciones.has(id)) errores.push(new Error_(funcion.line, funcion.column, "Semantico", "Funcion ya definida"));
-        else {
-            _Console.symbols.set(id, new Symbol('Instrucciones', id, 8, 'Global'));
-            this.funciones.set(id, funcion);
-        }
+        // if (this.funciones.has(id)) errores.push(new Error_(funcion.line, funcion.column, "Semantico", "Funcion ya definida"));
+        // else {
+        //     _Console.symbols.set(id, new Symbol('Instrucciones', id, 8, 'Global'));
+        //     this.funciones.set(id, funcion);
+        // }
     }
 
     public getVar(id: string): Symbol | undefined | null {

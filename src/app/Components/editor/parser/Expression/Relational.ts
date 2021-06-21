@@ -4,7 +4,6 @@ import { Environment } from "../Symbol/Environment";
 import { Error_ } from "../Error";
 import { errores } from '../Errores';
 import { _Console } from '../Util/Salida';
-import { _Optimizer } from '../Optimizer/Optimizer';
 
 export enum RelationalOption {
     EQUAL,
@@ -83,7 +82,7 @@ export class Relational extends Expression {
     }
 
     public execute(environment: Environment): Retorno {
-
+        console.log("ejecutando relacional"); return;
         const leftValue = (this.left == null) ? { value: null, type: 3 } : this.left.execute(environment);
         const rightValue = (this.right == null) ? { value: null, type: 3 } : this.right.execute(environment);
         if (leftValue == null || rightValue == null || leftValue == undefined || rightValue == undefined) errores.push(new Error_(this.line, this.column, 'Semantico', 'Operador no definido'));

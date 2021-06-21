@@ -30,19 +30,16 @@ import {
 import { errores } from './parser/Errores';
 import { reglas } from './parser/Reglas';
 
-import { _Optimizer } from './parser/Optimizer/Optimizer';
-import { Rule } from './parser/Optimizer/Rule';
-
 declare var require: any;
 const parserXMLASC = require('./parser/Grammar/XmlGrammarASC.js');
 const parserXMLDESC = require('./parser/Grammar/XmlGrammarDESC.js');
 const xPathASC = require('./parser/Grammar/xPathAsc.js');
 const xPathDESC = require('./parser/Grammar/xPathDesc.js');
+const xQuery = require('./parser/Grammar/xQuery.js');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
-import { Error_ } from './parser/Error';
 
 @Component({
   selector: 'editor-root',
@@ -57,7 +54,6 @@ export class EditorComponent {
   entradaXpath = '/helloworld';
   salida = 'TytusX Output: \n\n';
   ast: any;
-  reglas_: Array<Rule>;
   env: Environment;
   flag: boolean;
   envXML = new EnvironmentXML('global');
@@ -80,6 +76,8 @@ export class EditorComponent {
   ngOnInit() {
     this.clean();
   }
+
+  
 
   clean() {
     this.ast = null;
@@ -121,7 +119,38 @@ export class EditorComponent {
     this.salida += '\nreturn;\n';
     this.salida += '}\n\n';
   }
-
+  
+  ejecutarXQuery() {
+    if (this.ast == null) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+      return;
+    }
+    this.clean();
+    try {
+      let queryTree = xQuery.parse(this.entradaXpath.toString());
+      console.log("this query tree",queryTree);
+      // se pasa el env xml
+      // let ejecutor = new EjecutorXPath(this.envXML);
+      // ejecutor.ejecutar(queryTree);
+      // let envXPath = ejecutor.getEntorno();
+      // this.salida = 'TytusX Output: \n\n' + _Console.salida;
+      // // console.log("--- Imprimiendo Entorno de Consultas ---");
+      // // console.log(envXPath);
+      // // console.log("------");
+      // this.ast = queryTree;
+    } catch (e) {
+      console.error(e);
+    }
+    this.flag = false;
+  }
+  
   ejecutarXmlAsc() {
     this.clean();
     try {
@@ -408,34 +437,7 @@ export class EditorComponent {
   }
 
   optTable() {
-    if (this.reglas_ == undefined) {
-      Swal.fire({
-        title: 'Oops...',
-        text: 'No se ha analizado el codigo aun',
-        icon: 'error',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-    } else if (this.reglas_.length == 0) {
-      Swal.fire({
-        title: 'Cool!',
-        text: 'No se encontraron optimizaciones en su codigo',
-        icon: 'success',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-    } else {
-      Swal.fire({
-        title: 'Tabla de Reglas',
-        html: new Table().rules(this.reglas_),
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-        width: 800,
-      });
-    }
+    
   }
 
   errorTable() {

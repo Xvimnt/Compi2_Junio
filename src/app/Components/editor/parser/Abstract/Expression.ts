@@ -1,7 +1,6 @@
 import { Retorno, Type } from "./Retorno";
 import { Environment } from "../Symbol/Environment";
 import { tipos } from "../Util/TablaTipos";
-import { _Optimizer } from '../Optimizer/Optimizer';
 
 export abstract class Expression {
 

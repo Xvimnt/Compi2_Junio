@@ -11,7 +11,8 @@
     "xPathASC": "jison ./src/app/Components/editor/parser/Grammar/xPathAsc.jison && move xPathAsc.js ./src/app/Components/editor/parser/Grammar/",
     "xPathDESC": "jison ./src/app/Components/editor/parser/Grammar/xPathDesc.jison && move xPathDesc.js ./src/app/Components/editor/parser/Grammar/",
     "jison": "jison ./src/app/Components/editor/parser/Grammar/Grammar.jison && move Grammar.js ./src/app/Components/editor/parser/Grammar/",
-    "jison2": "jison ./src/app/Components/editor/parser/Grammar/OptGrammar.jison && move OptGrammar.js ./src/app/Components/editor/parser/Grammar/"
+    "jison2": "jison ./src/app/Components/editor/parser/Grammar/OptGrammar.jison && move OptGrammar.js ./src/app/Components/editor/parser/Grammar/",
+    "xquery": "jison ./src/app/Components/editor/parser/Grammar/xQuery.jison && move xQuery.js ./src/app/Components/editor/parser/Grammar/"
   },
   "private": true,
   "dependencies": {

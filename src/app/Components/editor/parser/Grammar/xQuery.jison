@@ -6,6 +6,9 @@
     const {Error_} = require('../Error');
     const {errores} = require('../Errores');
     const {NodoXML} = require('../Nodes/NodoXml')
+    // Expresiones
+
+     const {Relational, RelationalOption} = require('../Expression/Relational');
 %}
 
 %lex
@@ -211,12 +214,24 @@ Return: RETURN ExprLogica
             | RETURN If;
 
 ExprLogica
-         : ExprLogica '<=' ExprLogica 
-         | ExprLogica '>=' ExprLogica 
-         | ExprLogica '=' ExprLogica 
-         | ExprLogica '!=' ExprLogica 
-         | ExprLogica '>' ExprLogica 
-         | ExprLogica '<' ExprLogica 
+         : ExprLogica '<=' ExprLogica {
+             $$ = new Relational($1, $3,RelationalOption.LESSOREQUAL ,@1.first_line, @1.first_column);
+         }
+         | ExprLogica '>=' ExprLogica {
+            $$ = new Relational($1, $3,RelationalOption.GREATEROREQUAL ,@1.first_line, @1.first_column);
+         }
+         | ExprLogica '=' ExprLogica {
+            $$ = new Relational($1, $3,RelationalOption.EQUAL ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica '!=' ExprLogica  {
+            $$ = new Relational($1, $3,RelationalOption.NOTEQUAL ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica '>' ExprLogica {
+            $$ = new Relational($1, $3,RelationalOption.GREATER ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica '<' ExprLogica  {
+            $$ = new Relational($1, $3,RelationalOption.LESS, @1.first_line, @1.first_column);
+        }
          | ExprLogica 'EQ' ExprLogica 
          | ExprLogica 'NE' ExprLogica 
          | ExprLogica 'LT' ExprLogica 
