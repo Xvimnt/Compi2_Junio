@@ -6,9 +6,18 @@
     const {Error_} = require('../Error');
     const {errores} = require('../Errores');
     const {NodoXML} = require('../Nodes/NodoXml')
-    // Expresiones
 
-     const {Relational, RelationalOption} = require('../Expression/Relational');
+    // Expresiones
+    const {Relational, RelationalOption} = require('../Expression/Relational');
+    const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
+    const {Logic, LogicOption} = require('../Expression/Logic');
+    const {Literal} = require('../Expression/Literal');
+    // Instrucciones
+    const {If} = require('../Instruction/If');
+
+    // Extra
+    const {Type} = require('../Abstract/Retorno');
+    
 %}
 
 %lex
@@ -118,36 +127,45 @@ preceding ('preceding')('-sibling')?
 
 %%
 
-Init : LExpresiones EOF ;
+Init : LExpresiones EOF {
+        return $1;
+    }  
+; 
 
-LExpresiones : LExpresiones  Expresiones
-                       | Expresiones;
+LExpresiones : LExpresiones  Instrucciones {
+        $1.push($2);
+        $$ = $1;
+    }
+    | Instrucciones {
+        $$ = [$1];
+    }
+;
 
-Expresiones : For
-                     | Return
-                     | Let
-                     | Where
-                     | OrderBy 
-                     | If;
+Instrucciones : For { $$ = $1 }
+                     | Return { $$ = $1 }
+                     | Let { $$ = $1 }
+                     | Where { $$ = $1 }
+                     | OrderBy { $$ = $1 } 
+                     | If { $$ = $1 };
 		
 
 Exp : DIVSIGN Lexp
-    | Lexp;
+    | Lexp { $$ = $1};
 
 
 Lexp : Lexp ORSIGN DIVSIGN Syntfin		
      | Lexp DIVSIGN Syntfin
-     | Syntfin;
+     | Syntfin { $$ = $1 };
 
 
-Syntfin    :  Fin
+Syntfin    :  Fin { $$ = $1 }
            | '@' Valor Opc
            |  Preservada '::' Fin
            | '@' Preservada Opc
 	   | '@' '*';
 
 
-Fin :  Valor Opc   
+Fin :  Valor Opc  { $$ = $1 } 
 	| DIR Opc
     | TEXT   '('   ')'
     | NODE  '('   ')'
@@ -158,15 +176,34 @@ Fin :  Valor Opc
     | UPPERCASE'(' ExprLogica ')'
     | SUBSTRING '(' ExprLogica ',' ExprLogica ',' ExprLogica ')'
     | Preservada Opc 
-    |'*' Opc ;
+    | '*' Opc ;
 
 
-
+    // enum Type {
+    //     NUMBER = 0,
+    //     STRING = 1,
+    //     BOOLEAN = 2,
+    //     NULL = 3,
+    //     ARRAY = 4,
+    //     RESERVADA = 5,
+    //     TEMPLATE = 6,
+    //     STRUCT = 7,
+    //     FUNCION = 8,
+    //     FLOAT = 9
+    // }   
 Valor : ID
-      | NUMBER
-      | STRING
-      | STRING2
-      | DECIMAL
+      | NUMBER {
+          $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER);
+      }
+      | STRING {
+          $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING);
+      }
+      | STRING2 {
+          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.STRING);
+      }
+      | DECIMAL {
+          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FLOAT);
+      }
       | VARIABLE;
 
 
@@ -181,13 +218,15 @@ Preservada:  CHILD
           | ATTR;
 
 
-Opc : '['ExprLogica ']'
+Opc : '['ExprLogica ']' { $$ = $1 } 
         | ;
 
 
-If: IF '(' ExprLogica ')' THEN Exp Else;
+If: IF '(' ExprLogica ')' THEN Exp Else {
+     $$ = new If($3, $6, $7, @1.first_line, @1.first_column);
+};
 
-Else : ELSE Exp
+Else : ELSE Exp  { $$ = $2 }
        |;
 
 For: FOR  LFor ;
@@ -232,20 +271,46 @@ ExprLogica
          | ExprLogica '<' ExprLogica  {
             $$ = new Relational($1, $3,RelationalOption.LESS, @1.first_line, @1.first_column);
         }
-         | ExprLogica 'EQ' ExprLogica 
-         | ExprLogica 'NE' ExprLogica 
-         | ExprLogica 'LT' ExprLogica 
-         | ExprLogica 'LE' ExprLogica 
-         | ExprLogica 'GT' ExprLogica 
-         | ExprLogica 'GE' ExprLogica 
-         | Expr;
+         | ExprLogica 'EQ' ExprLogica {
+            $$ = new Relational($1, $3,RelationalOption.EQUAL ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica 'NE' ExprLogica  {
+            $$ = new Relational($1, $3,RelationalOption.NOTEQUAL ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica 'LT' ExprLogica  {
+            $$ = new Relational($1, $3,RelationalOption.LESS, @1.first_line, @1.first_column);
+        }
+         | ExprLogica 'LE' ExprLogica {
+             $$ = new Relational($1, $3,RelationalOption.LESSOREQUAL ,@1.first_line, @1.first_column);
+         }
+         | ExprLogica 'GT' ExprLogica {
+            $$ = new Relational($1, $3,RelationalOption.GREATER ,@1.first_line, @1.first_column);
+        }
+         | ExprLogica 'GE' ExprLogica  {
+            $$ = new Relational($1, $3,RelationalOption.GREATEROREQUAL ,@1.first_line, @1.first_column);
+         }
+         | Expr {$$ = $1};
 
-Expr : Expr '+' Expr   
-     | Expr '-' Expr
-     | Expr '*' Expr
-     | Expr DIV Expr
-     | Expr  MOD Expr
-     | Expr  OR Expr
-     | Expr  AND Expr
-     |'(' Expr ')'
-     | Exp;
+Expr : Expr '+' Expr {
+        $$ = new Arithmetic($1, $3, ArithmeticOption.PLUS, @1.first_line,@1.first_column);
+    }  
+     | Expr '-' Expr {
+        $$ = new Arithmetic($1, $3, ArithmeticOption.MINUS, @1.first_line,@1.first_column);
+    }
+     | Expr '*' Expr { 
+        $$ = new Arithmetic($1, $3, ArithmeticOption.TIMES, @1.first_line,@1.first_column);
+    }  
+     | Expr DIV Expr {
+        $$ = new Arithmetic($1, $3, ArithmeticOption.DIV, @1.first_line,@1.first_column);
+    }
+     | Expr MOD Expr {
+        $$ = new Arithmetic($1, $3, ArithmeticOption.MOD, @1.first_line,@1.first_column);
+    }
+     | Expr OR Expr {
+        $$ = new Logic($1, $3,LogicOption.OR ,@1.first_line, @1.first_column);
+    }
+     | Expr AND Expr {
+        $$ = new Logic($1, $3,LogicOption.AND ,@1.first_line, @1.first_column);
+    }
+     |'(' Expr ')' { $$ = $2 }
+     | Exp { $$ = $1 };

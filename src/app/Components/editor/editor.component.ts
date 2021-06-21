@@ -72,12 +72,12 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) {}
+  constructor(private dotService: DotService) { }
   ngOnInit() {
     this.clean();
   }
 
-  
+
 
   clean() {
     this.ast = null;
@@ -119,7 +119,7 @@ export class EditorComponent {
     this.salida += '\nreturn;\n';
     this.salida += '}\n\n';
   }
-  
+
   ejecutarXQuery() {
     if (this.ast == null) {
       Swal.fire({
@@ -135,22 +135,28 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xQuery.parse(this.entradaXpath.toString());
-      console.log("this query tree",queryTree);
-      // se pasa el env xml
-      // let ejecutor = new EjecutorXPath(this.envXML);
-      // ejecutor.ejecutar(queryTree);
-      // let envXPath = ejecutor.getEntorno();
-      // this.salida = 'TytusX Output: \n\n' + _Console.salida;
-      // // console.log("--- Imprimiendo Entorno de Consultas ---");
-      // // console.log(envXPath);
-      // // console.log("------");
-      // this.ast = queryTree;
+      let queryEnv = new Environment(null, this.envXML);
+      for (const instr of queryTree) {
+        try {
+          instr.execute(queryEnv);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      if (errores.length == 0) {
+        // Muestra el resultado en la pagina
+        this.salida += _Console.salida;
+      } else {
+        errores.forEach(error => {
+          this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
+        });
+      }
     } catch (e) {
       console.error(e);
     }
     this.flag = false;
   }
-  
+
   ejecutarXmlAsc() {
     this.clean();
     try {
@@ -437,7 +443,7 @@ export class EditorComponent {
   }
 
   optTable() {
-    
+
   }
 
   errorTable() {

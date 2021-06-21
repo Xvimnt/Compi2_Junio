@@ -1,16 +1,17 @@
 import { Symbol } from "./Symbol";
 import { Type } from "../Abstract/Retorno";
-import { errores } from '../Errores';
-import { Error_ } from '../Error';
 import { _Console } from '../Util/Salida';
+import { EnvironmentXML } from '../../parser/Symbol/EnviromentXML';
 
 export class Environment {
 
     public variables: Map<string, Symbol>;
     public funciones: Map<string, Function>;
     public apuntadores: Map<string, number>;
+    xmlEnvironment: EnvironmentXML;
 
-    constructor(public anterior: Environment | null) {
+    constructor(public anterior: Environment | null, xmlEnvironment: EnvironmentXML) {
+        this.xmlEnvironment = xmlEnvironment;
         this.anterior = anterior;
         this.variables = new Map<string, Symbol>();
         this.funciones = new Map<string, Function>();
