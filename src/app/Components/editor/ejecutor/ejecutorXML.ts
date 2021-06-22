@@ -27,7 +27,7 @@ export class EjecutorXML {
             .replace(/[']/g, '')
             .toLowerCase()
             .split('=');
-          console.log(vals);
+          // console.log(vals);
           if (vals.includes('utf-8')) {
             this.encoding = 0;
           } else if (vals.includes('ascii')) {
@@ -251,7 +251,7 @@ export class EjecutorXML {
   }
 
   encodeContent(str: any) {
-    console.log(this.encoding);
+    // console.log(this.encoding);
     switch (this.encoding) {
       case 0:
         //utf-8

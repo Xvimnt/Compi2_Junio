@@ -1,7 +1,6 @@
 import { Instruction } from "../Abstract/Instruction";
 import { Environment } from "../Symbol/Environment";
 import { _Console } from '../Util/Salida';
-import { Literal } from '../Expression/Literal';
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { Symbol } from '../Symbol/Symbol';
@@ -59,8 +58,8 @@ export class ForIn extends Instruction {
     public plot(count: number): string {
         let result = "node" + count + "[label=\"(" + this.line + "," + this.column + ") Foreach\"];";
         // Hijo 1
-        result += "node" + count + "1[label=\"(" + this.method.line + "," + this.method.column + ") methodo\"];";
-        result += this.method.plot(Number(count + "1"));
+        // result += "node" + count + "1[label=\"(" + this.method.line + "," + this.method.column + ") methodo\"];";
+        // result += this.method.plot(Number(count + "1"));
         // Hijo 2
         // Hijo 3
         result += "node" + count + "3[label=\"(" + this.code.line + "," + this.code.column + ") Codigo\"];";

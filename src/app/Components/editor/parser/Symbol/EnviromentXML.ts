@@ -96,7 +96,7 @@ export class EnvironmentXML {
   }
 
   private printEntornos2(ent: EnvironmentXML) {
-    console.log(ent.nombre);
+    // console.log(ent.nombre);
     ent.hijos.forEach((element) => {
       this.printEntornos2(element);
     });
