@@ -23,95 +23,109 @@
 
 %lex
 %options case-sensitive
+%x comment1
+%x comment2
 
+number      [0-9]+
+divsign     ('/')('/')?
+dir         ('.')('.')?
+orsign      ('|')('|')?
+decimal     [0-9]+("."[0-9]+)?
+string      ([\"][^"]*[\"])
+string2     ([\'][^\']*[\'])
 
-number  [0-9]+
-divsign ('/')('/')?
-dir     ('.')('.')?
-orsign ('|')('|')?
-decimal [0-9]+("."[0-9]+)?
-string  ([\"][^"]*[\"])
-string2  ([\'][^\']*[\'])
-
-ancestor ('ancestor')('-or-self')?
-following ('following')('-sibling')?
-preceding ('preceding')('-sibling')?
+ancestor    ('ancestor')('-or-self')?
+following   ('following')('-sibling')?
+preceding   ('preceding')('-sibling')?
 
 %%
-\s+                   /* skip whitespace */
+"<!--"							%{ this.begin("comment1"); %}
+<comment1>"-->"		  	        %{ this.popState(); %}
+<comment1>.				        %{ %}
+<comment1>[ \t\r\n\f]	        %{ %}
 
-{decimal}                  return 'DECIMAL'
-{number}                  return 'NUMBER'
-{string}                      return 'STRING'
-{string2}                      return 'STRING2'
-{divsign}                    return 'DIVSIGN'
-{dir}                            return 'DIR'
+"(:"							%{ this.begin("comment2"); %}
+<comment2>":)"		  	        %{ this.popState(); %}
+<comment2>.				        %{ %}
+<comment2>[ \t\r\n\f]	        %{ %}
+
+[ \t\n\r\f] 		        %{ /*se ignoran*/ %}
+
+{decimal}                   return 'DECIMAL'
+{number}                    return 'NUMBER'
+{string}                    return 'STRING'
+{string2}                   return 'STRING2'
+{divsign}                   return 'DIVSIGN'
+{dir}                       return 'DIR'
 {ancestor}                  return 'ANCESTOR'
-{following}                  return 'FOLLOWING'
-{preceding}                return 'PRECEDING'
-{orsign}                return 'ORSIGN'
+{following}                 return 'FOLLOWING'
+{preceding}                 return 'PRECEDING'
+{orsign}                    return 'ORSIGN'
 
-"@"                     return '@'
-"*"                     return '*'
-"::"                     return '::'
-":="                    return ':='
-"-"                     return '-'
-"+"                     return '+'
-","                     return ','
+"@"                         return '@'
+"*"                         return '*'
+"::"                        return '::'
+":="                        return ':='
+"-"                         return '-'
+"+"                         return '+'
+","                         return ','
 
-"<="                      return '<='
-">="                      return '>='
-"<"                        return '<'
-">"                        return '>'
-"!="                       return '!='
-"="                        return '='
-"or"                       return 'OR'
-"and"                    return 'AND'
-"mod"                   return 'MOD'
-"div"                      return 'DIV'
+"</"                        return '</'
+"<="                        return '<='
+">="                        return '>='
+"<"                         return '<'
+">"                         return '>'
+"!="                        return '!='
+"="                         return '='
+"or"                        return 'OR'
+"and"                       return 'AND'
+"mod"                       return 'MOD'
+"div"                       return 'DIV'
 
-"("                     return '('
-")"                     return ')' 
-"["                     return '['
-"]"                     return ']'
+"("                         return '('
+")"                         return ')' 
+"["                         return '['
+"]"                         return ']'
+"{"                         return 'tk_llavea'
+"}"                         return 'tk_llavec'
 
-"child"                        return 'CHILD'
-"attribute"                  return 'ATTR'
-"descendant"             return 'DESCENDANT'
-"namespace"              return 'NAMESPACE'
-"parent"                     return 'PARENT'
-'self'                           return 'SELF'
-"text"                         return 'TEXT'
-"last"                         return 'LAST'
-"position"                 return 'POSITION'
-"node"                       return 'NODE'
-"eq"                            return 'EQ'
-"ne"                            return 'NE'
-"lt"                            return 'LT'
-"le"                            return 'LE'
-"gt"                            return 'GT'
-"ge"                            return 'GE'
-"doc"                            return 'DOC'
-"for"                          return 'FOR'
-"in"                           return 'IN'
-"return"                   return 'RETURN'
-"at"                           return 'AT'
-"in"                           return 'IN'
-"to"                           return 'TO'
-"let"                         return 'LET'
-"where"                  return 'WHERE'
-"order"                   return 'ORDER'
-"by"                         return 'BY'
-"if"                            return 'IF'
+"child"                     return 'CHILD'
+"attribute"                 return 'ATTR'
+"descendant"                return 'DESCENDANT'
+"namespace"                 return 'NAMESPACE'
+"parent"                    return 'PARENT'
+'self'                      return 'SELF'
+"text"                      return 'TEXT'
+"last"                      return 'LAST'
+"position"                  return 'POSITION'
+"node"                      return 'NODE'
+"eq"                        return 'EQ'
+"ne"                        return 'NE'
+"lt"                        return 'LT'
+"le"                        return 'LE'
+"gt"                        return 'GT'
+"ge"                        return 'GE'
+"doc"                       return 'DOC'
+"for"                       return 'FOR'
+"in"                        return 'IN'
+"return"                    return 'RETURN'
+"at"                        return 'AT'
+"in"                        return 'IN'
+"to"                        return 'TO'
+"let"                       return 'LET'
+"where"                     return 'WHERE'
+"order"                     return 'ORDER'
+"by"                        return 'BY'
+"if"                        return 'IF'
 "then"                      return 'THEN'
-"else"                       return 'ELSE'
-"data"                       return 'DATA'
-"upper-case"          return 'UPPERCASE'
-"substring"              return "SUBSTRING"
+"else"                      return 'ELSE'
+"data"                      return 'DATA'
+"upper-case"                return 'UPPERCASE'
+"substring"                 return "SUBSTRING"
 
-([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'ID';
+([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	        return 'ID';
 ('$')([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'VARIABLE';
-<<EOF>>		                return 'EOF'
+<<EOF>>		                        return 'EOF'
 
 /lex
 %left 'OR'
@@ -140,6 +154,7 @@ LExpresiones : LExpresiones  Instrucciones {
     | Instrucciones {
         $$ = [$1];
     }
+    | HTML 
 ;
 
 Instrucciones : For { $$ = $1 }
@@ -147,7 +162,9 @@ Instrucciones : For { $$ = $1 }
                      | Let { $$ = $1 }
                      | Where { $$ = $1 }
                      | OrderBy { $$ = $1 } 
-                     | If { $$ = $1 };
+                     | If { $$ = $1 }
+                     | Valor
+                     ;
 		
 
 Exp : DIVSIGN Lexp {
@@ -259,7 +276,9 @@ ClauseExpr: ExprLogica {$$ = $1}
                     | '(' ExprLogica ',' ExprLogica ')';
 
 Return: RETURN ExprLogica
-            | RETURN If;
+        | RETURN If
+        | RETURN HTML
+        ;
 
 ExprLogica
          : ExprLogica '<=' ExprLogica {
@@ -323,3 +342,27 @@ Expr : Expr '+' Expr {
     }
      |'(' Expr ')' { $$ = $2 }
      | Exp { $$ = $1 };
+
+HTML: HTML HTMLSTRING
+    | HTMLSTRING
+    ;
+
+HTMLSTRING: '<' ID ATRIBUTOS SUFIX
+        | '<' ID SUFIX
+        ;
+
+ATRIBUTOS: ATRIBUTOS ID '=' STRING
+         | ATRIBUTOS ID '=' STRING2
+         | ATRIBUTOS ID '=' [\"] XQUERY [\"]
+         | ID '=' STRING
+         | ID '=' STRING2
+         | ID '=' [\"] XQUERY [\"]
+         ;
+         
+SUFIX: '/>'
+    | '>' XQUERY '</' ID '>'
+    | '>' HTML '</' ID '>'
+    | '>' (ID|[.])* '</' ID '>' 
+    ;
+
+XQUERY: tk_llavea LExpresiones tk_llavec;
