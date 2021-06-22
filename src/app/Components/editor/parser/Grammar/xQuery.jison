@@ -14,6 +14,7 @@
     const {Literal} = require('../Expression/Literal');
     // Instrucciones
     const {If} = require('../Instruction/If');
+    const {ForIn} = require('../Instruction/ForIn');
 
     // Extra
     const {Type} = require('../Abstract/Retorno');
@@ -149,13 +150,16 @@ Instrucciones : For { $$ = $1 }
                      | If { $$ = $1 };
 		
 
-Exp : DIVSIGN Lexp
-    | Lexp { $$ = $1};
+Exp : DIVSIGN Lexp {
+        $1.push($2);
+        $$ = $1;
+    }
+    | Lexp { $$ = [$1] };
 
 
 Lexp : Lexp ORSIGN DIVSIGN Syntfin		
      | Lexp DIVSIGN Syntfin
-     | Syntfin { $$ = $1 };
+     | Syntfin { $$ = [$1] };
 
 
 Syntfin    :  Fin { $$ = $1 }
@@ -166,7 +170,7 @@ Syntfin    :  Fin { $$ = $1 }
 
 
 Fin :  Valor Opc  { $$ = $1 } 
-	| DIR Opc
+	| DIR Opc { $$ = $1 } 
     | TEXT   '('   ')'
     | NODE  '('   ')'
     | POSITION '('   ')'
@@ -229,11 +233,13 @@ If: IF '(' ExprLogica ')' THEN Exp Else {
 Else : ELSE Exp  { $$ = $2 }
        |;
 
-For: FOR  LFor ;
+For: FOR  LFor {$$ = $2};
 
-LFor:LFor ','  VARIABLE IN ClauseExpr
+LFor:LFor ','  VARIABLE IN ClauseExpr 
        | LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr
-       | VARIABLE IN ClauseExpr
+       | VARIABLE IN ClauseExpr {
+    $$ = new ForIn($1, $3, @1.first_line, @1.first_column);
+}
        | VARIABLE AT VARIABLE IN  ClauseExpr;
 
 Let: LET VARIABLE ':=' ClauseExpr;
@@ -245,9 +251,9 @@ OrderBy: ORDER BY LExp;
 LExp : LExp ',' Exp
          | Exp;
 
-ClauseExpr: ExprLogica
-                    | '('ExprLogica TO ExprLogica')'
-                    | '('ExprLogica',' ExprLogica')';
+ClauseExpr: ExprLogica {$$ = $1}
+                    | '(' ExprLogica TO ExprLogica ')'
+                    | '(' ExprLogica ',' ExprLogica ')';
 
 Return: RETURN ExprLogica
             | RETURN If;

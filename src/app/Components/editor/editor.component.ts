@@ -121,18 +121,7 @@ export class EditorComponent {
   }
 
   ejecutarXQuery() {
-    if (this.ast == null) {
-      Swal.fire({
-        title: 'Oops...',
-        text: 'No se ha analizado el codigo aun',
-        icon: 'error',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black',
-      });
-      return;
-    }
-
+    this.ejecutarXmlAsc();
     this.clean();
     try {
       let queryTree = xQuery.parse(this.entradaXpath.toString());
