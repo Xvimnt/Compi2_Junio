@@ -6,6 +6,7 @@ import { _Console } from '../Util/Salida';
 import { env } from 'process';
 
 export class If extends Instruction {
+    
     public translate(environment: Environment): String {
         let result = "// Inicia If\n";
         result += this.condition.translate(environment);

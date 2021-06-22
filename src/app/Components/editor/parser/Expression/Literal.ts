@@ -6,9 +6,9 @@ import { errores } from '../Errores';
 import { _Console } from '../Util/Salida';
 
 export class Literal extends Expression {
-    public build(): String { 
-    let result = "";
-    return result;
+    public build(): String {
+        let result = "";
+        return result;
     }
 
     public translate(environment: Environment): String {
@@ -53,6 +53,8 @@ export class Literal extends Expression {
     public execute(environment: Environment): Retorno {
         switch (this.type) {
             case Type.NUMBER:
+                return { value: Number(this.value), type: Type.NUMBER };
+            case Type.FLOAT:
                 return { value: Number(this.value), type: Type.NUMBER };
             case Type.STRING:
                 return { value: this.fixString(this.value), type: Type.STRING };

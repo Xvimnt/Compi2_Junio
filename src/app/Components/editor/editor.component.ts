@@ -132,10 +132,13 @@ export class EditorComponent {
       });
       return;
     }
+
     this.clean();
     try {
       let queryTree = xQuery.parse(this.entradaXpath.toString());
       let queryEnv = new Environment(null, this.envXML);
+      console.log("------------TREE------------");
+      console.log(queryTree);
       for (const instr of queryTree) {
         try {
           instr.execute(queryEnv);
