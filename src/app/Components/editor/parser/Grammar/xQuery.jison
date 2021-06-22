@@ -23,7 +23,8 @@
 
 %lex
 %options case-sensitive
-
+%x comment1
+%x comment2
 
 number      [0-9]+
 divsign     ('/')('/')?
@@ -38,6 +39,16 @@ following   ('following')('-sibling')?
 preceding   ('preceding')('-sibling')?
 
 %%
+"<!--"							%{ this.begin("comment1"); %}
+<comment1>"-->"		  	        %{ this.popState(); %}
+<comment1>.				        %{ %}
+<comment1>[ \t\r\n\f]	        %{ %}
+
+"(:"							%{ this.begin("comment2"); %}
+<comment2>":)"		  	        %{ this.popState(); %}
+<comment2>.				        %{ %}
+<comment2>[ \t\r\n\f]	        %{ %}
+
 [ \t\n\r\f] 		        %{ /*se ignoran*/ %}
 
 {decimal}                   return 'DECIMAL'
@@ -143,7 +154,7 @@ LExpresiones : LExpresiones  Instrucciones {
     | Instrucciones {
         $$ = [$1];
     }
-    | HTMLSTRING 
+    | HTML 
 ;
 
 Instrucciones : For { $$ = $1 }
@@ -266,7 +277,7 @@ ClauseExpr: ExprLogica {$$ = $1}
 
 Return: RETURN ExprLogica
         | RETURN If
-        | RETURN HTMLSTRING
+        | RETURN HTML
         ;
 
 ExprLogica
@@ -332,10 +343,26 @@ Expr : Expr '+' Expr {
      |'(' Expr ')' { $$ = $2 }
      | Exp { $$ = $1 };
 
+HTML: HTML HTMLSTRING
+    | HTMLSTRING
+    ;
+
 HTMLSTRING: '<' ID ATRIBUTOS SUFIX
         | '<' ID SUFIX
         ;
+
+ATRIBUTOS: ATRIBUTOS ID '=' STRING
+         | ATRIBUTOS ID '=' STRING2
+         | ATRIBUTOS ID '=' [\"] XQUERY [\"]
+         | ID '=' STRING
+         | ID '=' STRING2
+         | ID '=' [\"] XQUERY [\"]
+         ;
+         
 SUFIX: '/>'
-     | '>' tk_llavea LExpresiones tk_llavec '</' ID '>'
-     | '>' '</' ID '>'
-     ;
+    | '>' XQUERY '</' ID '>'
+    | '>' HTML '</' ID '>'
+    | '>' (ID|[.])* '</' ID '>' 
+    ;
+
+XQUERY: tk_llavea LExpresiones tk_llavec;
