@@ -22,7 +22,7 @@ export class If extends Instruction {
         _Console.labels++;
 
         result += "l" + lTrue + ":\n"
-        result += this.code.translate(environment) + "";
+        // result += this.code.translate(environment) + "";
         result += "goto l" + salida + ";\n";
 
         result += "l" + lFalse + ":\n";

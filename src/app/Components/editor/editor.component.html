@@ -109,6 +109,16 @@
         </button>
         &nbsp;
         <button
+          (click)="translate()"
+          type="button"
+          class="btn btn-dark"
+          style="background-color: rgb(8, 101, 104)"
+        >
+          <fa-icon [icon]="faGlobe"></fa-icon>
+          Traducir
+        </button>
+        &nbsp;
+        <button
           (click)="optimizar()"
           type="button"
           class="btn btn-dark"

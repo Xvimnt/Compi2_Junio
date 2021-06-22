@@ -216,7 +216,7 @@ Preservada:  CHILD
           | ANCESTOR
           | PRECEDING
           | FOLLOWING
-	  | NAMESPACE
+	      | NAMESPACE
           | SELF
           | PARENT
           | ATTR;
@@ -244,12 +244,15 @@ LFor:LFor ','  VARIABLE IN ClauseExpr
 
 Let: LET VARIABLE ':=' ClauseExpr;
 
-Where : WHERE ExprLogica;
+Where : WHERE ExprLogica { $$ = $2 };
 
-OrderBy: ORDER BY LExp;
+OrderBy: ORDER BY LExp { $$ = $3 };
 
-LExp : LExp ',' Exp
-         | Exp;
+LExp : LExp ',' Exp {
+        $1.push($3);
+        $$ = $1;
+    }
+         | Exp {$$ = [$1] };
 
 ClauseExpr: ExprLogica {$$ = $1}
                     | '(' ExprLogica TO ExprLogica ')'

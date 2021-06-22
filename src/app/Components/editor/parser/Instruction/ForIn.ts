@@ -9,49 +9,49 @@ export class ForIn extends Instruction {
 
     public translate(environment: Environment): String {
         let result = "// Inicia ForIn\n";
-        let smb = _Console.symbols.get(this.array);
-        if (smb != undefined) {
-            result += "t" + _Console.count + " = p + " + smb.valor + ";\n";
-            _Console.count++;
-            let startT = _Console.count;
-            result += "t" + startT + " = Stack[(int)t" + (_Console.count - 1) + "];\n";
-            _Console.count++;
-            let sizeT = _Console.count;
-            result += "t" + sizeT + " = Heap[(int)t" + startT + "];\n";
-            _Console.count++;
-            let iteratorT = _Console.count;
-            _Console.count++;
-            let stackInd = _Console.stackPointer;
-            _Console.stackPointer++;
-            result += "t" + iteratorT + " = -1;\n";
-            let iteratorStackIndex = _Console.count;
-            _Console.count++;
-            result += "t" + iteratorStackIndex + " = p + " + stackInd + ";\n";
-            result += "Stack[(int)t" + iteratorStackIndex + "] = t" + iteratorT + ";\n";
-            let ambito = (environment.getAnterior() == null) ? "Global" : "Local";
-            _Console.symbols.set(this.id, new Symbol(stackInd, this.id, 0, ambito));
-            environment.guardar(this.id, stackInd, 0);
-            _Console.saveInStack(stackInd, 0);
-            let alfa = _Console.labels;
-            _Console.labels++;
-            result += "l" + alfa + ":\n";
-            // Condicion y asignacion de i
-            result += "t" + iteratorT + " = t" + iteratorT + " + 1;\n";
-            result += "t" + iteratorStackIndex + " = p + " + stackInd + ";\n";
-            result += "Stack[(int)t" + iteratorStackIndex + "] = t" + iteratorT + ";\n";
-            let inicio = _Console.labels;
-            _Console.labels++;
-            result += "t" + (_Console.count) + " = t" + iteratorT + " < t" + sizeT + ";\n";
-            result += "if(t" + _Console.count + ") goto l" + inicio + ";\n";
-            _Console.count++
-            let final = _Console.labels;
-            _Console.labels++;
-            result += "goto l" + final + ";\n";
-            result += "l" + inicio + ":\n";
-            result += "" + this.code.translate(environment);
-            result += "goto l" + alfa + ";\n";
-            result += "l" + final + ":\n";
-        } else errores.push(new Error_(this.line, this.column, 'Semantico', 'Variable no exitente'));
+        // let smb = _Console.symbols.get(this.array);
+        // if (smb != undefined) {
+        //     result += "t" + _Console.count + " = p + " + smb.valor + ";\n";
+        //     _Console.count++;
+        //     let startT = _Console.count;
+        //     result += "t" + startT + " = Stack[(int)t" + (_Console.count - 1) + "];\n";
+        //     _Console.count++;
+        //     let sizeT = _Console.count;
+        //     result += "t" + sizeT + " = Heap[(int)t" + startT + "];\n";
+        //     _Console.count++;
+        //     let iteratorT = _Console.count;
+        //     _Console.count++;
+        //     let stackInd = _Console.stackPointer;
+        //     _Console.stackPointer++;
+        //     result += "t" + iteratorT + " = -1;\n";
+        //     let iteratorStackIndex = _Console.count;
+        //     _Console.count++;
+        //     result += "t" + iteratorStackIndex + " = p + " + stackInd + ";\n";
+        //     result += "Stack[(int)t" + iteratorStackIndex + "] = t" + iteratorT + ";\n";
+        //     let ambito = (environment.getAnterior() == null) ? "Global" : "Local";
+        //     _Console.symbols.set(this.id, new Symbol(stackInd, this.id, 0, ambito));
+        //     environment.guardar(this.id, stackInd, 0);
+        //     _Console.saveInStack(stackInd, 0);
+        //     let alfa = _Console.labels;
+        //     _Console.labels++;
+        //     result += "l" + alfa + ":\n";
+        //     // Condicion y asignacion de i
+        //     result += "t" + iteratorT + " = t" + iteratorT + " + 1;\n";
+        //     result += "t" + iteratorStackIndex + " = p + " + stackInd + ";\n";
+        //     result += "Stack[(int)t" + iteratorStackIndex + "] = t" + iteratorT + ";\n";
+        //     let inicio = _Console.labels;
+        //     _Console.labels++;
+        //     result += "t" + (_Console.count) + " = t" + iteratorT + " < t" + sizeT + ";\n";
+        //     result += "if(t" + _Console.count + ") goto l" + inicio + ";\n";
+        //     _Console.count++
+        //     let final = _Console.labels;
+        //     _Console.labels++;
+        //     result += "goto l" + final + ";\n";
+        //     result += "l" + inicio + ":\n";
+        //     result += "" + this.code.translate(environment);
+        //     result += "goto l" + alfa + ";\n";
+        //     result += "l" + final + ":\n";
+        // } else errores.push(new Error_(this.line, this.column, 'Semantico', 'Variable no exitente'));
         return result;
     }
 

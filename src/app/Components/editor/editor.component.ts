@@ -120,6 +120,34 @@ export class EditorComponent {
     this.salida += '}\n\n';
   }
 
+  translate() {
+    // this.ejecutarXmlAsc(); // traducir xml primero
+    try {
+      let queryTree = xQuery.parse(this.entradaXpath.toString());
+      let queryEnv = new Environment(null, this.envXML);
+      console.log("------------TREE------------");
+      console.log(queryTree);
+      for (const instr of queryTree) {
+        try {
+          this.salida += instr.translate(queryEnv);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      if (errores.length == 0) {
+        // Muestra el resultado en la pagina
+        this.cOutput(this.salida);
+      } else {
+        errores.forEach(error => {
+          this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
+        });
+      }
+    } catch (e) {
+      console.error(e);
+    }
+    this.flag = false;
+  }
+
   ejecutarXQuery() {
     this.ejecutarXmlAsc();
     this.clean();
@@ -741,41 +769,4 @@ export class EditorComponent {
     // this.flag = false;
   }
 
-  translate() {
-    // this.clean();
-    // try {
-    //   this.ast = parser.parse(this.entrada.toString());
-    //   this.env = new Environment(null);
-    //   this.salida = '';
-    //   try {
-    //     for (const instr of this.ast) {
-    //       this.salida += instr.translate(this.env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   if (errores.length == 0) {
-    //     this.cOutput(this.salida);
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // this.flag = false;
-    // _Console.showSystem();
-  }
 }
