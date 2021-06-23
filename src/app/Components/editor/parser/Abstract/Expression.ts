@@ -11,7 +11,6 @@ export abstract class Expression {
         this.line = line;
         this.column = column;
     }
-
     public abstract execute(environment: Environment) : Retorno;
     public abstract translate(environment: Environment) : String;
     public abstract build() : String;
