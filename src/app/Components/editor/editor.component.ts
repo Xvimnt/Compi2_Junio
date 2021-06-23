@@ -156,7 +156,19 @@ export class EditorComponent {
       let queryEnv = new Environment(null, this.envXML);
       console.log("------------TREE------------");
       console.log(queryTree);
+      // Saving functions in table
+      for (const instr of this.ast) {
+        try {
+          if (instr instanceof Function)
+                instr.execute(this.env);
+        } catch (error) {
+          console.log(error);
+        }
+      }
+      // Executing Instructions Not Functions
       for (const instr of queryTree) {
+        if (instr instanceof Function) 
+          continue;
         try {
           instr.execute(queryEnv);
         } catch (error) {
