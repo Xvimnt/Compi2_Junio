@@ -1,7 +1,10 @@
 import { Symbol } from "./Symbol";
+import { Function } from '../Instruction/Function';
 import { Type } from "../Abstract/Retorno";
 import { _Console } from '../Util/Salida';
 import { EnvironmentXML } from '../../parser/Symbol/EnviromentXML';
+import { Error_ } from '../Error';
+import { errores } from '../Errores';
 
 export class Environment {
 
@@ -35,13 +38,19 @@ export class Environment {
         }
         this.variables.set(id, new Symbol(valor, id, type));
     }
+    
+    save_error(line:number, column: number, msg: string){
+        errores.push(new Error_(line, column, "Semantico", msg));
+    }
 
     public guardarFuncion(id: string, funcion: Function) {
-        // if (this.funciones.has(id)) errores.push(new Error_(funcion.line, funcion.column, "Semantico", "Funcion ya definida"));
-        // else {
-        //     _Console.symbols.set(id, new Symbol('Instrucciones', id, 8, 'Global'));
-        //     this.funciones.set(id, funcion);
-        // }
+        if (this.funciones.has(id)){
+            this.save_error(funcion.line,funcion.column,"Funcion ya definida");
+        } 
+        else {
+            _Console.symbols.set(id, new Symbol('Instrucciones', id, 8, 'Global'));
+            this.funciones.set(id, funcion);
+        }
     }
 
     public getVar(id: string): Symbol | undefined | null {

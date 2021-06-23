@@ -29,6 +29,7 @@ import {
 
 import { errores } from './parser/Errores';
 import { reglas } from './parser/Reglas';
+import { Function } from './parser/Instruction/Function';
 
 declare var require: any;
 const parserXMLASC = require('./parser/Grammar/XmlGrammarASC.js');
