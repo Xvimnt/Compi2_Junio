@@ -201,7 +201,33 @@ Instrucciones : For {
 			}
                      ;
 		
-		
+LlamadaFuncion: LOCAL ':' ID '(' LParams ')'{					
+			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",@1.first_line+1,@1.first_column+1);
+			var val = new NodoXML($1,"Prefix",@1.first_line+1,@1.first_column+1);
+			exp.addHijo(val);
+			exp.addHijo($3);
+			exp.addHijo($5);
+			$$ = exp;
+		}
+              | LOCAL ':' ID '(' ')'{					
+			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",@1.first_line+1,@1.first_column+1);
+			var val = new NodoXML($1,"Prefix",@1.first_line+1,@1.first_column+1);
+			exp.addHijo(val);
+			exp.addHijo($3);
+			$$ = exp;
+		};
+
+LParams : LParams ',' ExprLogica {					
+			var exp = new NodoXML("Parametros","Parametros",@1.first_line+1,@1.first_column+1);			
+			exp.addHijo($1);
+			exp.addHijo($3);
+			$$ = exp;
+		}
+                | ExprLogica {					
+			var exp = new NodoXML("Parametros","Parametros",@1.first_line+1,@1.first_column+1);			
+			exp.addHijo($1);
+			$$ = exp;
+		};
 
 Exp : DIVSIGN Lexp {					
 			var exp = new NodoXML("Exp","Exp",@1.first_line+1,@1.first_column+1);
@@ -393,7 +419,10 @@ Valor : ID
           $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FLOAT);
       }
       | VARIABLE{
-          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.ID);
+          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.VARIABLE);
+      }
+	  | LlamadaFuncion{
+          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FUNCION);
       };
 
 
@@ -463,7 +492,7 @@ stmnt: '('')' {
 		;
 
 
-For: FOR  LFor LForExpresiones LForWhere{
+For: FOR  LFor forstmnt LForWhere{
 				var for_ = new NodoXML("For","For",@1.first_line+1,@1.first_column+1);								
 				for_.addHijo($2);					
 				for_.addHijo($3);
@@ -732,7 +761,7 @@ Expr : Expr '+' Expr {
         $$ = new Logic($1, $3,LogicOption.AND ,@1.first_line, @1.first_column);
     }
      |'(' ExprLogica ')' { $$ = $2 }
-     | Exp { $$ = $1 };
+	 | Exp { $$ = $1 };
 
 HTML: HTML HTMLSTRING
     | HTMLSTRING
