@@ -85,39 +85,29 @@ var $0 = $$.length - 1;
 switch (yystate) {
 case 1:
 
-        var init = new NodoXML("Init","Init",_$[$0-1].first_line+1,_$[$0-1].first_column+1);
-			init.addHijo($$[$0-1]);
-			return init;
+			return $$[$0-1];
     
 break;
 case 2:
 
-			var exp = new NodoXML("LExp","LExp",_$[$0-1].first_line+1,_$[$0-1].first_column+1);			
-			exp.addHijo($$[$0-1]);
-			exp.addHijo($$[$0]);
-			this.$ = exp;
+			$$[$0-1].push($$[$0]);
+			this.$ = $$[$0-1];
     
 break;
 case 3:
  
-				var exp = new NodoXML("LExp","LExp",_$[$0].first_line+1,_$[$0].first_column+1);			
-				exp.addHijo($$[$0]);
-				this.$ = exp 
+				this.$ = [$$[$0]] 
 			
 break;
 case 5:
         
 			errores.push(new Error_(_$[$0].first_line, _$[$0].first_column, 'Sintactico','Valor inesperado ' + yytext));
-			
-			var init = new NodoXML("Init","Init",_$[$0].first_line+1,_$[$0].first_column+1);			
-			return init;
+			return "error";
 		
 break;
 case 6: case 7: case 8: case 9: case 10: case 11:
  
-				var instr = new NodoXML("Instruccion","Instruccion",_$[$0].first_line+1,_$[$0].first_column+1);			
-				instr.addHijo($$[$0]);
-				this.$ = instr 
+						this.$ = $$[$0]; 
 			
 break;
 case 12:
@@ -344,32 +334,22 @@ case 50:
 break;
 case 51:
 
-				var if_ = new NodoXML("If","If",_$[$0-7].first_line+1,_$[$0-7].first_column+1);								
-				if_.addHijo($$[$0-5]);	
-				if_.addHijo($$[$0-2]);	
-				if_.addHijo($$[$0]);	
-				this.$ = if_;
+				this.$ = new If($$[$0-5], $$[$0-2], $$[$0] ,_$[$0-7].first_line+1, _$[$0-7].first_column+1);		
 
 break;
 case 52:
 
-				var if_ = new NodoXML("Stmnt","Stmnt",_$[$0-1].first_line+1,_$[$0-1].first_column+1);											
-				this.$ = if_;
+			this.$ = null;
 		
 break;
 case 53:
 
-			var if_ = new NodoXML("Stmnt","Stmnt",_$[$0-2].first_line+1,_$[$0-2].first_column+1);								
-				if_.addHijo($$[$0-1]);	
-				this.$ = if_;
-		
+			this.$ = $$[$0-2];
 		
 break;
 case 54:
 
-				var if_ = new NodoXML("Stmnt","Stmnt",_$[$0].first_line+1,_$[$0].first_column+1);								
-				if_.addHijo($$[$0]);					
-				this.$ = if_;
+				this.$ = $$[$0];
 		
 break;
 case 55:
@@ -1462,8 +1442,6 @@ exports.main = function commonjsMain (args) {
         console.log('Usage: '+args[0]+' FILE');
         process.exit(1);
     }
-    //var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
-    //return exports.parser.parse(source);
 };
 if (typeof module !== 'undefined' && require.main === module) {
   exports.main(process.argv.slice(1));

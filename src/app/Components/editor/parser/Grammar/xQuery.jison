@@ -163,61 +163,41 @@ preceding   ('preceding')('-sibling')?
 %%
 
 Init : LExpresiones EOF {
-        var init = new NodoXML("Init","Init",@1.first_line+1,@1.first_column+1);
-			init.addHijo($1);
-			return init;
+			return $1;
     }  
 ; 
 
 LExpresiones : LExpresiones  Instrucciones {
-			var exp = new NodoXML("LExp","LExp",@1.first_line+1,@1.first_column+1);			
-			exp.addHijo($1);
-			exp.addHijo($2);
-			$$ = exp;
+			$1.push($2);
+			$$ = $1;
     }
     | Instrucciones { 
-				var exp = new NodoXML("LExp","LExp",@1.first_line+1,@1.first_column+1);			
-				exp.addHijo($1);
-				$$ = exp 
+				$$ = [$1] 
 			}
     | HTML 
 	| error {        
 			errores.push(new Error_(@1.first_line, @1.first_column, 'Sintactico','Valor inesperado ' + yytext));
-			
-			var init = new NodoXML("Init","Init",@1.first_line+1,@1.first_column+1);			
-			return init;
+			return "error";
 		}
 ;
 
 Instrucciones : For { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      | Return  { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      | Let     { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      | If      { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      | Valor   { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      |Function { 
-				var instr = new NodoXML("Instruccion","Instruccion",@1.first_line+1,@1.first_column+1);			
-				instr.addHijo($1);
-				$$ = instr 
+						$$ = $1; 
 			}
                      ;
 		
@@ -468,27 +448,17 @@ Opc : '['ExprLogica ']' {
 
 
 If: IF '(' ExprLogica ')' THEN stmnt ELSE  stmnt{
-				var if_ = new NodoXML("If","If",@1.first_line+1,@1.first_column+1);								
-				if_.addHijo($3);	
-				if_.addHijo($6);	
-				if_.addHijo($8);	
-				$$ = if_;
+				$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1);		
 };
 
 stmnt: '('')' {
-				var if_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);											
-				$$ = if_;
+			$$ = null;
 		}
         | '('LExpresiones')'{
-			var if_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				if_.addHijo($2);	
-				$$ = if_;
-		
+			$$ = $1;
 		}
         | Instrucciones{
-				var if_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				if_.addHijo($1);					
-				$$ = if_;
+				$$ = $1;
 		}
 		;
 
