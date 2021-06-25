@@ -158,10 +158,10 @@ export class EditorComponent {
       console.log("------------TREE------------");
       console.log(queryTree);
       // Saving functions in table
-      for (const instr of this.ast) {
+      for (const instr of queryTree) {
         try {
           if (instr instanceof Function)
-                instr.execute(this.env);
+                instr.execute(queryEnv);
         } catch (error) {
           console.log(error);
         }

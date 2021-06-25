@@ -112,52 +112,33 @@ case 6: case 7: case 8: case 9: case 10: case 11:
 break;
 case 12:
 					
-			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",_$[$0-5].first_line+1,_$[$0-5].first_column+1);
-			var val = new NodoXML($$[$0-5],"Prefix",_$[$0-5].first_line+1,_$[$0-5].first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($$[$0-3]);
-			exp.addHijo($$[$0-1]);
-			this.$ = exp;
+			this.$ = new Call($$[$0-3],$$[$0-1],_$[$0-5].first_line+1,_$[$0-5].first_column+1);
 		
 break;
 case 13:
 					
-			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",_$[$0-4].first_line+1,_$[$0-4].first_column+1);
-			var val = new NodoXML($$[$0-4],"Prefix",_$[$0-4].first_line+1,_$[$0-4].first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($$[$0-2]);
-			this.$ = exp;
+					this.$ = new Call($$[$0-2],null,_$[$0-4].first_line+1,_$[$0-4].first_column+1);
 		
 break;
 case 14:
-					
-			var exp = new NodoXML("Parametros","Parametros",_$[$0-2].first_line+1,_$[$0-2].first_column+1);			
-			exp.addHijo($$[$0-2]);
-			exp.addHijo($$[$0]);
-			this.$ = exp;
+	
+			$$[$0-2].push($$[$0]);
+			this.$ = $$[$0-2];
 		
 break;
 case 15:
-					
-			var exp = new NodoXML("Parametros","Parametros",_$[$0].first_line+1,_$[$0].first_column+1);			
-			exp.addHijo($$[$0]);
-			this.$ = exp;
+		
+			this.$ = [$$[$0]];
 		
 break;
 case 16:
 					
-			var exp = new NodoXML("Exp","Exp",_$[$0-1].first_line+1,_$[$0-1].first_column+1);
-			var val = new NodoXML($$[$0-1],"Exp",_$[$0-1].first_line+1,_$[$0-1].first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($$[$0]);
-			this.$ = exp;
+			this.$ = $$[$0];
 		
 break;
 case 17:
 			
-			var exp = new NodoXML("Exp","Exp",_$[$0].first_line+1,_$[$0].first_column+1);			
-			exp.addHijo($$[$0]);
-			this.$ = exp;
+			this.$ = $$[$0];
 		
 break;
 case 18:
@@ -184,17 +165,12 @@ case 19:
 break;
 case 20:
 
-									
-			var lexp = new NodoXML("Lexp","Lexp",_$[$0].first_line+1,_$[$0].first_column+1);			
-			lexp.addHijo($$[$0]);
-			this.$ = lexp;
+			this.$ = $$[$0];
 		
 break;
 case 21:
 
-					var syntfin = new NodoXML("Syntfin","Syntfin",_$[$0].first_line+1,_$[$0].first_column+1);		
-					syntfin.addHijo($$[$0]);
-					this.$ = syntfin;
+					this.$ = $$[$0];
 				
 break;
 case 22: case 24:
@@ -230,10 +206,7 @@ case 25:
 break;
 case 26:
  
-			var fin = new NodoXML("Fin","Fin",_$[$0-1].first_line+1,_$[$0-1].first_column+1);			
-			fin.addHijo($$[$0-1]);			
-			fin.addHijo($$[$0]);										
-			this.$ = fin;
+			this.$ = $$[$0-1];
 		
 break;
 case 27:
@@ -343,7 +316,7 @@ case 43:
 break;
 case 44:
 
-          this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column,  Type.FUNCION);
+          this.$ = $$[$0];
       
 break;
 case 45:
@@ -592,6 +565,28 @@ case 84: case 85: case 86:
 				lexp.addHijo($$[$0]);
 				this.$ = lexp;
 
+break;
+case 87:
+
+	this.$ = new Function($$[$0-9],$$[$0-8],$$[$0-4],$$[$0-2],_$[$0-13].first_line+1,_$[$0-13].first_column+1);
+
+break;
+case 88:
+this.$ = $$[$0-1]
+break;
+case 89:
+this.$ = null
+break;
+case 90:
+
+				$$[$0-6].push(new Variable($$[$0-4], $$[$0], _$[$0-6].first_line, _$[$0-6].first_column));
+				this.$ = $$[$0-6];
+			
+break;
+case 91:
+
+					  this.$ = [new Variable($$[$0-4], $$[$0], _$[$0-4].first_line, _$[$0-4].first_column)]
+					
 break;
 case 98: case 107:
 
@@ -931,9 +926,12 @@ _handle_error:
     const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
     const {Logic, LogicOption} = require('../Expression/Logic');
     const {Literal} = require('../Expression/Literal');
+    const {Variable} = require('../Expression/Variable');
     // Instrucciones
     const {If} = require('../Instruction/If');
     const {ForIn} = require('../Instruction/ForIn');
+    const {Function} = require('../Instruction/Function');
+    const {Call} = require('../Instruction/Call');
 
     // Extra
     const {Type} = require('../Abstract/Retorno');
@@ -1481,8 +1479,6 @@ exports.main = function commonjsMain (args) {
         console.log('Usage: '+args[0]+' FILE');
         process.exit(1);
     }
- //   var source = require('fs').readFileSync(require('path').normalize(args[1]), "utf8");
-   // return exports.parser.parse(source);
 };
 if (typeof module !== 'undefined' && require.main === module) {
   exports.main(process.argv.slice(1));

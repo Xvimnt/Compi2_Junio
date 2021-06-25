@@ -12,9 +12,12 @@
     const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
     const {Logic, LogicOption} = require('../Expression/Logic');
     const {Literal} = require('../Expression/Literal');
+    const {Variable} = require('../Expression/Variable');
     // Instrucciones
     const {If} = require('../Instruction/If');
     const {ForIn} = require('../Instruction/ForIn');
+    const {Function} = require('../Instruction/Function');
+    const {Call} = require('../Instruction/Call');
 
     // Extra
     const {Type} = require('../Abstract/Retorno');
@@ -202,44 +205,25 @@ Instrucciones : For {
                      ;
 		
 LlamadaFuncion: LOCAL ':' ID '(' LParams ')'{					
-			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",@1.first_line+1,@1.first_column+1);
-			var val = new NodoXML($1,"Prefix",@1.first_line+1,@1.first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($3);
-			exp.addHijo($5);
-			$$ = exp;
+			$$ = new Call($3,$5,@1.first_line+1,@1.first_column+1);
 		}
               | LOCAL ':' ID '(' ')'{					
-			var exp = new NodoXML("LlamadaFuncion","LlamadaFuncion",@1.first_line+1,@1.first_column+1);
-			var val = new NodoXML($1,"Prefix",@1.first_line+1,@1.first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($3);
-			$$ = exp;
+					$$ = new Call($3,null,@1.first_line+1,@1.first_column+1);
 		};
 
-LParams : LParams ',' ExprLogica {					
-			var exp = new NodoXML("Parametros","Parametros",@1.first_line+1,@1.first_column+1);			
-			exp.addHijo($1);
-			exp.addHijo($3);
-			$$ = exp;
+LParams : LParams ',' ExprLogica {	
+			$1.push($3);
+			$$ = $1;
 		}
-                | ExprLogica {					
-			var exp = new NodoXML("Parametros","Parametros",@1.first_line+1,@1.first_column+1);			
-			exp.addHijo($1);
-			$$ = exp;
+		| ExprLogica {		
+			$$ = [$1];
 		};
 
 Exp : DIVSIGN Lexp {					
-			var exp = new NodoXML("Exp","Exp",@1.first_line+1,@1.first_column+1);
-			var val = new NodoXML($1,"Exp",@1.first_line+1,@1.first_column+1);
-			exp.addHijo(val);
-			exp.addHijo($2);
-			$$ = exp;
+			$$ = $2;
 		}
     | Lexp {			
-			var exp = new NodoXML("Exp","Exp",@1.first_line+1,@1.first_column+1);			
-			exp.addHijo($1);
-			$$ = exp;
+			$$ = $1;
 		};
 
 
@@ -262,17 +246,12 @@ Lexp : Lexp ORSIGN DIVSIGN Syntfin	{
 			$$ = lexp;
 		}
      | Syntfin {
-									
-			var lexp = new NodoXML("Lexp","Lexp",@1.first_line+1,@1.first_column+1);			
-			lexp.addHijo($1);
-			$$ = lexp;
+			$$ = $1;
 		};
 
 
 Syntfin    :  Fin {
-					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);		
-					syntfin.addHijo($1);
-					$$ = syntfin;
+					$$ = $1;
 				}
            | '@' Valor Opc{
 					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
@@ -310,10 +289,7 @@ Syntfin    :  Fin {
 
 
 Fin :  Valor Opc  { 
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);			
-			fin.addHijo($1);			
-			fin.addHijo($2);										
-			$$ = fin;
+			$$ = $1;
 		}
 	| DIR Opc { 
 	var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
@@ -422,7 +398,7 @@ Valor : ID
           $$ = new Literal($1, @1.first_line, @1.first_column,  Type.VARIABLE);
       }
 	  | LlamadaFuncion{
-          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FUNCION);
+          $$ = $1;
       };
 
 
@@ -684,13 +660,20 @@ Return: RETURN ExprLogica{
 }
         ;
 
-Function : DECLARE FUNCTION Prefix ':' ID Parameter  AS XS':'TipoVar tk_llavea LExpresiones tk_llavec ';';
+Function : DECLARE FUNCTION Prefix ':' ID Parameter  AS XS':'TipoVar tk_llavea LExpresiones tk_llavec ';'{
+	$$ = new Function($5,$6,$10,$12,@1.first_line+1,@1.first_column+1);
+};
 
-Parameter: '(' LVariables ')'
-                  |'('')';
+Parameter: '(' LVariables ')' {$$ = $2}
+                  |'('')' {$$ = null};
 
-LVariables: LVariables ',' VARIABLE AS XS':'TipoVar
-                  | VARIABLE  AS XS':'TipoVar;
+LVariables: LVariables ',' VARIABLE AS XS':'TipoVar {
+				$1.push(new Variable($3, $7, @1.first_line, @1.first_column));
+				$$ = $1;
+			}
+                  | VARIABLE  AS XS ':' TipoVar {
+					  $$ = [new Variable($1, $5, @1.first_line, @1.first_column)]
+					}; 
 
 TipoVar: INTEGER_
               | DECIMAL_

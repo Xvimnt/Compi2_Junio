@@ -11,9 +11,8 @@ export class Environment {
     public variables: Map<string, Symbol>;
     public funciones: Map<string, Function>;
     public apuntadores: Map<string, number>;
-    xmlEnvironment: EnvironmentXML;
 
-    constructor(public anterior: Environment | null, xmlEnvironment: EnvironmentXML) {
+    constructor(public anterior: Environment | null, public xmlEnvironment: EnvironmentXML) {
         this.xmlEnvironment = xmlEnvironment;
         this.anterior = anterior;
         this.variables = new Map<string, Symbol>();
@@ -64,7 +63,7 @@ export class Environment {
         return null;
     }
 
-    public getFuncion(id: string): Function | undefined {
+    public getFuncion(id: string): Function{
         let env: Environment | null = this;
         while (env != null) {
             if (env.funciones.has(id)) {
@@ -72,7 +71,7 @@ export class Environment {
             }
             env = env.anterior;
         }
-        return undefined;
+        return null;
     }
 
     public getGlobal(): Environment {
