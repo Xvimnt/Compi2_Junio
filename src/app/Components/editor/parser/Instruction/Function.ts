@@ -48,7 +48,7 @@ export class Function extends Instruction {
         return result;
     }
 
-    constructor(private id: string, public statment: Instruction, line: number, column: number) {
+    constructor(public id: string, public parameters,  public statment: Instruction,  line: number, column: number) {
         super(line, column);
     }
 
