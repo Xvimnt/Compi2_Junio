@@ -323,7 +323,8 @@ export class Call extends Instruction {
                     else {
                         // Saving parameters and executing function
                         local_environment.guardar(p_parameter.value, parameter.value, parameter.type);
-                       // TODO crear statement
+                        const result = p_function.statment.execute(local_environment);
+                        console.log(result);
                     }
                 }
             }

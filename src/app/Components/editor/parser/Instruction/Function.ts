@@ -2,6 +2,7 @@ import { Instruction } from "../Abstract/Instruction";
 import { Environment } from "../Symbol/Environment";
 // import { _Type } from '../Types/Type';
 import { _Console } from '../Util/Salida';
+import { Statement } from "./Statement";
 
 
 export class Function extends Instruction {
@@ -48,7 +49,7 @@ export class Function extends Instruction {
         return result;
     }
 
-    constructor(public id: string, public parameters,  public statment: Instruction,  line: number, column: number) {
+    constructor(public id: string, public parameters, public return_type, public statment: Statement,  line: number, column: number) {
         super(line, column);
     }
 

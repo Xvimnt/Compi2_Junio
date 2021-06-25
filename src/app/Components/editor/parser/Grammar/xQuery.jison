@@ -18,6 +18,7 @@
     const {ForIn} = require('../Instruction/ForIn');
     const {Function} = require('../Instruction/Function');
     const {Call} = require('../Instruction/Call');
+    const {Statement} = require('../Instruction/Statement');
 
     // Extra
     const {Type} = require('../Abstract/Retorno');
@@ -660,8 +661,14 @@ Return: RETURN ExprLogica{
 }
         ;
 
-Function : DECLARE FUNCTION Prefix ':' ID Parameter  AS XS':'TipoVar tk_llavea LExpresiones tk_llavec ';'{
-	$$ = new Function($5,$6,$10,$12,@1.first_line+1,@1.first_column+1);
+Function : DECLARE FUNCTION Prefix ':' ID Parameter  AS XS':'TipoVar prod_statement ';'{
+	$$ = new Function($5,$6,$10,$11,@1.first_line+1,@1.first_column+1);
+};
+
+prod_statement: tk_llavea LExpresiones tk_llavec {
+	$$ = new Statement($2, @1.first_line, @1.first_column);
+} | tk_llavea tk_llavec {
+	$$ = new Statement([], @1.first_line, @1.first_column);
 };
 
 Parameter: '(' LVariables ')' {$$ = $2}
