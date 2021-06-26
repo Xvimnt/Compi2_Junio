@@ -289,6 +289,11 @@ case 37:
 			this.$ = fin;
 		
 break;
+case 38:
+
+		this.$ = new Access($$[$0], _$[$0].first_line, _$[$0].first_column);
+	  
+break;
 case 39:
 
           this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column, Type.NUMBER);
@@ -311,7 +316,7 @@ case 42:
 break;
 case 43:
 
-          this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column,  Type.VARIABLE);
+          this.$ = new Access($$[$0], _$[$0].first_line, _$[$0].first_column);
       
 break;
 case 44:
@@ -936,6 +941,7 @@ _handle_error:
     const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
     const {Logic, LogicOption} = require('../Expression/Logic');
     const {Literal} = require('../Expression/Literal');
+    const {Access} = require('../Expression/Access');
     const {Variable} = require('../Expression/Variable');
     // Instrucciones
     const {If} = require('../Instruction/If');

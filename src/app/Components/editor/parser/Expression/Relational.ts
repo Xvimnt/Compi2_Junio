@@ -84,7 +84,6 @@ export class Relational extends Expression {
     public execute(environment: Environment): Retorno {
         const leftValue = (this.left == null) ? { value: null, type: Type.NULL } : this.left.execute(environment);
         const rightValue = (this.right == null) ? { value: null, type: Type.NULL } : this.right.execute(environment);
-        
         if (leftValue == null || rightValue == null || leftValue == undefined || rightValue == undefined) errores.push(new Error_(this.line, this.column, 'Semantico', 'Operador no definido'));
         else {
             switch (this.type) {

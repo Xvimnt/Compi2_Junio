@@ -27,6 +27,8 @@ export class Statement extends Instruction {
         for (const instr of this.code) {
             try {
                 const element = instr.execute(env);
+                console.log("stmnt",element,env);
+
                 if (element != undefined || element != null)
                     return element;
             } catch (error) {

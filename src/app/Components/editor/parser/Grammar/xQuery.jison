@@ -12,6 +12,7 @@
     const {Arithmetic, ArithmeticOption} = require('../Expression/Arithmetic');
     const {Logic, LogicOption} = require('../Expression/Logic');
     const {Literal} = require('../Expression/Literal');
+    const {Access} = require('../Expression/Access');
     const {Variable} = require('../Expression/Variable');
     // Instrucciones
     const {If} = require('../Instruction/If');
@@ -382,7 +383,9 @@ Fin :  Valor Opc  {
     //     FUNCION = 8,
     //     FLOAT = 9
     // }   
-Valor : ID
+Valor : ID {
+		$$ = new Access($1, @1.first_line, @1.first_column);
+	  }
       | NUMBER {
           $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER);
       }
@@ -396,7 +399,7 @@ Valor : ID
           $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FLOAT);
       }
       | VARIABLE{
-          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.VARIABLE);
+          $$ = new Access($1, @1.first_line, @1.first_column);
       }
 	  | LlamadaFuncion{
           $$ = $1;
