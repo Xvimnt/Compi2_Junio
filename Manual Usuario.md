@@ -3,6 +3,7 @@
 
 ## UI:
 ![image](https://user-images.githubusercontent.com/14981793/123496280-78bf6100-d5e4-11eb-96d0-e1c83d7dfc14.png)
+
 Tytus X cuenta con 5 distintas áreas:
 1. Barra de Menú
 2. Entrada XML donde podrá escribir la sintaxis de un archivo xml o ver la carga de algún archivo desde su computadora.
