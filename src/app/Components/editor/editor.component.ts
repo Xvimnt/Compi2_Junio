@@ -73,12 +73,10 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) { }
+  constructor(private dotService: DotService) {}
   ngOnInit() {
     this.clean();
   }
-
-
 
   clean() {
     this.ast = null;
@@ -97,10 +95,26 @@ export class EditorComponent {
   cOutput(body: string) {
     // Muestra el encabezado
     this.salida = '#include <stdio.h> \n\n';
-    this.salida += 'float Heap[16384];\n';
-    this.salida += 'float Stack[16384]; \n';
-    this.salida += 'float p; \n';
-    this.salida += 'float h; \n';
+    this.salida += 'float HeapXML[100000];\n';
+    this.salida += 'float StackXML[100000]; \n';
+
+    this.salida += 'float HeapXPath[100000];\n';
+    this.salida += 'float StackXPath[100000]; \n';
+
+    this.salida += 'float HeapXQuery[100000];\n';
+    this.salida += 'float StackXQuery[100000]; \n';
+
+    this.salida += 'float pxml; \n';
+    this.salida += 'float hxml; \n';
+
+    this.salida += 'float pxpath; \n';
+    this.salida += 'float hxpath; \n';
+
+    this.salida += 'float pxquery; \n';
+    this.salida += 'float hxquery; \n';
+
+    this.translateXML();
+
     this.salida += 'float ';
     for (let index = 0; index < _Console.count; index++) {
       if (index > 0 && index % 8 == 0) {
@@ -121,26 +135,71 @@ export class EditorComponent {
     this.salida += '}\n\n';
   }
 
+  translateXML() {
+    let table = this.envXML.getTablaSimbolos();
+    let result = 'void cargaXML(){\n';
+    result += 'pxml = 0;\nhxml = 0;\n\n';
+    var c = (_Console.count = 0);
+    var h = (_Console.heapPointer = 0);
+    var s = (_Console.stackPointer = 0);
+
+    table.forEach((element) => {
+      // console.log(element.valor);
+      // console.log(element.posicion);
+      result += `t${c} = hxml;\n`;
+      c++;
+
+      for (var x = 0; x < element.valor.length; x++) {
+        var char = element.valor.charCodeAt(x);
+        result += `HeapXML[(int)hxml] = ${char};\n`;
+        result += `hxml = hxml + 1;\n`;
+        h++;
+      }
+      result += `HeapXML[(int)hxml] = -1;\n`;
+      result += `hxml = hxml + 1;\n`;
+      result += `StackXML[(int)${s}] = t${c - 1};\n\n`;
+      element.posicion = s;
+      s++;
+    });
+    result += '}\n\n';
+    _Console.salida = result;
+    _Console.count = c;
+    _Console.heapPointer = h;
+    _Console.stackPointer = s;
+  }
+
   translate() {
     // this.ejecutarXmlAsc(); // traducir xml primero
     try {
-      let queryTree = xQuery.parse(this.entradaXpath.toString());
-      let queryEnv = new Environment(null, this.envXML);
-      console.log("------------TREE------------");
-      console.log(queryTree);
-      for (const instr of queryTree) {
-        try {
-          this.salida += instr.translate(queryEnv);
-        } catch (error) {
-          console.log(error);
-        }
-      }
+      let salida = '';
+      //let queryTree = xQuery.parse(this.entradaXpath.toString());
+      //let queryEnv = new Environment(null, this.envXML);
+      //console.log('------------TREE------------');
+      //console.log(queryTree);
+      // for (const instr of queryTree) {
+      //   try {
+      //     this.salida += instr.translate(queryEnv);
+      //   } catch (error) {
+      //     console.log(error);
+      //   }
+      // }
       if (errores.length == 0) {
         // Muestra el resultado en la pagina
-        this.cOutput(this.salida);
+        salida += '//main\n';
+        salida += 'cargaXML();\n';
+        this.cOutput(salida);
       } else {
-        errores.forEach(error => {
-          this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
+        errores.forEach((error) => {
+          this.salida +=
+            'Error ' +
+            error.getTipo() +
+            ' (linea: ' +
+            error.getLinea() +
+            ', columna: ' +
+            error.getColumna() +
+            '): ' +
+            error.getDescripcion() +
+            '.  \n';
         });
       }
     } catch (e) {
@@ -155,21 +214,19 @@ export class EditorComponent {
     try {
       let queryTree = xQuery.parse(this.entradaXpath.toString());
       let queryEnv = new Environment(null, this.envXML);
-      console.log("------------TREE------------");
+      console.log('------------TREE------------');
       console.log(queryTree);
       // Saving functions in table
       for (const instr of queryTree) {
         try {
-          if (instr instanceof Function)
-                instr.execute(queryEnv);
+          if (instr instanceof Function) instr.execute(queryEnv);
         } catch (error) {
           console.log(error);
         }
       }
       // Executing Instructions Not Functions
       for (const instr of queryTree) {
-        if (instr instanceof Function) 
-          continue;
+        if (instr instanceof Function) continue;
         try {
           instr.execute(queryEnv);
         } catch (error) {
@@ -180,8 +237,17 @@ export class EditorComponent {
         // Muestra el resultado en la pagina
         this.salida += _Console.salida;
       } else {
-        errores.forEach(error => {
-          this.salida += "Error " + error.getTipo() + " (linea: " + error.getLinea() + ", columna: " + error.getColumna() + "): " + error.getDescripcion() + ".  \n";
+        errores.forEach((error) => {
+          this.salida +=
+            'Error ' +
+            error.getTipo() +
+            ' (linea: ' +
+            error.getLinea() +
+            ', columna: ' +
+            error.getColumna() +
+            '): ' +
+            error.getDescripcion() +
+            '.  \n';
         });
       }
     } catch (e) {
@@ -475,9 +541,7 @@ export class EditorComponent {
     }
   }
 
-  optTable() {
-
-  }
+  optTable() {}
 
   errorTable() {
     if (this.flag) {
@@ -781,5 +845,4 @@ export class EditorComponent {
     // }
     // this.flag = false;
   }
-
 }
