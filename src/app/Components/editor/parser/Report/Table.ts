@@ -61,6 +61,7 @@ export class Table {
     result += '<th scope="col">ID</th>\n';
     result += '<th scope="col">Tipo</th>\n';
     result += '<th scope="col">Ambito</th>\n';
+    result += '<th scope="col">Posicion</th>\n';
     result += '</tr>\n';
     result += '</thead>\n';
     result += '<tbody>\n';
@@ -72,6 +73,7 @@ export class Table {
       result += `<th>${element.getNombre()}</th>\n`;
       result += `<th>${element.getTipo()}</th>\n`;
       result += `<th>${element.getAmbito()}</th>\n`;
+      result += `<th>${element.getPosicion()}</th>\n`;
       result += '</tr>\n';
       count++;
     });
