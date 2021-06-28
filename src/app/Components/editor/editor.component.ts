@@ -690,9 +690,10 @@ export class EditorComponent {
 
   optimizar() {
     let c_code_tree = optimizer.parse(this.salida);
+    console.log(c_code_tree);
     let env = new _Optimizer();
     try {
-      for (const instr of c_code_tree) {
+      for (const instr of c_code_tree[0]) {
         instr.regla1(env);
       }
     } catch (e) {

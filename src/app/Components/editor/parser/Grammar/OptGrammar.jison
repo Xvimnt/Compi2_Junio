@@ -125,12 +125,17 @@ Statements
 
 Statement 
     : Assignation ';' { $$ = $1 }
+    | Call ';' { $$ = $1 }
     | 'GOTO' ID ';' { $$ = new Goto($2, @1.first_line, @1.first_column) }
     | ID ':' { $$ = new Label($1, @1.first_line, @1.first_column) }
     | PRINT '(' STRING ',' Expr ')' ';' { $$ = new Print($3, $5, @1.first_line, @1.first_column) }
     | PRINT '(' STRING ')' ';' { $$ = new Print($3, null, @1.first_line, @1.first_column) }
     | RETURN ';'  { $$ = new Return(@1.first_line, @1.first_column) }
     | 'IF' '(' Expr ')' 'GOTO' ID ';' { $$ = new IfGoto($3, $6, @1.first_line, @1.first_column) }
+;
+
+Call
+    : ID '(' ')'
 ;
 
 Assignation
