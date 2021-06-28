@@ -473,11 +473,7 @@ stmnt: '('')' {
 
 
 For: FOR  LFor forstmnt LForWhere{
-				var for_ = new NodoXML("For","For",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($2);					
-				for_.addHijo($3);
-				for_.addHijo($4);
-				$$ = for_;
+				$$ = new ForIn($1,$2,$3,@1.first_line+1,@1.first_column+1);
 		};
 
 LFor:LFor ','  VARIABLE IN ClauseExpr {
