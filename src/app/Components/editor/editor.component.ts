@@ -43,6 +43,7 @@ import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
+import { Rule } from './parser/Optimizer/Rule';
 
 @Component({
   selector: 'editor-root',
@@ -60,7 +61,8 @@ export class EditorComponent {
   env: Environment;
   flag: boolean;
   envXML = new EnvironmentXML('global');
-
+  reglas: Array<Rule>;
+  
   // Iconos
   faSpinner = faSpinner;
   faCoffee = faCoffee;
@@ -542,7 +544,38 @@ export class EditorComponent {
     }
   }
 
-  optTable() { }
+  optTable() { 
+    if (this.reglas == undefined) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black'
+      })
+    }
+    else if (this.reglas.length == 0) {
+      Swal.fire({
+        title: 'Cool!',
+        text: 'No se encontraron optimizaciones en su codigo',
+        icon: 'success',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black'
+      })
+    }
+    else {
+      Swal.fire({
+        title: 'Tabla de Reglas',
+        html: new Table().rules(this.reglas),
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+        width: 800
+      })
+    }
+  }
 
   errorTable() {
     if (this.flag) {
@@ -689,7 +722,7 @@ export class EditorComponent {
   }
 
   optimizar() {
-    let c_code_tree = optimizer.parse(this.salida);
+    let c_code_tree = optimizer.parse(this.entradaXml);
     console.log(c_code_tree);
     let env = new _Optimizer();
     try {
@@ -699,6 +732,66 @@ export class EditorComponent {
     } catch (e) {
       console.log(e);
     }
+    this.cOutput(env.salida);
+      // this.ast = optimizer.parse(this.salida);
+      // let c_rules = env.reglas;
+      // env = new _Optimizer();
+      // env.reglas = c_rules;
+      // try {
+      //   for (const instr of this.ast[0]) {
+      //     instr.regla2(env);
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
+      // this.cOutput(env.salida);
+      // this.ast = optimizer.parse(this.salida);
+      // c_rules = env.reglas;
+      // env = new _Optimizer();
+      // env.reglas = c_rules;
+      // try {
+      //   for (const instr of this.ast[0]) {
+      //     instr.regla3(env);
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
+      // this.cOutput(env.salida);
+      // this.ast = optimizer.parse(this.salida);
+      // c_rules = env.reglas;
+      // env = new _Optimizer();
+      // env.reglas = c_rules;
+      // try {
+      //   for (const instr of this.ast[0]) {
+      //     instr.regla4(env);
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
+      // this.cOutput(env.salida);
+      // this.ast = optimizer.parse(this.salida);
+      // c_rules = env.reglas;
+      // env = new _Optimizer();
+      // env.reglas = c_rules;
+      // try {
+      //   for (const instr of this.ast[0]) {
+      //     instr.regla5(env);
+      //   }
+      // } catch (e) {
+      //   console.log(e);
+      // }
+      // c_rules = env.reglas;
+      Swal.fire({
+        title: 'Cool!',
+        text: 'Su codigo intermedio se ha optimizado correctamente...',
+        icon: 'success',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black'
+      }).then(() => {
+        this.reglas = env.reglas;
+        this.cOutput(env.salida);
+      });
   }
 
 
