@@ -7,6 +7,7 @@
     const {ArrayAccess} = require('../Expression/ArrayAccess');
     const {Access} = require('../Expression/Access');
     const {Literal} = require('../Expression/Literal');
+    const {Call} = require('../Optimizer/Call');
     // Instrucciones
     const {Assignation} = require('../Optimizer/Assignation');
     const {ArrayAssignation} = require('../Optimizer/ArrayAssignation');
@@ -135,7 +136,7 @@ Statement
 ;
 
 Call
-    : ID '(' ')'
+    : ID '(' ')' { $$ = new Call($1, null, @1.first_line, @1.first_column) }
 ;
 
 Assignation

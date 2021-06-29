@@ -127,6 +127,9 @@ break;
 case 16:
  this.$ = new IfGoto($$[$0-4], $$[$0-1], _$[$0-6].first_line, _$[$0-6].first_column) 
 break;
+case 17:
+ this.$ = new Call($$[$0-2], null, _$[$0-2].first_line, _$[$0-2].first_column) 
+break;
 case 18:
  this.$ = new Assignation($$[$0-2], $$[$0], _$[$0-2].first_line,_$[$0-2].first_column) 
 break;
@@ -383,6 +386,7 @@ parse: function parse(input) {
     const {ArrayAccess} = require('../Expression/ArrayAccess');
     const {Access} = require('../Expression/Access');
     const {Literal} = require('../Expression/Literal');
+    const {Call} = require('../Optimizer/Call');
     // Instrucciones
     const {Assignation} = require('../Optimizer/Assignation');
     const {ArrayAssignation} = require('../Optimizer/ArrayAssignation');

@@ -7,9 +7,9 @@ import { _Console } from '../Util/Salida';
 
 export class Literal extends Expression {
     public build(): String {
-        let result = "";
-        return result;
-    }
+        let env = new Environment(null,null);
+        return this.execute(env).value;
+     }
 
     public translate(environment: Environment): String {
         let result = "";

@@ -726,24 +726,24 @@ export class EditorComponent {
     console.log(c_code_tree);
     let env = new _Optimizer();
     try {
-      for (const instr of c_code_tree[0]) {
-        instr.regla1(env);
+      for (const instr of c_code_tree[1]) {
+        instr.regla1(env); 
       }
     } catch (e) {
       console.log(e);
     }
-    this.cOutput(env.salida);
-      // this.ast = optimizer.parse(this.salida);
-      // let c_rules = env.reglas;
-      // env = new _Optimizer();
-      // env.reglas = c_rules;
-      // try {
-      //   for (const instr of this.ast[0]) {
-      //     instr.regla2(env);
-      //   }
-      // } catch (e) {
-      //   console.log(e);
-      // }
+    // this.cOutput(env.salida);
+    //   this.ast = optimizer.parse(this.salida);
+    //   let c_rules = env.reglas;
+    //   env = new _Optimizer();
+    //   env.reglas = c_rules;
+    //   try {
+    //     for (const instr of this.ast[0]) {
+    //       instr.regla2(env);
+    //     }
+    //   } catch (e) {
+    //     console.log(e);
+    //   }
       // this.cOutput(env.salida);
       // this.ast = optimizer.parse(this.salida);
       // c_rules = env.reglas;
