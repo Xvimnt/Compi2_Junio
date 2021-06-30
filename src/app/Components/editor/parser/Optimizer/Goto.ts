@@ -31,14 +31,22 @@ export class Goto {
         env.flag = false;
 
     }
+
     regla4(env: _Optimizer) {
-        env.salida += "goto " + this.label + ";\n";
+        if (env.flag){
+            env.salida += "goto " + this.label + ";\n";
+            env.reglas.push(new Rule(this.line, "Mirilla", "Regla 3", "goto " + this.label + ";\n", ""))
+        }
+        else {
+            env.salida += "goto " + this.label + ";\n";
+        }
+        env.flag = false;
     }
+
     regla5(env: _Optimizer) {
         env.salida += "goto " + this.label + ";\n";
     }
     optimize(env: _Optimizer) {
-        // Regla 1
-
+        env.salida += "goto " + this.label + ";\n";
     }
 }

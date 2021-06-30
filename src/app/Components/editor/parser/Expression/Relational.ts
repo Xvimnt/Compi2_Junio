@@ -4,6 +4,7 @@ import { Environment } from "../Symbol/Environment";
 import { Error_ } from "../Error";
 import { errores } from '../Errores';
 import { _Console } from '../Util/Salida';
+import { _Optimizer } from "../Optimizer/Optimizer";
 
 export enum RelationalOption {
     EQUAL,
@@ -23,7 +24,10 @@ export class Relational extends Expression {
     public build_opossite(): String {
         return this.left.build() + this.get_oposite_type() + this.right.build();
     }
-
+    
+    optimize(env: _Optimizer) {
+        env.salida += this.build();
+    }
     public translate(environment: Environment): String {
         let result = this.left.translate(environment);
         let leftT = _Console.count - 1;

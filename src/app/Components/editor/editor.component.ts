@@ -750,6 +750,20 @@ export class EditorComponent {
        console.log(e);
      }
 
+    // Regla 4
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla4(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
     // Regla 2
 
     this.cOutput(env.salida);
@@ -764,34 +778,40 @@ export class EditorComponent {
     } catch (e) {
       console.log(e);
     }
-
    
+    // Regla 5
+   
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla5(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    c_rules = env.reglas;
 
+
+    // Restantes
+   
     // this.cOutput(env.salida);
     // this.ast = optimizer.parse(this.salida);
     // c_rules = env.reglas;
     // env = new _Optimizer();
     // env.reglas = c_rules;
     // try {
-    //   for (const instr of this.ast[0]) {
-    //     instr.regla4(env);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
-    // this.cOutput(env.salida);
-    // this.ast = optimizer.parse(this.salida);
-    // c_rules = env.reglas;
-    // env = new _Optimizer();
-    // env.reglas = c_rules;
-    // try {
-    //   for (const instr of this.ast[0]) {
-    //     instr.regla5(env);
+    //   for (const instr of this.ast[1]) {
+    //     instr.optimize(env);
     //   }
     // } catch (e) {
     //   console.log(e);
     // }
     // c_rules = env.reglas;
+
     Swal.fire({
       title: 'Cool!',
       text: 'Su codigo intermedio se ha optimizado correctamente...',

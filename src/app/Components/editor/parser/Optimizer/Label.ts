@@ -30,8 +30,9 @@ export class Label {
     }
     regla5(env: _Optimizer) {
         env.salida += this.label + ":\n";
+        env.flag = false;
     }
     optimize(env: _Optimizer) {
-
+        env.salida += this.label + ":\n";
     }
 }

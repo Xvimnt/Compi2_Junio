@@ -40,31 +40,48 @@ export class IfGoto {
     regla3(env: _Optimizer) {
         if (this.condition instanceof Relational) {
             if(this.condition.left instanceof Literal && this.condition.right instanceof Literal){
-                if(this.condition.left.value == this.condition.right.value && this.condition.type == RelationalOption.EQUAL){
+                if(
+                    (this.condition.left.value == this.condition.right.value && this.condition.type == RelationalOption.EQUAL) ||
+                    (this.condition.left.value > this.condition.right.value && this.condition.type == RelationalOption.GREATER) ||
+                    (this.condition.left.value >= this.condition.right.value && this.condition.type == RelationalOption.GREATEROREQUAL) ||
+                    (this.condition.left.value < this.condition.right.value && this.condition.type == RelationalOption.LESS) ||
+                    (this.condition.left.value <= this.condition.right.value && this.condition.type == RelationalOption.LESSOREQUAL) ||
+                    (this.condition.left.value != this.condition.right.value && this.condition.type == RelationalOption.NOTEQUAL) 
+                ){
                     env.salida += "goto " + this.label + ";\n";
                     env.flag = true;
                     return;
                 }
             }
-            env.salida += this.build();
-        } else {
-            env.salida += "goto " + this.label + ";\n";
-        }
+        } 
+        env.salida += this.build();
+        
     }
 
     regla4(env: _Optimizer) {
         if (this.condition instanceof Relational) {
-            // if (this.condition.execute(new Environment(null)).value) env.salida += this.build();
-            // else env.reglas.push(new Rule(this.line, "Mirilla", "Regla 4", this.build(), ""));
-        } else {
-            env.salida += this.build();
-        }
+            if(this.condition.left instanceof Literal && this.condition.right instanceof Literal){
+                if(
+                    (this.condition.left.value != this.condition.right.value && this.condition.type == RelationalOption.EQUAL) ||
+                    (this.condition.left.value <= this.condition.right.value && this.condition.type == RelationalOption.GREATER) ||
+                    (this.condition.left.value > this.condition.right.value && this.condition.type == RelationalOption.GREATEROREQUAL) ||
+                    (this.condition.left.value >= this.condition.right.value && this.condition.type == RelationalOption.LESS) ||
+                    (this.condition.left.value > this.condition.right.value && this.condition.type == RelationalOption.LESSOREQUAL) ||
+                    (this.condition.left.value == this.condition.right.value && this.condition.type == RelationalOption.NOTEQUAL) 
+                ){
+                    env.flag = true;
+                    return;
+                }
+            }
+        } 
+        env.salida += this.build();
+        
     }
     regla5(env: _Optimizer) {
         env.salida += this.build();
     }
 
     optimize(env: _Optimizer) {
-
+        env.salida += this.build();
     }
 }

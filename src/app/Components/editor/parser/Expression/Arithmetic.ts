@@ -118,6 +118,10 @@ export class Arithmetic extends Expression {
         return '';
     }
 
+    public optimize(env: _Optimizer) {
+        env.salida += this.build();
+    }
+    
     private getTypeName() {
         switch (this.type) {
             case ArithmeticOption.PLUS:
