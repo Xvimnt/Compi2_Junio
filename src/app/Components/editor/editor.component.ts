@@ -62,7 +62,7 @@ export class EditorComponent {
   flag: boolean;
   envXML = new EnvironmentXML('global');
   reglas: Array<Rule>;
-  
+
   // Iconos
   faSpinner = faSpinner;
   faCoffee = faCoffee;
@@ -177,7 +177,7 @@ export class EditorComponent {
     }
     this.flag = false;
   }
-  
+
   translateXML() {
     let table = this.envXML.getTablaSimbolos();
     let result = 'void cargaXML(){\n';
@@ -544,7 +544,7 @@ export class EditorComponent {
     }
   }
 
-  optTable() { 
+  optTable() {
     if (this.reglas == undefined) {
       Swal.fire({
         title: 'Oops...',
@@ -722,76 +722,87 @@ export class EditorComponent {
   }
 
   optimizar() {
+    // Regla 1
+
     let c_code_tree = optimizer.parse(this.entradaXml);
     console.log(c_code_tree);
     let env = new _Optimizer();
     try {
       for (const instr of c_code_tree[1]) {
-        instr.regla1(env); 
+        instr.regla1(env);
       }
     } catch (e) {
       console.log(e);
     }
+
+     // Regla 3
+
+     this.cOutput(env.salida);
+     this.ast = optimizer.parse(this.salida);
+     let c_rules = env.reglas;
+     env = new _Optimizer();
+     env.reglas = c_rules;
+     try {
+       for (const instr of this.ast[1]) {
+         instr.regla3(env);
+       }
+     } catch (e) {
+       console.log(e);
+     }
+
+    // Regla 2
+
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla2(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+   
+
     // this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   let c_rules = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = c_rules;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla2(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
+    // this.ast = optimizer.parse(this.salida);
+    // c_rules = env.reglas;
+    // env = new _Optimizer();
+    // env.reglas = c_rules;
+    // try {
+    //   for (const instr of this.ast[0]) {
+    //     instr.regla4(env);
     //   }
-      // this.cOutput(env.salida);
-      // this.ast = optimizer.parse(this.salida);
-      // c_rules = env.reglas;
-      // env = new _Optimizer();
-      // env.reglas = c_rules;
-      // try {
-      //   for (const instr of this.ast[0]) {
-      //     instr.regla3(env);
-      //   }
-      // } catch (e) {
-      //   console.log(e);
-      // }
-      // this.cOutput(env.salida);
-      // this.ast = optimizer.parse(this.salida);
-      // c_rules = env.reglas;
-      // env = new _Optimizer();
-      // env.reglas = c_rules;
-      // try {
-      //   for (const instr of this.ast[0]) {
-      //     instr.regla4(env);
-      //   }
-      // } catch (e) {
-      //   console.log(e);
-      // }
-      // this.cOutput(env.salida);
-      // this.ast = optimizer.parse(this.salida);
-      // c_rules = env.reglas;
-      // env = new _Optimizer();
-      // env.reglas = c_rules;
-      // try {
-      //   for (const instr of this.ast[0]) {
-      //     instr.regla5(env);
-      //   }
-      // } catch (e) {
-      //   console.log(e);
-      // }
-      // c_rules = env.reglas;
-      Swal.fire({
-        title: 'Cool!',
-        text: 'Su codigo intermedio se ha optimizado correctamente...',
-        icon: 'success',
-        confirmButtonText: 'Entendido',
-        confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      }).then(() => {
-        this.reglas = env.reglas;
-        this.cOutput(env.salida);
-      });
+    // } catch (e) {
+    //   console.log(e);
+    // }
+    // this.cOutput(env.salida);
+    // this.ast = optimizer.parse(this.salida);
+    // c_rules = env.reglas;
+    // env = new _Optimizer();
+    // env.reglas = c_rules;
+    // try {
+    //   for (const instr of this.ast[0]) {
+    //     instr.regla5(env);
+    //   }
+    // } catch (e) {
+    //   console.log(e);
+    // }
+    // c_rules = env.reglas;
+    Swal.fire({
+      title: 'Cool!',
+      text: 'Su codigo intermedio se ha optimizado correctamente...',
+      icon: 'success',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: 'rgb(8, 101, 104)',
+      background: 'black'
+    }).then(() => {
+      this.reglas = env.reglas;
+      this.cOutput(env.salida);
+    });
   }
 
 

@@ -1,5 +1,3 @@
-import { Expression } from "../Abstract/Expression";
-import { Arithmetic } from '../Expression/Arithmetic';
 import { _Optimizer } from './Optimizer';
 export class Call {
 
@@ -15,7 +13,7 @@ export class Call {
     regla2(env: _Optimizer) {
         env.salida += this.build();
     }
-     regla3(env: _Optimizer) {
+    regla3(env: _Optimizer) {
         env.salida += this.build();
     }
     regla4(env: _Optimizer) {

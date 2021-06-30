@@ -16,7 +16,7 @@ export class Literal extends Expression {
         return result;
     }
 
-    constructor(private value: any, line: number, column: number, public type: number) {
+    constructor(public value: any, line: number, column: number, public type: number) {
         super(line, column);
     }
     public plot(count: number): string {

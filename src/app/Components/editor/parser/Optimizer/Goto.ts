@@ -7,15 +7,15 @@ export class Goto {
     constructor(public label: string, public line: number, column: number) { }
 
     regla1(env: _Optimizer) {
+        env.salida += env.temp;
         env.label = this.label;
         env.flag = true;
-        env.temp += "goto " + this.label + ";\n";
+        env.temp = "goto " + this.label + ";\n";
     }
 
     regla2(env: _Optimizer) {
         if (env.flag) {
-            let temp = env.temp + " = !" + env.temp + ";\n";
-            temp += "if(" + env.temp + ") goto " + this.label + ";\n";
+            let temp = "if(" + env.temp + ") goto " + this.label + ";\n";
             env.salida += temp;
             env.reglas.push(new Rule(this.line, "Mirilla", "Regla 2", "goto " + this.label + ";\n", temp));
         } else {
