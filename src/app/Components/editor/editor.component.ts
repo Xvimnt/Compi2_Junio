@@ -38,6 +38,7 @@ const xPathASC = require('./parser/Grammar/xPathAsc.js');
 const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 const xQuery = require('./parser/Grammar/xQuery.js');
 const optimizer = require('./parser/Grammar/OptGrammar');
+const xQueryTrad = require('./parser/Grammar/xQueryTrad.js');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
@@ -45,6 +46,7 @@ import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
 import { environment } from 'src/environments/environment';
+import { TraductorXQuery } from './ejecutor/traductorXQuery';
 
 @Component({
   selector: 'editor-root',
@@ -171,24 +173,16 @@ export class EditorComponent {
   }
 
   translate() {
-    // this.ejecutarXmlAsc(); // traducir xml primero
+    this.ejecutarXmlAsc(); // traducir xml primero
     try {
       let salida = '';
-      //let queryTree = xQuery.parse(this.entradaXpath.toString());
-      //let queryEnv = new Environment(null, this.envXML);
-      //console.log('------------TREE------------');
-      //console.log(queryTree);
-      // for (const instr of queryTree) {
-      //   try {
-      //     this.salida += instr.translate(queryEnv);
-      //   } catch (error) {
-      //     console.log(error);
-      //   }
-      // }
       if (errores.length == 0) {
         // Muestra el resultado en la pagina
         salida += '//main\n';
         salida += 'cargaXML();\n';
+        this.ast = xQueryTrad.parse(this.entradaXpath.toString());
+        let traductor = new TraductorXQuery();
+        salida += traductor.traducir(this.ast, this.envXML);
         this.cOutput(salida);
       } else {
         errores.forEach((error) => {
