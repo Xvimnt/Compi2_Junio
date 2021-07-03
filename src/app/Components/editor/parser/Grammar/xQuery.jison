@@ -21,6 +21,7 @@
     const {Function} = require('../Instruction/Function');
     const {Call} = require('../Instruction/Call');
     const {Statement} = require('../Instruction/Statement');
+    const {Return} = require('../Instruction/Return');
 		const {Let} = require('../Instruction/Let');
 		const {Fin} = require('../Instruction/Fin');
 		const {Lexp} = require('../Instruction/Lexp');
@@ -345,14 +346,18 @@ Fin: Valor Opc	{
 							}
 		;
 
-Valor: ID { var val = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1);				
+Valor: ID { 
+			var val = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1);				
 			$$ = val;
 		}
       | NUMBER 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER); }
       | STRING 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
       | STRING2 { $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
       | DECIMAL { $$ = new Literal($1, @1.first_line, @1.first_column, Type.FLOAT); }
-      | VARIABLE{ $$ = new Access($1, @1.first_line, @1.first_column); }
+      | VARIABLE{ 
+		  var val = new NodoXML($1,"Access",@1.first_line+1,@1.first_column+1);				
+		  $$ = val;
+	   }
 	  	| LlamadaFuncion{ $$ = $1; }
 			;
 
@@ -503,13 +508,13 @@ ClauseExpr: ExprLogica 	{ $$ = $1; }
 					;
 
 Return: RETURN ExprLogica {
-			$$ = $2
+			$$ = new Return($2,@1.first_line+1,@1.first_column+1)
 		}
         | RETURN If {
-			$$ = $2
+			$$ = new Return($2,@1.first_line+1,@1.first_column+1)
 		}
         | RETURN HTML{
-			$$ = $2
+			$$ = new Return($2,@1.first_line+1,@1.first_column+1)
 		}
 ;
 

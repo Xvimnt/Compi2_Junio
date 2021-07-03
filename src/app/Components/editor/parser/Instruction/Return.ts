@@ -1,25 +1,29 @@
 import { EjecutorXPath } from "../../ejecutor/ejecutorXPath";
-import { Expression } from "../Abstract/Expression";
 import { Instruction } from "../Abstract/Instruction";
 import { NodoXML } from "../Nodes/NodoXml";
 import { Environment } from "../Symbol/Environment";
 import { _Console } from '../Util/Salida';
 import { Fin } from "./Fin";
 
-export class ForAssign extends Instruction {
+export class Return extends Instruction {
 
-    constructor(private variable1: string, private variable2: string, private clause: Array<Fin>, line: number, column: number) {
+    constructor(private instructions: Array<Fin>, line: number, column: number) {
         super(line, column);
     }
 
     public execute(env: Environment) {
-        
-        if(this.variable2 == null) {
-            let valor = "";
-            this.clause.forEach(element => {
-                valor += "/" + element.getValor() 
+        try {
+            // Hacer la consulta a xpath
+            var Return = new NodoXML("Return", "Return",0,0);
+            this.instructions.forEach(element => {
+                Return.addHijo(element.tree);
             });
-            env.guardar(this.variable1,valor,0)
+            let ejecutor = new EjecutorXPath(env);
+            let result = ejecutor.ejecutar(Return);
+
+            console.log("clause result", result);
+        } catch (e) {
+            console.error(e);
         }
     }
 

@@ -28,6 +28,11 @@ export class Fin extends Instruction {
     super(line, column);
   }
 
+  public getValor() {
+    let valor = this.tree.listaNodos[0].name;
+    return valor;
+  }
+
   public execute(env: Environment) {
     //recorrer arbol
     console.log('---ejecutando Fin---');

@@ -285,7 +285,8 @@ case 36:
 							
 break;
 case 37:
- var val = new NodoXML($$[$0],"Valor",_$[$0].first_line+1,_$[$0].first_column+1);				
+ 
+			var val = new NodoXML($$[$0],"Valor",_$[$0].first_line+1,_$[$0].first_column+1);				
 			this.$ = val;
 		
 break;
@@ -299,7 +300,10 @@ case 41:
  this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column, Type.FLOAT); 
 break;
 case 42:
- this.$ = new Access($$[$0], _$[$0].first_line, _$[$0].first_column); 
+ 
+		  var val = new NodoXML($$[$0],"Access",_$[$0].first_line+1,_$[$0].first_column+1);				
+		  this.$ = val;
+	   
 break;
 case 44: case 45: case 46: case 47: case 48: case 49: case 50: case 52:
  this.$ = new NodoXML($$[$0],"Preservada",_$[$0].first_line+1,_$[$0].first_column+1); 
@@ -463,7 +467,7 @@ case 82:
 break;
 case 83: case 84: case 85:
 
-			this.$ = $$[$0]
+			this.$ = new Return($$[$0],_$[$0-1].first_line+1,_$[$0-1].first_column+1)
 		
 break;
 case 86:
@@ -842,6 +846,7 @@ _handle_error:
     const {Function} = require('../Instruction/Function');
     const {Call} = require('../Instruction/Call');
     const {Statement} = require('../Instruction/Statement');
+    const {Return} = require('../Instruction/Return');
 		const {Let} = require('../Instruction/Let');
 		const {Fin} = require('../Instruction/Fin');
 		const {Lexp} = require('../Instruction/Lexp');

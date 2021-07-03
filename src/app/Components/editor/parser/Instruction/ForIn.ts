@@ -2,6 +2,7 @@ import { Instruction } from "../Abstract/Instruction";
 import { Environment } from "../Symbol/Environment";
 import { _Console } from '../Util/Salida';
 import { ForAssign } from "./ForAssign";
+import { Return } from "./Return";
 
 export class ForIn extends Instruction {
 
@@ -70,16 +71,17 @@ export class ForIn extends Instruction {
 
     }
 
-    constructor(private assignations: Array<ForAssign>, private conditions: Instruction, private instructions, line: number, column: number) {
+    constructor(private assignations: Array<ForAssign>, private conditions: Instruction, private instructions: Return, line: number, column: number) {
         super(line, column);
     }
 
     public execute(env: Environment) {
         // Se realiza la asignacion de la variable respecto a la consulta de xpath
         this.assignations.forEach(element => {
-            const assignation = element.execute(env);
+            element.execute(env);
         });
-       
+        // Se realiza el return
+        const result = this.instructions.execute(env);
 
     }
 }

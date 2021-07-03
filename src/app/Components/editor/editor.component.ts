@@ -44,6 +44,7 @@ import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
+import { environment } from 'src/environments/environment';
 
 @Component({
   selector: 'editor-root',
@@ -306,8 +307,9 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathASC.parse(this.entradaXpath.toString());
+      let newEnv = new Environment(null,this.envXML);
       // se pasa el env xml
-      let ejecutor = new EjecutorXPath(this.envXML);
+      let ejecutor = new EjecutorXPath(newEnv);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
       this.salida = 'TytusX Output: \n\n' + _Console.salida;
@@ -333,8 +335,9 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathDESC.parse(this.entradaXpath.toString());
+      let newEnv = new Environment(null,this.envXML);
       // se pasa el env xml
-      let ejecutor = new EjecutorXPath(this.envXML);
+      let ejecutor = new EjecutorXPath(newEnv);
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
       this.salida = 'TytusX Output: \n\n' + _Console.salida;
