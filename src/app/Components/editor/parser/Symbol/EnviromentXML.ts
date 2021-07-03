@@ -1,6 +1,7 @@
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { XMLSymbol } from '../Symbol/xmlSymbol';
+import { element } from 'protractor';
 
 export class EnvironmentXML {
   public nombre: string;
@@ -50,22 +51,22 @@ export class EnvironmentXML {
     if (this.tablaSimbolos.length > 0) {
       this.tablaSimbolos.forEach((element) => {
         if (element.ambito == ambito) {
-          response = element.getValor();
+          if(element.nombre == "" ) response = element.getValor();
+
         }
       });
-    } else {
-      // Imprimir etiqueta XML Completa
-      this.hijos.forEach((element) => {
-        response +=
-          '<' +
-          element.nombre +
-          '>' +
-          element.getValor(element.nombre) +
-          '</' +
-          element.nombre +
-          '>\n';
-      });
     }
+    // Imprimir etiqueta XML Completa
+    this.hijos.forEach((element) => {
+      response +=
+        '<' +
+        element.nombre +
+        '>' +
+        element.getValor(element.nombre) +
+        '</' +
+        element.nombre +
+        '>\n';
+    });
     return response;
   }
 

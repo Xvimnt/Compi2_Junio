@@ -54,9 +54,13 @@ export class EjecutorXPath {
     // obtener el primer hijo
     let first = this.ejecutar(ast.listaNodos[0]);
     if(first != null && first instanceof Symbol) {
-      let envXmlTemp = this.environmentXML;
-      
-      console.log("first",first);
+      const envXmlTemp = this.environmentXML;
+      // buscar la ruta
+      let queryTree = xPathASC.parse(first.valor);
+      let newEnv = new Environment(this.entorno,this.environmentXML);
+      // se pasa el env xml
+      let ejecutor = new EjecutorXPath(newEnv);
+      ejecutor.ejecutar(queryTree);
       
     }
   }
