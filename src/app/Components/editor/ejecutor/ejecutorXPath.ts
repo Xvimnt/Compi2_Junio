@@ -1,20 +1,22 @@
 import { NodoXML } from '../parser/Nodes/NodoXml';
-import { EnvironmentXPath } from '../parser/Symbol/EnviromentXPath';
 import { EnvironmentXML } from '../parser/Symbol/EnviromentXML';
 import { Error_ } from '../parser/Error';
 import { errores } from '../parser/Errores';
 import { _Console } from '../parser/Util/Salida';
+import { Environment } from '../parser/Symbol/Environment';
+const xPathASC = require('../parser/Grammar/xPathAsc.js');
 
 export class EjecutorXPath {
-  entorno: EnvironmentXPath;
+  entorno: Environment;
   environmentXML: EnvironmentXML;
   nivel: number;
   indexCount: number;
-  constructor(xmlEnvironment: EnvironmentXML) {
-    this.entorno = new EnvironmentXPath('global', null);
+
+  constructor(entorno: Environment) {
+    this.entorno = entorno;
+    this.environmentXML = entorno.xmlEnvironment;
     this.nivel = 0;
     this.indexCount = 1;
-    this.environmentXML = xmlEnvironment; // El entorno de xml donde busca la consulta
   }
 
   ejecutar(ast: NodoXML) {
@@ -91,7 +93,20 @@ export class EjecutorXPath {
   ejecutarFin(ast: NodoXML) {
     let hijos = ast.getHijos();
     if (hijos.length == 0) return this.environmentXML.getValor(this.environmentXML.nombre);
-    let ruta = hijos[0].name;
+    let ruta = "";
+    if(hijos[0].type == "Access") {
+      ruta = this.entorno.getVar(hijos[0].name).valor;
+      let queryTree = xPathASC.parse(ruta);
+      // se pasa el env xml
+      let ejecutor = new EjecutorXPath(this.entorno);
+      ejecutor.ejecutar(queryTree);
+      this.environmentXML = ejecutor.environmentXML;
+      return;
+    }
+    else {
+      console.log("searching",this);
+      ruta = hijos[0].name;
+    }
     // console.log("validando",this.environmentXML,hijos[0]);
     let nodes = this.environmentXML.hijos;
     let find = false;
