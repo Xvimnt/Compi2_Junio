@@ -798,19 +798,19 @@ export class EditorComponent {
 
     // Restantes
    
-    // this.cOutput(env.salida);
-    // this.ast = optimizer.parse(this.salida);
-    // c_rules = env.reglas;
-    // env = new _Optimizer();
-    // env.reglas = c_rules;
-    // try {
-    //   for (const instr of this.ast[1]) {
-    //     instr.optimize(env);
-    //   }
-    // } catch (e) {
-    //   console.log(e);
-    // }
-    // c_rules = env.reglas;
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.optimize(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    c_rules = env.reglas;
 
     Swal.fire({
       title: 'Cool!',

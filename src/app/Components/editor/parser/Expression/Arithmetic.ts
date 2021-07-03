@@ -22,7 +22,7 @@ export class Arithmetic extends Expression {
         return this.left.build() + this.getTypeSign() + this.right.build();
     }
 
-    constructor(private left: Expression, private right: Expression, private type: ArithmeticOption, line: number, column: number) {
+    constructor(public left: Expression, public right: Expression, public type: ArithmeticOption, line: number, column: number) {
         super(line, column);
     }
     
