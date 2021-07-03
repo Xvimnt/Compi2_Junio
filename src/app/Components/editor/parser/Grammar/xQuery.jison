@@ -20,6 +20,9 @@
     const {Function} = require('../Instruction/Function');
     const {Call} = require('../Instruction/Call');
     const {Statement} = require('../Instruction/Statement');
+		const {Let} = require('../Instruction/Let');
+		const {Fin} = require('../Instruction/Fin');
+		const {Lexp} = require('../Instruction/Lexp');
 
     // Extra
     const {Type} = require('../Abstract/Retorno');
@@ -44,17 +47,17 @@ following   ('following')('-sibling')?
 preceding   ('preceding')('-sibling')?
 
 %%
-"<!--"							%{ this.begin("comment1"); %}
-<comment1>"-->"		  	        %{ this.popState(); %}
-<comment1>.				        %{ %}
-<comment1>[ \t\r\n\f]	        %{ %}
+"<!--"											%{ this.begin("comment1"); %}
+<comment1>"-->"		  	    	%{ this.popState(); %}
+<comment1>.				        	%{ %}
+<comment1>[ \t\r\n\f]	    	%{ %}
 
-"(:"							%{ this.begin("comment2"); %}
-<comment2>":)"		  	        %{ this.popState(); %}
-<comment2>.				        %{ %}
-<comment2>[ \t\r\n\f]	        %{ %}
+"(:"												%{ this.begin("comment2"); %}
+<comment2>":)"		  	    	%{ this.popState(); %}
+<comment2>.				        	%{ %}
+<comment2>[ \t\r\n\f]	    	%{ %}
 
-[ \t\n\r\f] 		        %{ /*se ignoran*/ %}
+[ \t\n\r\f] 		        		%{ /*se ignoran*/ %}
 
 {decimal}                   return 'DECIMAL'
 {number}                    return 'NUMBER'
@@ -132,25 +135,25 @@ preceding   ('preceding')('-sibling')?
 
 
 "declare"                   return 'DECLARE'
-"function"                 return 'FUNCTION'
-"local"                       return 'LOCAL'
-"as"                            return 'AS'
-"xs"                            return 'XS'
-"decimal"                  return 'DECIMAL_'
+"function"                 	return 'FUNCTION'
+"local"                     return 'LOCAL'
+"as"                        return 'AS'
+"xs"                        return 'XS'
+"decimal"                  	return 'DECIMAL_'
 "integer"                   return 'INTEGER_'
-"string"                     return 'STRING_'
-"date"                        return 'DATE_'
-"time"                       return 'TIME_'
-"dateTime"               return 'DATETIME_'
-"boolean"                 return 'BOOLEAN_'
-"double"                   return 'DOUBLE_'
-"float"                       return 'FLOAT_'
+"string"                    return 'STRING_'
+"date"                      return 'DATE_'
+"time"                      return 'TIME_'
+"dateTime"               		return 'DATETIME_'
+"boolean"                 	return 'BOOLEAN_'
+"double"                   	return 'DOUBLE_'
+"float"                     return 'FLOAT_'
 
 
 
 ([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	        return 'ID';
-('$')([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*	return 'VARIABLE';
-<<EOF>>		                        return 'EOF'
+('$')([a-zA-Z_])[a-zA-Z0-9_ñÑ.]*		return 'VARIABLE';
+<<EOF>>		                        	return 'EOF'
 
 /lex
 %left 'OR'
@@ -162,323 +165,233 @@ preceding   ('preceding')('-sibling')?
 %left '+' '-'
 %left '*' 'DIV' 'MOD'
 
-
 %start Init
 
 %%
 
-Init : LExpresiones EOF {
-			return $1;
-    }  
-; 
+Init : LExpresiones EOF { return $1; }; 
+// Init : Lexp EOF { return [$1]; }; 
 
-LExpresiones : LExpresiones  Instrucciones {
-			$1.push($2);
-			$$ = $1;
-    }
-    | Instrucciones { 
-				$$ = [$1] 
-			}
-    | HTML 
-	| error {        
-			errores.push(new Error_(@1.first_line, @1.first_column, 'Sintactico','Valor inesperado ' + yytext));
-			return "error";
-		}
-;
+LExpresiones : LExpresiones Instrucciones {
+							$1.push($2);
+							$$ = $1;
+						}
+    				| Instrucciones { $$ = [$1]; } 
+						| error {        
+							errores.push(new Error_(@1.first_line, @1.first_column, 'Sintactico','Valor inesperado ' + yytext));
+							return "error";
+						}
+						;
 
-Instrucciones : For { 
-						$$ = $1; 
-			}
-                     | Return  { 
-						$$ = $1; 
-			}
-                     | Let     { 
-						$$ = $1; 
-			}
-                     | If      { 
-						$$ = $1; 
-			}
-                     | Valor   { 
-						$$ = $1; 
-			}
-                     |Function { 
-						$$ = $1; 
-			}
-                     ;
+Instrucciones : For { $$ = $1; }
+							| Return { $$ = $1; }
+            	| Let { $$ = $1; }
+              | If { $$ = $1; }
+              | Valor { $$ = $1; }
+              | Function { $$ = $1; }
+              ;
 		
 LlamadaFuncion: LOCAL ':' ID '(' LParams ')'{					
-			$$ = new Call($3,$5,@1.first_line+1,@1.first_column+1);
-		}
+								$$ = new Call($3,$5,@1.first_line+1,@1.first_column+1);
+							}
               | LOCAL ':' ID '(' ')'{					
-					$$ = new Call($3,null,@1.first_line+1,@1.first_column+1);
-		};
+								$$ = new Call($3,null,@1.first_line+1,@1.first_column+1);
+							}
+							;
 
 LParams : LParams ',' ExprLogica {	
-			$1.push($3);
-			$$ = $1;
-		}
-		| ExprLogica {		
-			$$ = [$1];
-		};
-
-Exp : DIVSIGN Lexp {					
-			$$ = $2;
-		}
-    | Lexp {			
-			$$ = $1;
-		};
-
-
-Lexp : Lexp ORSIGN DIVSIGN Syntfin	{
-			var lexp = new NodoXML("Lexp","Lexp",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($2,"Lexp",@1.first_line+1,@1.first_column+1);
-			var val2 = new NodoXML($3,"Lexp",@1.first_line+1,@1.first_column+1);
-			lexp.addHijo($1);
-			lexp.addHijo(val1);
-			lexp.addHijo(val2);
-			lexp.addHijo($4);
-			$$ = lexp;
-		}	
-     | Lexp DIVSIGN Syntfin{						
-			var lexp = new NodoXML("Lexp","Lexp",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($2,"Lexp",@1.first_line+1,@1.first_column+1);			
-			lexp.addHijo($1);
-			lexp.addHijo(val1);			
-			lexp.addHijo($3);
-			$$ = lexp;
-		}
-     | Syntfin {
-			$$ = $1;
-		};
-
-
-Syntfin    :  Fin {
+					$1.push($3);
 					$$ = $1;
 				}
-           | '@' Valor Opc{
-					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
-					var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
-					syntfin.addHijo(val1);
-					syntfin.addHijo($2);			
-					syntfin.addHijo($3);										
-					$$ = syntfin;
-				}
-           |  Preservada '::' Fin{
-					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
-					var val1 = new NodoXML($2,"Syntfin",@1.first_line+1,@1.first_column+1);													
-					syntfin.addHijo($1);			
-					syntfin.addHijo(val1);
-					syntfin.addHijo($3);										
-					$$ = syntfin;
-				}
-           | '@' Preservada Opc {
-					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
-					var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
-					syntfin.addHijo(val1);
-					syntfin.addHijo($2);			
-					syntfin.addHijo($3);										
-					$$ = syntfin;
-				}
-	   | '@' '*' {
-	   
-					var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
-					var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
-					var val2 = new NodoXML($2,"Syntfin",@1.first_line+1,@1.first_column+1);								
-					syntfin.addHijo(val1);
-					syntfin.addHijo(val2);					
-					$$ = syntfin;
-				};
+				| ExprLogica { $$ = [$1]; }
+				;
 
+Exp : DIVSIGN Lexp { $$ = $2; }
+    | Lexp { $$ = $1; }
+		;
 
-Fin :  Valor Opc  { 
-			$$ = $1;
+Lexp : Lexp ORSIGN DIVSIGN Syntfin	{
+			var or = new NodoXML($2,"OR",@1.first_line+1,@1.first_column+1);
+			var val2 = new NodoXML($3,"Lexp",@1.first_line+1,@1.first_column+1);
+			val2.addHijo($4);
+			or.addHijo($1);
+			or.addHijo(val2);
+			$$ = new Lexp(or,@1.first_line+1,@1.first_column+1);
+		}	
+		| Lexp DIVSIGN Syntfin{						
+			var lexp = new NodoXML("Lexp","Lexp",@1.first_line+1,@1.first_column+1);
+			var val1 = new NodoXML($2,"Lexp",@1.first_line+1,@1.first_column+1);
+			val1.addHijo($3);			
+			lexp.addHijo($1);
+			lexp.addHijo(val1);			
+			$$ = new Lexp(lexp,@1.first_line+1,@1.first_column+1);
 		}
-	| DIR Opc { 
-	var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Fin",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);		
-			fin.addHijo($2);					
-			$$ = fin;
-		}
-    | TEXT   '('   ')'{
-				var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);									
-			$$ = fin;
-		}
-    | NODE  '('   ')'{		
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);									
-			$$ = fin;
-		}
-    | POSITION '('   ')'{
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);									
-			$$ = fin;
-		}
-    | LAST '('   ')'{
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);									
-			$$ = fin;
-		}
-	
-    | DOC '(' STRING ')' {
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);								
-			var val2 = new NodoXML($3,"Funcion",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);	
-			fin.addHijo(val2);				
-			$$ = fin;
-		}
-    | DATA'(' ExprLogica ')' {
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);																
-			fin.addHijo(val1);	
-			fin.addHijo($3);				
-			$$ = fin;
-		}
-    | UPPERCASE'(' ExprLogica ')'{
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);																
-			fin.addHijo(val1);	
-			fin.addHijo($3);				
-			$$ = fin;
-		}
-    | SUBSTRING '(' ExprLogica ',' ExprLogica ',' ExprLogica ')'{
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Funcion",@1.first_line+1,@1.first_column+1);																
-			fin.addHijo(val1);	
-			fin.addHijo($3);	
-			fin.addHijo($5);	
-			fin.addHijo($7);	
-			$$ = fin;
-		}
-    | Preservada Opc {
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);			
-			fin.addHijo($1);
-			fin.addHijo($2);												
-			$$ = fin;
-		}
-    | '*' Opc {
-			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($1,"Fin",@1.first_line+1,@1.first_column+1);								
-			fin.addHijo(val1);	
-			fin.addHijo($2);				
-			$$ = fin;
-		};
-
-
-    // enum Type {
-    //     NUMBER = 0,
-    //     STRING = 1,
-    //     BOOLEAN = 2,
-    //     NULL = 3,
-    //     ARRAY = 4,
-    //     RESERVADA = 5,
-    //     TEMPLATE = 6,
-    //     STRUCT = 7,
-    //     FUNCION = 8,
-    //     FLOAT = 9
-    // }   
-Valor : ID {
-		$$ = new Access($1, @1.first_line, @1.first_column);
-	  }
-      | NUMBER {
-          $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER);
-      }
-      | STRING {
-          $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING);
-      }
-      | STRING2 {
-          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.STRING);
-      }
-      | DECIMAL {
-          $$ = new Literal($1, @1.first_line, @1.first_column,  Type.FLOAT);
-      }
-      | VARIABLE{
-          $$ = new Access($1, @1.first_line, @1.first_column);
-      }
-	  | LlamadaFuncion{
-          $$ = $1;
-      };
-
-
-Preservada:  CHILD{
-						var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | DESCENDANT{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | ANCESTOR{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | PRECEDING{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | FOLLOWING{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-	      | NAMESPACE{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | SELF{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | PARENT{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					}
-          | ATTR{
-		  				var val = new NodoXML($1,"Axes",@1.first_line+1,@1.first_column+1);				
-						$$ = val;
-					};
-
-
-Opc : '['ExprLogica ']' { 
-				var predicado = new NodoXML("Opc","Opc",@1.first_line+1,@1.first_column+1);								
-				predicado.addHijo($2);	
-				$$ = predicado;
-		} 
-        | {
-				var opc = new NodoXML("Opc","Opc",@1.first_line+1,@1.first_column+1);									
-				$$ = opc;
-		};
-
-
-
-If: IF '(' ExprLogica ')' THEN stmnt ELSE  stmnt{
-				$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1);		
-};
-
-stmnt: '('')' {
-			$$ = null;
-		}
-        | '('LExpresiones')'{
-			$$ = $1;
-		}
-        | Instrucciones{
-				$$ = $1;
-		}
+		| Syntfin { $$ = $1; }
 		;
 
 
-For: FOR  LFor forstmnt LForWhere{
-				var for_ = new NodoXML("For","For",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($2);					
-				for_.addHijo($3);
-				for_.addHijo($4);
-				$$ = for_;
+Syntfin: Fin { $$ = $1; }
+			| '@' Valor Opc	{
+												var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
+												var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
+												syntfin.addHijo(val1);
+												syntfin.addHijo($2);			
+												syntfin.addHijo($3);										
+												$$ = syntfin;
+												//ejecutar(signo,izq,der)
+											}
+			| Preservada '::' Fin	{
+															var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
+															var val1 = new NodoXML($2,"Syntfin",@1.first_line+1,@1.first_column+1);													
+															syntfin.addHijo($1);			
+															syntfin.addHijo(val1);
+															syntfin.addHijo($3);										
+															$$ = syntfin;
+																//ejecutar(signo,izq,der)
+														}
+			| '@' Preservada Opc 	{
+															var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
+															var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
+															syntfin.addHijo(val1);
+															syntfin.addHijo($2);			
+															syntfin.addHijo($3);										
+															$$ = syntfin;
+																//ejecutar(signo,izq,der)
+														}
+			| '@' '*' {
+									var syntfin = new NodoXML("Syntfin","Syntfin",@1.first_line+1,@1.first_column+1);
+									var val1 = new NodoXML($1,"Syntfin",@1.first_line+1,@1.first_column+1);								
+									var val2 = new NodoXML($2,"Syntfin",@1.first_line+1,@1.first_column+1);								
+									syntfin.addHijo(val1);
+									syntfin.addHijo(val2);					
+									$$ = syntfin;
+										//ejecutar(signo,izq,der)
+								}
+			;
+
+Fin: Valor Opc	{ 
+			var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+			fin.addHijo($1);
+			fin.addHijo($2);
+			$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+ 		}
+		| DIR Opc { 
+								var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+								var val1 = new NodoXML($1,"DIR",@1.first_line+1,@1.first_column+1);								
+								fin.addHijo(val1);		
+								fin.addHijo($2);					
+								$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+							}
+    | TEXT '(' ')' {
+											var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+											var val1 = new NodoXML($1,"TEXT",@1.first_line+1,@1.first_column+1);								
+											fin.addHijo(val1);									
+											$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+										}
+    | NODE  '(' ')' {		
+											var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+											var val1 = new NodoXML($1,"NODE",@1.first_line+1,@1.first_column+1);								
+											fin.addHijo(val1);									
+											$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+										}
+    | POSITION '(' ')' {
+													var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+													var val1 = new NodoXML($1,"POSITION",@1.first_line+1,@1.first_column+1);								
+													fin.addHijo(val1);									
+													$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+												}
+    | LAST '(' ')' 	{
+											var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+											var val1 = new NodoXML($1,"LAST",@1.first_line+1,@1.first_column+1);								
+											fin.addHijo(val1);									
+											$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+										}
+    | DOC '(' STRING ')' 	{	
+														var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+														var val1 = new NodoXML($1,"DOC",@1.first_line+1,@1.first_column+1);								
+														var val2 = new NodoXML($3,"STRING",@1.first_line+1,@1.first_column+1);								
+														fin.addHijo(val1);	
+														fin.addHijo(val2);				
+														$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+													}
+    | DATA'(' ExprLogica ')' 	{
+																var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+																var val1 = new NodoXML($1,"DATA",@1.first_line+1,@1.first_column+1);																
+																fin.addHijo(val1);	
+																fin.addHijo($3);				
+																$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+															}
+    | UPPERCASE '(' ExprLogica ')'	{
+																		var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+																		var val1 = new NodoXML($1,"UPPERCASE",@1.first_line+1,@1.first_column+1);																
+																		fin.addHijo(val1);	
+																		fin.addHijo($3);				
+																		$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+																	}
+    | SUBSTRING '(' ExprLogica ',' ExprLogica ',' ExprLogica ')'	{
+																																		var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+																																		var val1 = new NodoXML($1,"SUBSTRING",@1.first_line+1,@1.first_column+1);																
+																																		fin.addHijo(val1);	
+																																		fin.addHijo($3);	
+																																		fin.addHijo($5);	
+																																		fin.addHijo($7);	
+																																		$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+																																	}
+    | Preservada Opc 	{
+												var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);			
+												fin.addHijo($1);
+												fin.addHijo($2);												
+												$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+											}
+    | '*' Opc {
+								var fin = new NodoXML("Fin","Fin",@1.first_line+1,@1.first_column+1);
+								var val1 = new NodoXML($1,"*",@1.first_line+1,@1.first_column+1);								
+								fin.addHijo(val1);	
+								fin.addHijo($2);				
+								$$ = new Fin(fin,@1.first_line+1,@1.first_column+1);
+							}
+		;
+
+Valor: ID { $$ = new Access($1, @1.first_line, @1.first_column); }
+      | NUMBER 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER); }
+      | STRING 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
+      | STRING2 { $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
+      | DECIMAL { $$ = new Literal($1, @1.first_line, @1.first_column, Type.FLOAT); }
+      | VARIABLE{ $$ = new Access($1, @1.first_line, @1.first_column); }
+	  	| LlamadaFuncion{ $$ = $1; }
+			;
+
+
+Preservada: CHILD	{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+          | DESCENDANT{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+          | ANCESTOR{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+          | PRECEDING	{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+          | FOLLOWING	{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+	      	| NAMESPACE	{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }		
+          | SELF { $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }	
+          | PARENT { $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1);	}
+          | ATTR { $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
+					;
+
+Opc : '[' ExprLogica ']' 	{ $$ = $2; } 
+		| { $$ = null; };
+
+If: IF '(' ExprLogica ')' THEN stmnt ELSE stmnt { 
+			$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1); 
 		};
+
+stmnt: '('')' { $$ = null; }
+			| '(' LExpresiones ')' { $$ = $1; }
+			| Instrucciones	{ $$ = $1; }
+			;
+
+For: FOR  LFor forstmnt LForWhere	{
+																		var for_ = new NodoXML("For","For",@1.first_line+1,@1.first_column+1);								
+																		for_.addHijo($2);					
+																		for_.addHijo($3);
+																		for_.addHijo($4);
+																		$$ = for_;
+																	};
 
 LFor:LFor ','  VARIABLE IN ClauseExpr {
 				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
@@ -488,8 +401,8 @@ LFor:LFor ','  VARIABLE IN ClauseExpr {
 				for_.addHijo(val1);
 				for_.addHijo($5);
 				$$ = for_;
-		}
-       | LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr{
+			}
+			| LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr{
 				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
 				var val1 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);	
 				var val2 = new NodoXML($4,"AT",@1.first_line+1,@1.first_column+1);			
@@ -502,18 +415,18 @@ LFor:LFor ','  VARIABLE IN ClauseExpr {
 				for_.addHijo(val4);
 				for_.addHijo($7);
 				$$ = for_;
-		}
-       | VARIABLE IN ClauseExpr {
-			var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
+			}
+			| VARIABLE IN ClauseExpr {
+				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
 				var val1 = new NodoXML($1,"Variable",@1.first_line+1,@1.first_column+1);			
 				var val2 = new NodoXML($2,"IN",@1.first_line+1,@1.first_column+1);			
 				for_.addHijo($1);					
 				for_.addHijo(val1);
 				for_.addHijo($3);
 				$$ = for_;
-}
-       | VARIABLE AT VARIABLE IN  ClauseExpr{
-			var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
+			}
+			| VARIABLE AT VARIABLE IN  ClauseExpr{
+				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
 				var val1 = new NodoXML($1,"Variable",@1.first_line+1,@1.first_column+1);	
 				var val2 = new NodoXML($2,"AT",@1.first_line+1,@1.first_column+1);			
 				var val3 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);					
@@ -527,25 +440,27 @@ LFor:LFor ','  VARIABLE IN ClauseExpr {
 	   };
 
 forstmnt : LForExpresiones{
-			var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);
-				$$ = for_;
-	   }
-                | {var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);												
-				$$ = for_;};
+						var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+						for_.addHijo($1);
+						$$ = for_;
+	   			}
+					| {
+							var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);												
+							$$ = for_;
+						};
 
 LForExpresiones: LForExpresiones For_Let_Opt{
-		var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+				var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
 				for_.addHijo($1);
 				for_.addHijo($2);
 				$$ = for_;
-}
-                            | For_Let_Opt {
-							
-								var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);				
-				$$ = for_;
-							};
+			}
+			| For_Let_Opt {
+					var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+					for_.addHijo($1);				
+					$$ = for_;
+			}
+			;
 
 For_Let_Opt: Let {
 			var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
@@ -595,12 +510,8 @@ LForReturn: Return {	var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.f
 };
 
 Let: LET VARIABLE ':=' ClauseExpr  { 
-				var let_ = new NodoXML("Let","Let",@1.first_line+1,@1.first_column+1);			
-				var val1 = new NodoXML($2,"Variable",@1.first_line+1,@1.first_column+1);	
-				let_.addHijo(val1);
-				let_.addHijo($4);
-				$$ = let_;
-};
+				$$ = new Let($2, $4, @1.first_line, @1.first_column);
+			};
 
 Where : WHERE ExprLogica  { 
 				var where_ = new NodoXML("Where","Where",@1.first_line+1,@1.first_column+1);							
@@ -619,33 +530,31 @@ LExp : LExp ',' Exp {
 				lexp.addHijo($1);
 				lexp.addHijo($3);
 				$$ = lexp;
-}
-         | Exp {
+			}
+			| Exp {
 				var lexp = new NodoXML("LExp","LExp",@1.first_line+1,@1.first_column+1);							
 				lexp.addHijo($1);
 				$$ = lexp;
 };
 
-ClauseExpr: ExprLogica {
-				var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);							
-				lexp.addHijo($1);
-				$$ = lexp;
-}
-                    | '(' ExprLogica TO ExprLogica ')'
-					{
-				var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
-				var val1 = new NodoXML($3,"TO",@1.first_line+1,@1.first_column+1);				
-				lexp.addHijo($2);
-				lexp.addHijo(val1);
-				lexp.addHijo($4);
-				$$ = lexp;
-}
-                    | '(' ExprLogica ',' ExprLogica ')'{
-				var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);				
-				lexp.addHijo($2);
-				lexp.addHijo($4);
-				$$ = lexp;
-};
+ClauseExpr: ExprLogica 	{ $$ = $1; }
+					| '(' ExprLogica TO ExprLogica ')'{
+																							var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
+																							var val1 = new NodoXML($3,"TO",@1.first_line+1,@1.first_column+1);				
+																							lexp.addHijo($2);
+																							lexp.addHijo(val1);
+																							lexp.addHijo($4);
+																							$$ = lexp;
+																						}
+					| '(' ExprLogica ',' ExprLogica')'	{ 
+						var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
+						var val1 = new NodoXML($3,",",@1.first_line+1,@1.first_column+1);				
+						lexp.addHijo($2);
+						lexp.addHijo(val1);
+						lexp.addHijo($4);
+						$$ = lexp; 
+					}
+					;
 
 Return: RETURN ExprLogica{
 				var lexp = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1);				
@@ -730,31 +639,32 @@ ExprLogica
          | ExprLogica 'GE' ExprLogica  {
             $$ = new Relational($1, $3,RelationalOption.GREATEROREQUAL ,@1.first_line, @1.first_column);
          }
-         | Expr {$$ = $1};
+         | Expr { $$ = $1 };
 
 Expr : Expr '+' Expr {
         $$ = new Arithmetic($1, $3, ArithmeticOption.PLUS, @1.first_line,@1.first_column);
-    }  
-     | Expr '-' Expr {
-        $$ = new Arithmetic($1, $3, ArithmeticOption.MINUS, @1.first_line,@1.first_column);
-    }
-     | Expr '*' Expr { 
+    	}  
+		| Expr '-' Expr {
+				$$ = new Arithmetic($1, $3, ArithmeticOption.MINUS, @1.first_line,@1.first_column);
+    	}
+		| Expr '*' Expr { 
         $$ = new Arithmetic($1, $3, ArithmeticOption.TIMES, @1.first_line,@1.first_column);
-    }  
-     | Expr DIV Expr {
+    	}  
+		| Expr DIV Expr {
         $$ = new Arithmetic($1, $3, ArithmeticOption.DIV, @1.first_line,@1.first_column);
-    }
-     | Expr MOD Expr {
+    	}
+		| Expr MOD Expr {
         $$ = new Arithmetic($1, $3, ArithmeticOption.MOD, @1.first_line,@1.first_column);
-    }
-     | Expr OR Expr {
+    	}
+		| Expr OR Expr {
         $$ = new Logic($1, $3,LogicOption.OR ,@1.first_line, @1.first_column);
-    }
-     | Expr AND Expr {
+    	}
+		| Expr AND Expr {
         $$ = new Logic($1, $3,LogicOption.AND ,@1.first_line, @1.first_column);
-    }
-     |'(' ExprLogica ')' { $$ = $2 }
-	 | Exp { $$ = $1 };
+    	}
+		|'(' ExprLogica ')' { $$ = $2 }
+		| Exp { $$ = $1 }
+		;
 
 HTML: HTML HTMLSTRING
     | HTMLSTRING
