@@ -150,6 +150,14 @@ export class EditorComponent {
     var s = (_Console.stackPointer = 0);
 
     table.forEach((element) => {
+      console.log(element);
+      if (element.tipo === 0) {
+        //atributo
+        result += `// atributo (etiqueta: ${element.ambito}): ${element.nombre} = "${element.valor}"\n`;
+      } else {
+        //valor
+        result += `// contenido (etiqueta: ${element.ambito}): ${element.valor}\n`;
+      }
       result += `t${c} = hxml;\n`;
       c++;
       for (var x = 0; x < element.valor.length; x++) {
