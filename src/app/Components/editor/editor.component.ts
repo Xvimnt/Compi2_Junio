@@ -77,7 +77,7 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) { }
+  constructor(private dotService: DotService) {}
   ngOnInit() {
     this.clean();
   }
@@ -138,6 +138,37 @@ export class EditorComponent {
     this.salida += '\nreturn;\n';
     this.salida += '}\n\n';
   }
+
+  translateXML() {
+    let table = this.envXML.getTablaSimbolos();
+    let result = 'void cargaXML(){\n';
+    result += 'pxml = 0;\nhxml = 0;\n\n';
+    var c = (_Console.count = 0);
+    var h = (_Console.heapPointer = 0);
+    var s = (_Console.stackPointer = 0);
+
+    table.forEach((element) => {
+      result += `t${c} = hxml;\n`;
+      c++;
+      for (var x = 0; x < element.valor.length; x++) {
+        var char = element.valor.charCodeAt(x);
+        result += `HeapXML[(int)hxml] = ${char};\n`;
+        result += `hxml = hxml + 1;\n`;
+        h++;
+      }
+      result += `HeapXML[(int)hxml] = -1;\n`;
+      result += `hxml = hxml + 1;\n`;
+      result += `StackXML[(int)${s}] = t${c - 1};\n\n`;
+      element.posicion = s;
+      s++;
+    });
+    result += '}\n\n';
+    _Console.salida = result;
+    _Console.count = c;
+    _Console.heapPointer = h;
+    _Console.stackPointer = s;
+  }
+
   translate() {
     // this.ejecutarXmlAsc(); // traducir xml primero
     try {
@@ -178,39 +209,6 @@ export class EditorComponent {
     this.flag = false;
   }
 
-  translateXML() {
-    let table = this.envXML.getTablaSimbolos();
-    let result = 'void cargaXML(){\n';
-    result += 'pxml = 0;\nhxml = 0;\n\n';
-    var c = (_Console.count = 0);
-    var h = (_Console.heapPointer = 0);
-    var s = (_Console.stackPointer = 0);
-
-    table.forEach((element) => {
-      // console.log(element.valor);
-      // console.log(element.posicion);
-      result += `t${c} = hxml;\n`;
-      c++;
-
-      for (var x = 0; x < element.valor.length; x++) {
-        var char = element.valor.charCodeAt(x);
-        result += `HeapXML[(int)hxml] = ${char};\n`;
-        result += `hxml = hxml + 1;\n`;
-        h++;
-      }
-      result += `HeapXML[(int)hxml] = -1;\n`;
-      result += `hxml = hxml + 1;\n`;
-      result += `StackXML[(int)${s}] = t${c - 1};\n\n`;
-      element.posicion = s;
-      s++;
-    });
-    result += '}\n\n';
-    _Console.salida = result;
-    _Console.count = c;
-    _Console.heapPointer = h;
-    _Console.stackPointer = s;
-  }
-
   ejecutarXQuery() {
     this.ejecutarXmlAsc();
     this.clean();
@@ -222,7 +220,10 @@ export class EditorComponent {
       // Saving functions in table
       for (const instr of queryTree) {
         try {
-          if (instr instanceof Function) instr.execute(queryEnv);
+          if (instr instanceof Function) {
+            console.log('instace of function');
+            instr.execute(queryEnv);
+          }
         } catch (error) {
           console.log(error);
         }
@@ -231,6 +232,7 @@ export class EditorComponent {
       for (const instr of queryTree) {
         if (instr instanceof Function) continue;
         try {
+          console.log('instace of instruction');
           instr.execute(queryEnv);
         } catch (error) {
           console.log(error);
@@ -238,7 +240,9 @@ export class EditorComponent {
       }
       if (errores.length == 0) {
         // Muestra el resultado en la pagina
-        this.salida += _Console.salida;
+        // this.salida += _Console.salida;
+        console.log(_Console.symbols);
+        console.log(_Console.salida);
       } else {
         errores.forEach((error) => {
           this.salida +=
@@ -263,13 +267,10 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXMLASC.parse(this.entradaXml.toString());
-      // console.log(this.ast);
-      // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast, this.envXML);
       this.envXML.printEntornos();
-      // console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -280,13 +281,10 @@ export class EditorComponent {
     this.clean();
     try {
       this.ast = parserXMLDESC.parse(this.entradaXml.toString());
-      // console.log(this.ast);
-      // console.log('ejecutando');
       this.envXML = new EnvironmentXML('global');
       let ejecutor = new EjecutorXML();
       ejecutor.ejecutar(this.ast, this.envXML);
       this.envXML.printEntornos();
-      // console.log(this.envXML.getTablaSimbolos());
     } catch (e) {
       console.error(e.message);
     }
@@ -313,9 +311,6 @@ export class EditorComponent {
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
       this.salida = 'TytusX Output: \n\n' + _Console.salida;
-      // console.log("--- Imprimiendo Entorno de Consultas ---");
-      // console.log(envXPath);
-      // console.log("------");
       this.ast = queryTree;
     } catch (e) {
       console.error(e);
@@ -343,9 +338,6 @@ export class EditorComponent {
       ejecutor.ejecutar(queryTree);
       let envXPath = ejecutor.getEntorno();
       this.salida = 'TytusX Output: \n\n' + _Console.salida;
-      // console.log("--- Imprimiendo Entorno de Consultas ---");
-      // console.log(envXPath);
-      // console.log("------");
       this.ast = queryTree;
     } catch (e) {
       console.error(e);
@@ -552,28 +544,26 @@ export class EditorComponent {
         icon: 'error',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else if (this.reglas.length == 0) {
+        background: 'black',
+      });
+    } else if (this.reglas.length == 0) {
       Swal.fire({
         title: 'Cool!',
         text: 'No se encontraron optimizaciones en su codigo',
         icon: 'success',
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
-        background: 'black'
-      })
-    }
-    else {
+        background: 'black',
+      });
+    } else {
       Swal.fire({
         title: 'Tabla de Reglas',
         html: new Table().rules(this.reglas),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',
-        width: 800
-      })
+        width: 800,
+      });
     }
   }
 
@@ -735,20 +725,20 @@ export class EditorComponent {
       console.log(e);
     }
 
-     // Regla 3
+    // Regla 3
 
-     this.cOutput(env.salida);
-     this.ast = optimizer.parse(this.salida);
-     let c_rules = env.reglas;
-     env = new _Optimizer();
-     env.reglas = c_rules;
-     try {
-       for (const instr of this.ast[1]) {
-         instr.regla3(env);
-       }
-     } catch (e) {
-       console.log(e);
-     }
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    let c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla3(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
 
     // Regla 4
     this.cOutput(env.salida);
@@ -778,9 +768,9 @@ export class EditorComponent {
     } catch (e) {
       console.log(e);
     }
-   
+
     // Regla 5
-   
+
     this.cOutput(env.salida);
     this.ast = optimizer.parse(this.salida);
     c_rules = env.reglas;
@@ -795,9 +785,8 @@ export class EditorComponent {
     }
     c_rules = env.reglas;
 
-
     // Restantes
-   
+
     this.cOutput(env.salida);
     this.ast = optimizer.parse(this.salida);
     c_rules = env.reglas;
@@ -818,71 +807,10 @@ export class EditorComponent {
       icon: 'success',
       confirmButtonText: 'Entendido',
       confirmButtonColor: 'rgb(8, 101, 104)',
-      background: 'black'
+      background: 'black',
     }).then(() => {
       this.reglas = env.reglas;
       this.cOutput(env.salida);
     });
-  }
-
-
-  ejecutar() {
-    // this.clean();
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parserXML.parse(this.entradaXml.toString());
-    //   console.log(this.ast);
-    // } catch (e) {
-    //   console.error(e.message);
-    // }
-    // this.flag = false;
-    // try {
-    //   this.ast = parser.parse(this.entradaXml.toString());
-    //   this.env = new Environment(null);
-    //   for (const instr of this.ast) {
-    //     try {
-    //       if (instr instanceof Function) instr.execute(this.env);
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   for (const instr of this.ast) {
-    //     if (instr instanceof Function || isString(instr)) continue;
-    //     try {
-    //       instr.execute(this.env);
-    //       // TODO validar return break continue fuera de ciclos
-    //     } catch (error) {
-    //       console.log(error);
-    //     }
-    //   }
-    //   if (errores.length == 0) {
-    //     // Muestra el resultado en la pagina
-    //     this.salida += _Console.salida;
-    //   } else {
-    //     if (errores.length != 0) {
-    //       errores.forEach((error) => {
-    //         this.salida +=
-    //           'Error ' +
-    //           error.getTipo() +
-    //           ' (linea: ' +
-    //           error.getLinea() +
-    //           ', columna: ' +
-    //           error.getColumna() +
-    //           '): ' +
-    //           error.getDescripcion() +
-    //           '.  \n';
-    //       });
-    //     }
-    //   }
-    // } catch (error) {
-    //   console.log(error);
-    // }
-    // this.flag = false;
   }
 }
