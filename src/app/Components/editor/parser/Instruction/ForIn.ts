@@ -4,6 +4,7 @@ import { _Console } from '../Util/Salida';
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { Symbol } from '../Symbol/Symbol';
+import { ForAssign } from "./ForAssign";
 
 export class ForIn extends Instruction {
 
@@ -72,7 +73,7 @@ export class ForIn extends Instruction {
 
     }
 
-    constructor(private id: string, private code: Instruction, line: number, column: number) {
+    constructor(private assignation: ForAssign, private code: Instruction, private conditions, line: number, column: number) {
         super(line, column);
     }
 

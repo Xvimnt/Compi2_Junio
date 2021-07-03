@@ -17,6 +17,7 @@
     // Instrucciones
     const {If} = require('../Instruction/If');
     const {ForIn} = require('../Instruction/ForIn');
+    const {ForAssign} = require('../Instruction/ForAssign');
     const {Function} = require('../Instruction/Function');
     const {Call} = require('../Instruction/Call');
     const {Statement} = require('../Instruction/Statement');
@@ -385,128 +386,60 @@ stmnt: '('')' { $$ = null; }
 			| Instrucciones	{ $$ = $1; }
 			;
 
-For: FOR  LFor forstmnt LForWhere	{
-																		var for_ = new NodoXML("For","For",@1.first_line+1,@1.first_column+1);								
-																		for_.addHijo($2);					
-																		for_.addHijo($3);
-																		for_.addHijo($4);
-																		$$ = for_;
-																	};
-
-If: IF '(' ExprLogica ')' THEN stmnt ELSE  stmnt{
-				$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1);		
+For: FOR  LFor forstmnt LForWhere{
+	$$ = new ForIn($2, $3, $4, @1.first_line+1,@1.first_column+1);
 };
 
-stmnt: '('')' {
-			$$ = null;
-		}
-        | '('LExpresiones')'{
-			$$ = $1;
-		}
-        | Instrucciones{
-				$$ = $1;
-		}
-		;
-
-
-For: FOR  LFor forstmnt LForWhere{
-				$$ = new ForIn($1,$2,$3,@1.first_line+1,@1.first_column+1);
-		};
-
 LFor:LFor ','  VARIABLE IN ClauseExpr {
-				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
-				var val1 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);			
-				var val2 = new NodoXML($4,"IN",@1.first_line+1,@1.first_column+1);			
-				for_.addHijo($1);					
-				for_.addHijo(val1);
-				for_.addHijo($5);
-				$$ = for_;
-			}
-			| LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr{
-				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
-				var val1 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);	
-				var val2 = new NodoXML($4,"AT",@1.first_line+1,@1.first_column+1);			
-				var val3 = new NodoXML($5,"Variable",@1.first_line+1,@1.first_column+1);					
-				var val4 = new NodoXML($6,"IN",@1.first_line+1,@1.first_column+1);	
-				for_.addHijo($1);					
-				for_.addHijo(val1);
-				for_.addHijo(val2);
-				for_.addHijo(val3);
-				for_.addHijo(val4);
-				for_.addHijo($7);
-				$$ = for_;
-			}
-			| VARIABLE IN ClauseExpr {
-				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
-				var val1 = new NodoXML($1,"Variable",@1.first_line+1,@1.first_column+1);			
-				var val2 = new NodoXML($2,"IN",@1.first_line+1,@1.first_column+1);			
-				for_.addHijo($1);					
-				for_.addHijo(val1);
-				for_.addHijo($3);
-				$$ = for_;
-			}
-			| VARIABLE AT VARIABLE IN  ClauseExpr{
-				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
-				var val1 = new NodoXML($1,"Variable",@1.first_line+1,@1.first_column+1);	
-				var val2 = new NodoXML($2,"AT",@1.first_line+1,@1.first_column+1);			
-				var val3 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);					
-				var val4 = new NodoXML($4,"IN",@1.first_line+1,@1.first_column+1);									
-				for_.addHijo(val1);
-				for_.addHijo(val2);
-				for_.addHijo(val3);
-				for_.addHijo(val4);
-				for_.addHijo($5);
-				$$ = for_;
-	   };
+		$1.push( new ForAssign($3, null, $5, @1.first_line+1, @1.first_column+1) )
+		$$ = $1;
+	}
+	| LFor ',' VARIABLE AT VARIABLE IN  ClauseExpr{
+		$1.push( new ForAssign($3, $5, $7, @1.first_line+1, @1.first_column+1) )
+		$$ = $1;
+	}
+	| VARIABLE IN ClauseExpr {
+		$$ = [new ForAssign($1, null, $3, @1.first_line+1, @1.first_column+1)]
+	}
+	| VARIABLE AT VARIABLE IN  ClauseExpr{
+		$$ = [new ForAssign($1, $3, $5, @1.first_line+1, @1.first_column+1)]
+	};
 
-forstmnt : LForExpresiones{
-						var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-						for_.addHijo($1);
-						$$ = for_;
-	   			}
-					| {
-							var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);												
-							$$ = for_;
-						};
+forstmnt : LForExpresiones {
+		$$ = $1
+	}
+	| {
+		$$ = null
+	};
 
-LForExpresiones: LForExpresiones For_Let_Opt{
-				var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);
-				for_.addHijo($2);
-				$$ = for_;
-			}
-			| For_Let_Opt {
-					var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-					for_.addHijo($1);				
-					$$ = for_;
-			}
-			;
+LForExpresiones: LForExpresiones For_Let_Opt {
+		$1.push($2);
+		$$ = $1
+	}
+	| For_Let_Opt {
+		$$ = [$1]
+	}
+;
 
 For_Let_Opt: Let {
-			var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);				
-				$$ = for_;
-}
-                      | For
-					  {
-							var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);				
-				$$ = for_;
-}
-						
-					  }
-					  ;
+		$$ = $1
+	}
+    | For
+	{
+		$$ = $1
+	}
+;
 	   
-LForWhere:   Where LForOrderby { 
-				var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);
-				for_.addHijo($2);
-				$$ = for_;
+LForWhere: Where  LForOrderby { 
+	var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+	for_.addHijo($1);
+	for_.addHijo($2);
+	$$ = for_;
 }
-                     |LForOrderby{
-							var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-							for_.addHijo($1);				
-							$$ = for_;
+	|LForOrderby {
+		var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+		for_.addHijo($1);				
+		$$ = for_;
 }
 					 
 					 ;
@@ -559,13 +492,13 @@ LExp : LExp ',' Exp {
 
 ClauseExpr: ExprLogica 	{ $$ = $1; }
 					| '(' ExprLogica TO ExprLogica ')'{
-																							var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
-																							var val1 = new NodoXML($3,"TO",@1.first_line+1,@1.first_column+1);				
-																							lexp.addHijo($2);
-																							lexp.addHijo(val1);
-																							lexp.addHijo($4);
-																							$$ = lexp;
-																						}
+						var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
+						var val1 = new NodoXML($3,"TO",@1.first_line+1,@1.first_column+1);				
+						lexp.addHijo($2);
+						lexp.addHijo(val1);
+						lexp.addHijo($4);
+						$$ = lexp;
+					}
 					| '(' ExprLogica ',' ExprLogica')'	{ 
 						var lexp = new NodoXML("ClauseExpr","ClauseExpr",@1.first_line+1,@1.first_column+1);	
 						var val1 = new NodoXML($3,",",@1.first_line+1,@1.first_column+1);				
