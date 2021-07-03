@@ -4,6 +4,7 @@ import { Environment } from "../Symbol/Environment";
 import { Error_ } from "../Error";
 import { errores } from '../Errores';
 import { _Console } from '../Util/Salida';
+import { _Optimizer } from "../Optimizer/Optimizer";
 
 export enum RelationalOption {
     EQUAL,
@@ -20,6 +21,13 @@ export class Relational extends Expression {
         return this.left.build() + this.getTypeSign() + this.right.build();
     }
 
+    public build_opossite(): String {
+        return this.left.build() + this.get_oposite_type() + this.right.build();
+    }
+    
+    optimize(env: _Optimizer) {
+        env.salida += this.build();
+    }
     public translate(environment: Environment): String {
         let result = this.left.translate(environment);
         let leftT = _Console.count - 1;
@@ -29,6 +37,26 @@ export class Relational extends Expression {
         _Console.count++;
         return result;
     }
+
+    private get_oposite_type() {
+        switch (this.type) {
+            case RelationalOption.EQUAL:
+                return " != ";
+            case RelationalOption.NOTEQUAL:
+                return " == ";
+            case RelationalOption.LESS:
+                return " >= ";
+            case RelationalOption.LESSOREQUAL:
+                return " > ";
+            case RelationalOption.GREATER:
+                return " <= ";
+            case RelationalOption.GREATEROREQUAL:
+                return " < ";
+            default:
+                return "Error";
+        }
+    }
+    
     private getTypeSign() {
         switch (this.type) {
             case RelationalOption.EQUAL:
@@ -47,6 +75,7 @@ export class Relational extends Expression {
                 return "Error";
         }
     }
+
     private getTypeName() {
         switch (this.type) {
             case RelationalOption.EQUAL:
@@ -77,7 +106,7 @@ export class Relational extends Expression {
         return result;
     }
 
-    constructor(private left: Expression, private right: Expression, private type: RelationalOption, line: number, column: number) {
+    constructor(public left: Expression, public right: Expression, public type: RelationalOption, line: number, column: number) {
         super(line, column);
     }
 

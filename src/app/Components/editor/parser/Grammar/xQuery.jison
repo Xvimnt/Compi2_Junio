@@ -393,6 +393,26 @@ For: FOR  LFor forstmnt LForWhere	{
 																		$$ = for_;
 																	};
 
+If: IF '(' ExprLogica ')' THEN stmnt ELSE  stmnt{
+				$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1);		
+};
+
+stmnt: '('')' {
+			$$ = null;
+		}
+        | '('LExpresiones')'{
+			$$ = $1;
+		}
+        | Instrucciones{
+				$$ = $1;
+		}
+		;
+
+
+For: FOR  LFor forstmnt LForWhere{
+				$$ = new ForIn($1,$2,$3,@1.first_line+1,@1.first_column+1);
+		};
+
 LFor:LFor ','  VARIABLE IN ClauseExpr {
 				var for_ = new NodoXML("ForExpr","ForExpr",@1.first_line+1,@1.first_column+1);								
 				var val1 = new NodoXML($3,"Variable",@1.first_line+1,@1.first_column+1);			
