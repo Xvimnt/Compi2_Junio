@@ -37,10 +37,13 @@ const parserXMLDESC = require('./parser/Grammar/XmlGrammarDESC.js');
 const xPathASC = require('./parser/Grammar/xPathAsc.js');
 const xPathDESC = require('./parser/Grammar/xPathDesc.js');
 const xQuery = require('./parser/Grammar/xQuery.js');
+const optimizer = require('./parser/Grammar/OptGrammar');
 
 import { EnvironmentXML } from './parser/Symbol/EnviromentXML';
 import { EjecutorXML } from './ejecutor/ejecutorXML';
 import { EjecutorXPath } from './ejecutor/ejecutorXPath';
+import { _Optimizer } from './parser/Optimizer/Optimizer';
+import { Rule } from './parser/Optimizer/Rule';
 
 @Component({
   selector: 'editor-root',
@@ -58,6 +61,7 @@ export class EditorComponent {
   env: Environment;
   flag: boolean;
   envXML = new EnvironmentXML('global');
+  reglas: Array<Rule>;
 
   // Iconos
   faSpinner = faSpinner;
@@ -73,7 +77,7 @@ export class EditorComponent {
   faFileDownload = faFileDownload;
   faPlay = faPlay;
 
-  constructor(private dotService: DotService) {}
+  constructor(private dotService: DotService) { }
   ngOnInit() {
     this.clean();
   }
@@ -203,6 +207,39 @@ export class EditorComponent {
       console.error(e);
     }
     this.flag = false;
+  }
+
+  translateXML() {
+    let table = this.envXML.getTablaSimbolos();
+    let result = 'void cargaXML(){\n';
+    result += 'pxml = 0;\nhxml = 0;\n\n';
+    var c = (_Console.count = 0);
+    var h = (_Console.heapPointer = 0);
+    var s = (_Console.stackPointer = 0);
+
+    table.forEach((element) => {
+      // console.log(element.valor);
+      // console.log(element.posicion);
+      result += `t${c} = hxml;\n`;
+      c++;
+
+      for (var x = 0; x < element.valor.length; x++) {
+        var char = element.valor.charCodeAt(x);
+        result += `HeapXML[(int)hxml] = ${char};\n`;
+        result += `hxml = hxml + 1;\n`;
+        h++;
+      }
+      result += `HeapXML[(int)hxml] = -1;\n`;
+      result += `hxml = hxml + 1;\n`;
+      result += `StackXML[(int)${s}] = t${c - 1};\n\n`;
+      element.posicion = s;
+      s++;
+    });
+    result += '}\n\n';
+    _Console.salida = result;
+    _Console.count = c;
+    _Console.heapPointer = h;
+    _Console.stackPointer = s;
   }
 
   ejecutarXQuery() {
@@ -532,7 +569,38 @@ export class EditorComponent {
     }
   }
 
-  optTable() {}
+  optTable() {
+    if (this.reglas == undefined) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black'
+      })
+    }
+    else if (this.reglas.length == 0) {
+      Swal.fire({
+        title: 'Cool!',
+        text: 'No se encontraron optimizaciones en su codigo',
+        icon: 'success',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black'
+      })
+    }
+    else {
+      Swal.fire({
+        title: 'Tabla de Reglas',
+        html: new Table().rules(this.reglas),
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+        width: 800
+      })
+    }
+  }
 
   errorTable() {
     if (this.flag) {
@@ -678,102 +746,107 @@ export class EditorComponent {
     this.salida = '[Grupo18_TitusX]Output: \n\n';
   }
 
-  executeOpt(entrada: string) {
-    // try {
-    //   this.ast = optimizer.parse(entrada);
-    //   let env = new _Optimizer();
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla1(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla2(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla3(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla4(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.cOutput(env.salida);
-    //   this.ast = optimizer.parse(this.salida);
-    //   this.reglas = env.reglas;
-    //   env = new _Optimizer();
-    //   env.reglas = this.reglas;
-    //   try {
-    //     for (const instr of this.ast[0]) {
-    //       instr.regla5(env);
-    //     }
-    //   } catch (e) {
-    //     console.log(e);
-    //   }
-    //   this.reglas = env.reglas;
-    //   Swal.fire({
-    //     title: 'Cool!',
-    //     text: 'Su codigo intermedio se ha optimizado correctamente...',
-    //     icon: 'success',
-    //     confirmButtonText: 'Entendido',
-    //     confirmButtonColor: 'rgb(8, 101, 104)',
-    //     background: 'black',
-    //   }).then(() => {
-    //     this.cOutput(env.salida);
-    //   });
-    // } catch (e) {
-    //   console.log(e);
-    //   Swal.fire({
-    //     title: 'Error',
-    //     text: 'Ocurrieron errores en la optimizacion...',
-    //     icon: 'error',
-    //     confirmButtonText: 'Entendido',
-    //     confirmButtonColor: 'rgb(8, 101, 104)',
-    //     background: 'black',
-    //   });
-    // }
-  }
-
   optimizar() {
-    // Swal.fire({
-    //   title: 'En donde se encuentra el codigo a optimizar?',
-    //   showDenyButton: true,
-    //   showCancelButton: true,
-    //   confirmButtonText: `Entrada`,
-    //   denyButtonText: `Salida`,
-    //   confirmButtonColor: 'rgb(8, 101, 104)',
-    //   background: 'black',
-    //   icon: 'info',
-    // }).then((result) => {
-    //   if (result.isConfirmed) this.executeOpt(this.entrada.toString());
-    //   else if (result.isDenied) this.executeOpt(this.salida.toString());
-    // });
+    // Regla 1
+
+    let c_code_tree = optimizer.parse(this.entradaXml);
+    console.log(c_code_tree);
+    let env = new _Optimizer();
+    try {
+      for (const instr of c_code_tree[1]) {
+        instr.regla1(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+     // Regla 3
+
+     this.cOutput(env.salida);
+     this.ast = optimizer.parse(this.salida);
+     let c_rules = env.reglas;
+     env = new _Optimizer();
+     env.reglas = c_rules;
+     try {
+       for (const instr of this.ast[1]) {
+         instr.regla3(env);
+       }
+     } catch (e) {
+       console.log(e);
+     }
+
+    // Regla 4
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla4(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+
+    // Regla 2
+
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla2(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+   
+    // Regla 5
+   
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.regla5(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    c_rules = env.reglas;
+
+
+    // Restantes
+   
+    this.cOutput(env.salida);
+    this.ast = optimizer.parse(this.salida);
+    c_rules = env.reglas;
+    env = new _Optimizer();
+    env.reglas = c_rules;
+    try {
+      for (const instr of this.ast[1]) {
+        instr.optimize(env);
+      }
+    } catch (e) {
+      console.log(e);
+    }
+    c_rules = env.reglas;
+
+    Swal.fire({
+      title: 'Cool!',
+      text: 'Su codigo intermedio se ha optimizado correctamente...',
+      icon: 'success',
+      confirmButtonText: 'Entendido',
+      confirmButtonColor: 'rgb(8, 101, 104)',
+      background: 'black'
+    }).then(() => {
+      this.reglas = env.reglas;
+      this.cOutput(env.salida);
+    });
   }
 }
