@@ -212,23 +212,15 @@ Exp : DIVSIGN Lexp { $$ = $2; }
 		;
 
 Lexp : Lexp ORSIGN DIVSIGN Syntfin	{
-			var or = new NodoXML($2,"OR",@1.first_line+1,@1.first_column+1);
-			var val2 = new NodoXML($3,"Lexp",@1.first_line+1,@1.first_column+1);
-			val2.addHijo($4);
-			or.addHijo($1);
-			or.addHijo(val2);
-			$$ = new Lexp(or,@1.first_line+1,@1.first_column+1);
+			$$ = [$1]
+			$$.push($4)
 		}	
 		| Lexp DIVSIGN Syntfin{						
-			var lexp = new NodoXML("Lexp","Lexp",@1.first_line+1,@1.first_column+1);
-			var val1 = new NodoXML($2,"Lexp",@1.first_line+1,@1.first_column+1);
-			val1.addHijo($3);			
-			lexp.addHijo($1);
-			lexp.addHijo(val1);			
-			$$ = new Lexp(lexp,@1.first_line+1,@1.first_column+1);
+			$1.push($3);
+			$$ = $1;
 		}
-		| Syntfin { $$ = $1; }
-		;
+		| Syntfin { $$ = [$1] }
+;
 
 
 Syntfin: Fin { $$ = $1; }
@@ -386,7 +378,7 @@ stmnt: '('')' { $$ = null; }
 			| Instrucciones	{ $$ = $1; }
 			;
 
-For: FOR  LFor forstmnt LForWhere{
+For: FOR  LFor forstmnt Return {
 	$$ = new ForIn($2, $3, $4, @1.first_line+1,@1.first_column+1);
 };
 
@@ -431,35 +423,27 @@ For_Let_Opt: Let {
 ;
 	   
 LForWhere: Where  LForOrderby { 
-	var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-	for_.addHijo($1);
-	for_.addHijo($2);
-	$$ = for_;
-}
-	|LForOrderby {
-		var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-		for_.addHijo($1);				
-		$$ = for_;
+		$$ = $1;
+	}
+	| LForOrderby {
+		$$ = $1;
 }
 					 
 					 ;
 
 LForOrderby: Orderby  LForReturn { 
-				var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);
-				for_.addHijo($2);
-				$$ = for_;
-}
-                               |LForReturn{
-									var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);				
-				$$ = for_;
-								
-							   };
 
-LForReturn: Return {	var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
-				for_.addHijo($1);				
-				$$ = for_;
+	}
+	| LForReturn {
+		var for_ = new NodoXML("Stmnt","Stmnt",@1.first_line+1,@1.first_column+1);								
+		for_.addHijo($1);				
+		$$ = for_;
+								
+	}
+;
+
+LForReturn: Return {	
+	$$ = $1
 };
 
 Let: LET VARIABLE ':=' ClauseExpr  { 
@@ -509,22 +493,16 @@ ClauseExpr: ExprLogica 	{ $$ = $1; }
 					}
 					;
 
-Return: RETURN ExprLogica{
-				var lexp = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1);				
-				lexp.addHijo($2);
-				$$ = lexp;
-}
-        | RETURN If{
-				var lexp = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1);				
-				lexp.addHijo($2);
-				$$ = lexp;
-}
+Return: RETURN ExprLogica {
+			$$ = $2
+		}
+        | RETURN If {
+			$$ = $2
+		}
         | RETURN HTML{
-				var lexp = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1);				
-				lexp.addHijo($2);
-				$$ = lexp;
-}
-        ;
+			$$ = $2
+		}
+;
 
 Function : DECLARE FUNCTION Prefix ':' ID Parameter  AS XS':'TipoVar prod_statement ';'{
 	$$ = new Function($5,$6,$10,$11,@1.first_line+1,@1.first_column+1);

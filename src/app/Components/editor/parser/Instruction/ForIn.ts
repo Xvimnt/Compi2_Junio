@@ -73,7 +73,7 @@ export class ForIn extends Instruction {
 
     }
 
-    constructor(private assignation: ForAssign, private code: Instruction, private conditions, line: number, column: number) {
+    constructor(private assignation: ForAssign, private conditions: Instruction, private instructions, line: number, column: number) {
         super(line, column);
     }
 
