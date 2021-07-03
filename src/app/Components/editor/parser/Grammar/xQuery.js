@@ -284,8 +284,10 @@ case 36:
 								this.$ = new Fin(fin,_$[$0-1].first_line+1,_$[$0-1].first_column+1);
 							
 break;
-case 37: case 42:
- this.$ = new Access($$[$0], _$[$0].first_line, _$[$0].first_column); 
+case 37:
+ var val = new NodoXML($$[$0],"Valor",_$[$0].first_line+1,_$[$0].first_column+1);				
+			this.$ = val;
+		
 break;
 case 38:
  this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column, Type.NUMBER); 
@@ -296,6 +298,9 @@ break;
 case 41:
  this.$ = new Literal($$[$0], _$[$0].first_line, _$[$0].first_column, Type.FLOAT); 
 break;
+case 42:
+ this.$ = new Access($$[$0], _$[$0].first_line, _$[$0].first_column); 
+break;
 case 44: case 45: case 46: case 47: case 48: case 49: case 50: case 52:
  this.$ = new NodoXML($$[$0],"Preservada",_$[$0].first_line+1,_$[$0].first_column+1); 
 break;
@@ -303,15 +308,25 @@ case 51:
  this.$ = new NodoXML($$[$0],"Preservada",_$[$0].first_line+1,_$[$0].first_column+1);	
 break;
 case 53:
- this.$ = $$[$0-1]; 
+ 
+			var opc = new NodoXML("Opc","Opc",_$[$0-2].first_line+1,_$[$0-2].first_column+1);				
+			opc.addHijo($$[$0-2]);				
+			this.$ = opc;
+		
 break;
-case 54: case 56:
- this.$ = null; 
+case 54:
+ 
+			var opc = new NodoXML("Opc","Opc",_$[$0].first_line+1,_$[$0].first_column+1);									
+			this.$ = opc;
+		
 break;
 case 55:
  
 			this.$ = new If($$[$0-5], $$[$0-2], $$[$0] ,_$[$0-7].first_line+1, _$[$0-7].first_column+1); 
 		
+break;
+case 56:
+ this.$ = null; 
 break;
 case 57:
  this.$ = $$[$0-2]; 

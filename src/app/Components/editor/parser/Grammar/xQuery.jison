@@ -345,7 +345,9 @@ Fin: Valor Opc	{
 							}
 		;
 
-Valor: ID { $$ = new Access($1, @1.first_line, @1.first_column); }
+Valor: ID { var val = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1);				
+			$$ = val;
+		}
       | NUMBER 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.NUMBER); }
       | STRING 	{ $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
       | STRING2 { $$ = new Literal($1, @1.first_line, @1.first_column, Type.STRING); }
@@ -366,8 +368,15 @@ Preservada: CHILD	{ $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_co
           | ATTR { $$ = new NodoXML($1,"Preservada",@1.first_line+1,@1.first_column+1); }
 					;
 
-Opc : '[' ExprLogica ']' 	{ $$ = $2; } 
-		| { $$ = null; };
+Opc : '[' ExprLogica ']' 	{ 
+			var opc = new NodoXML("Opc","Opc",@1.first_line+1,@1.first_column+1);				
+			opc.addHijo($1);				
+			$$ = opc;
+		} 
+		| { 
+			var opc = new NodoXML("Opc","Opc",@1.first_line+1,@1.first_column+1);									
+			$$ = opc;
+		};
 
 If: IF '(' ExprLogica ')' THEN stmnt ELSE stmnt { 
 			$$ = new If($3, $6, $8 ,@1.first_line+1, @1.first_column+1); 

@@ -24,7 +24,7 @@ export class Fin extends Instruction {
     return result;
   }
 
-  constructor(private tree: NodoXML, line: number, column: number) {
+  constructor(public tree: NodoXML, line: number, column: number) {
     super(line, column);
   }
 

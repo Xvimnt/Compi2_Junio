@@ -29,11 +29,11 @@ export class EjecutorXPath {
           if (find) {
             // console.log("entorno",this.environmentXML);
             let valor = this.environmentXML.getValor(this.environmentXML.nombre);
-            _Console.salida = valor;
+            _Console.salida += valor;
           }
           break;
         case 'Syntfin':
-          _Console.salida = this.ejecutarSyntfin(ast);
+          _Console.salida += this.ejecutarSyntfin(ast);
           break;
         case 'LPredicado':
           let index = this.ejecutarPredicado(ast);

@@ -1,9 +1,6 @@
 import { Instruction } from "../Abstract/Instruction";
 import { Environment } from "../Symbol/Environment";
 import { _Console } from '../Util/Salida';
-import { errores } from '../Errores';
-import { Error_ } from '../Error';
-import { Symbol } from '../Symbol/Symbol';
 import { ForAssign } from "./ForAssign";
 
 export class ForIn extends Instruction {
@@ -63,8 +60,8 @@ export class ForIn extends Instruction {
         // result += this.method.plot(Number(count + "1"));
         // Hijo 2
         // Hijo 3
-        result += "node" + count + "3[label=\"(" + this.code.line + "," + this.code.column + ") Codigo\"];";
-        result += this.code.plot(Number(count + "3"));
+        // result += "node" + count + "3[label=\"(" + this.code.line + "," + this.code.column + ") Codigo\"];";
+        // result += this.code.plot(Number(count + "3"));
         // Flechas
         result += "node" + count + " -> " + "node" + count + "1;";
         result += "node" + count + " -> " + "node" + count + "3;";
@@ -73,11 +70,16 @@ export class ForIn extends Instruction {
 
     }
 
-    constructor(private assignation: ForAssign, private conditions: Instruction, private instructions, line: number, column: number) {
+    constructor(private assignations: Array<ForAssign>, private conditions: Instruction, private instructions, line: number, column: number) {
         super(line, column);
     }
 
     public execute(env: Environment) {
+        // Se realiza la asignacion de la variable respecto a la consulta de xpath
+        this.assignations.forEach(element => {
+            const assignation = element.execute(env);
+        });
+       
 
     }
 }

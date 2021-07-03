@@ -221,7 +221,7 @@ export class EditorComponent {
       for (const instr of queryTree) {
         try {
           if (instr instanceof Function) {
-            console.log('instace of function');
+            // console.log('instace of function');
             instr.execute(queryEnv);
           }
         } catch (error) {
@@ -232,7 +232,7 @@ export class EditorComponent {
       for (const instr of queryTree) {
         if (instr instanceof Function) continue;
         try {
-          console.log('instace of instruction');
+          // console.log('instace of instruction');
           instr.execute(queryEnv);
         } catch (error) {
           console.log(error);
@@ -240,7 +240,7 @@ export class EditorComponent {
       }
       if (errores.length == 0) {
         // Muestra el resultado en la pagina
-        // this.salida += _Console.salida;
+        this.salida += _Console.salida;
         console.log(_Console.symbols);
         console.log(_Console.salida);
       } else {
