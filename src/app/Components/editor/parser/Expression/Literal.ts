@@ -7,16 +7,16 @@ import { _Console } from '../Util/Salida';
 
 export class Literal extends Expression {
     public build(): String {
-        let result = "";
-        return result;
-    }
+        let env = new Environment(null,null);
+        return this.execute(env).value;
+     }
 
     public translate(environment: Environment): String {
         let result = "";
         return result;
     }
 
-    constructor(private value: any, line: number, column: number, public type: number) {
+    constructor(public value: any, line: number, column: number, public type: number) {
         super(line, column);
     }
     public plot(count: number): string {

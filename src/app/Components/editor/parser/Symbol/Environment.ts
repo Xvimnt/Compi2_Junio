@@ -52,13 +52,13 @@ export class Environment {
         }
     }
 
-    public getVar(id: string): Symbol | undefined | null {
-        let env: Environment | null = this;
+    public getVar(id: string): Symbol {
+        let env: Environment = this;
         while (env != null) {
             if (env.variables.has(id)) {
                 return env.variables.get(id);
             }
-            env = env.anterior;
+            else env = env.anterior;
         }
         return null;
     }
