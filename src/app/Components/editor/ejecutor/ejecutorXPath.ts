@@ -4,6 +4,8 @@ import { Error_ } from '../parser/Error';
 import { errores } from '../parser/Errores';
 import { _Console } from '../parser/Util/Salida';
 import { Environment } from '../parser/Symbol/Environment';
+import { Symbol } from '../parser/Symbol/Symbol';
+declare var require: any
 const xPathASC = require('../parser/Grammar/xPathAsc.js');
 
 export class EjecutorXPath {
@@ -27,16 +29,12 @@ export class EjecutorXPath {
       // console.log("tipo",tipo);
       switch (tipo) {
         case 'Fin':
-          let find = this.ejecutarFin(ast);
-          if (find) {
-            // console.log("entorno",this.environmentXML);
-            let valor = this.environmentXML.getValor(this.environmentXML.nombre);
-            _Console.salida += valor;
-          }
-          break;
+          return this.ejecutarFin(ast);
         case 'Syntfin':
           _Console.salida += this.ejecutarSyntfin(ast);
           break;
+        case 'Return':
+          return this.ejecutarReturn(ast);
         case 'LPredicado':
           let index = this.ejecutarPredicado(ast);
           return index;
@@ -49,6 +47,18 @@ export class EjecutorXPath {
       }
     }
     return response;
+  }
+
+  ejecutarReturn(ast: NodoXML){
+    console.log("return", ast);
+    // obtener el primer hijo
+    let first = this.ejecutar(ast.listaNodos[0]);
+    if(first != null && first instanceof Symbol) {
+      let envXmlTemp = this.environmentXML;
+      
+      console.log("first",first);
+      
+    }
   }
 
   ejecutarSyntfin(ast: NodoXML) {
@@ -95,16 +105,9 @@ export class EjecutorXPath {
     if (hijos.length == 0) return this.environmentXML.getValor(this.environmentXML.nombre);
     let ruta = "";
     if(hijos[0].type == "Access") {
-      ruta = this.entorno.getVar(hijos[0].name).valor;
-      let queryTree = xPathASC.parse(ruta);
-      // se pasa el env xml
-      let ejecutor = new EjecutorXPath(this.entorno);
-      ejecutor.ejecutar(queryTree);
-      this.environmentXML = ejecutor.environmentXML;
-      return;
+      return this.entorno.getVar(hijos[0].name);
     }
     else {
-      console.log("searching",this);
       ruta = hijos[0].name;
     }
     // console.log("validando",this.environmentXML,hijos[0]);
