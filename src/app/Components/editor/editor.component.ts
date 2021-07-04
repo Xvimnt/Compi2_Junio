@@ -148,6 +148,9 @@ export class EditorComponent {
     let table = this.envXML.getTablaSimbolos();
     let result = 'void cargaXML(){\n';
     result += 'pxml = 0;\nhxml = 0;\n\n';
+    let tempc = _Console.count;
+    let temph = _Console.heapPointer;
+    let temps = _Console.stackPointer;
     var c = (_Console.count = 0);
     var h = (_Console.heapPointer = 0);
     var s = (_Console.stackPointer = 0);
@@ -171,13 +174,14 @@ export class EditorComponent {
       }
       result += `HeapXML[(int)hxml] = -1;\n`;
       result += `hxml = hxml + 1;\n`;
-      result += `StackXML[(int)${s}] = t${c - 1};\n\n`;
+      result += `StackXML[(int)pxml] = t${c - 1};\n\n`;
+      result += 'pxml = pxml + 1;\n';
       element.posicion = s;
       s++;
     });
     result += '}\n\n';
     _Console.salida = result;
-    _Console.count = c;
+    _Console.count = c > tempc ? c : tempc;
     _Console.heapPointer = h;
     _Console.stackPointer = s;
   }
@@ -197,7 +201,10 @@ export class EditorComponent {
         this.ast = xQueryTrad.parse(this.entradaXpath.toString());
         let traductor = new TraductorXQuery();
         this.envXQuery = new EnvironmentXQuery('global', null);
-        salida += traductor.traducir(this.ast, this.envXML, this.envXQuery);
+        let trad = traductor.traducir(this.ast, this.envXML, this.envXQuery);
+        salida += trad.salida;
+        _Console.count = trad.count;
+        _Console.labels = trad.labels;
         this.cOutput(salida);
       } else {
         errores.forEach((error) => {

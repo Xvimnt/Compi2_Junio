@@ -73,4 +73,19 @@ export class EnvironmentXQuery {
       this.getSimbolos(element, list);
     });
   }
+
+  public searchVar(name: string) {
+    let ret = null;
+    let tmp: EnvironmentXQuery = this;
+    while (tmp != null) {
+      tmp.tablaSimbolos.forEach((element) => {
+        if (element.nombre === name) {
+          ret = element;
+          return;
+        }
+      });
+      tmp = this.anterior;
+    }
+    return ret;
+  }
 }
