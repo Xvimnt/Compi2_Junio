@@ -33,9 +33,135 @@ export class TraductorXQuery {
         case 'Let':
           this.traducirLet(ast, envXML, envXQuery);
           break;
+        case 'Return':
+          this.traducirReturn(ast, envXML, envXQuery);
+          break;
       }
     }
     return _Console;
+  }
+
+  private traducirReturn(
+    ast: NodoXML,
+    envXML: EnvironmentXML,
+    envXQuery: EnvironmentXQuery
+  ) {
+    // ExprLogica || if
+    let exp = ast.listaNodos[0];
+    switch (exp.type) {
+      case 'ExprLogica':
+        // logica
+        var log = this.traducirLogica(exp, envXML, envXQuery);
+        switch (log[1]) {
+          case 1:
+            // number
+            _Console.salida += `// return number\n`;
+            _Console.salida += `printf("%f\\n",(float)${log[2]});\n`;
+            break;
+          case 2:
+            //traducir
+            var c = _Console.count;
+            var h = _Console.heapPointer;
+            var s = _Console.stackPointer;
+            _Console.salida += `// return cadena\n`;
+            _Console.salida += `t${c}=StackXQuery[(int)t${c - 1}];\n`;
+            c++;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `while(t${c} != -1){\n`;
+            _Console.salida += `printf("%c",(int)t${c});\n`;
+            _Console.salida += `t${c - 1} = t${c - 1} + 1;\n`;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `}\nprintf("\\n");\n\n`;
+
+            _Console.count++;
+            _Console.count++;
+            break;
+          case 3:
+            //boolean
+            _Console.salida += `// return boolean\n`;
+            _Console.salida += `printf("%d\\n",(int)${log[2]});\n`;
+            break;
+        }
+        break;
+      case 'Expr':
+        // aritmetica
+        var log = this.traducirAritmetica(exp, envXML, envXQuery);
+        switch (log[1]) {
+          case 1:
+            // number
+            _Console.salida += `// return number\n`;
+            _Console.salida += `printf("%f\\n",(float)${log[2]});\n`;
+            break;
+          case 2:
+            //traducir
+            var c = _Console.count;
+            var h = _Console.heapPointer;
+            var s = _Console.stackPointer;
+            _Console.salida += `// return cadena\n`;
+            _Console.salida += `t${c}=StackXQuery[(int)t${c - 1}];\n`;
+            c++;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `while(t${c} != -1){\n`;
+            _Console.salida += `printf("%c",(int)t${c});\n`;
+            _Console.salida += `t${c - 1} = t${c - 1} + 1;\n`;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `}\nprintf("\\n");\n\n`;
+
+            _Console.count++;
+            _Console.count++;
+            break;
+          case 3:
+            //boolean
+            _Console.salida += `// return boolean\n`;
+            _Console.salida += `printf("%d\\n",(int)${log[2]});\n`;
+            break;
+        }
+        break;
+      case 'Exp':
+        // xpath
+        break;
+      case 'Lexp':
+        // xpath
+        break;
+      case 'Syntfin':
+        // xpath
+        break;
+      case 'Fin':
+        var log = this.traducirAritmetica(exp, envXML, envXQuery);
+        switch (log[1]) {
+          case 1:
+            // number
+            _Console.salida += `// return number\n`;
+            _Console.salida += `printf("%f\\n",(float)${log[2]});\n`;
+            break;
+          case 2:
+            //traducir
+            var c = _Console.count;
+            var h = _Console.heapPointer;
+            var s = _Console.stackPointer;
+            _Console.salida += `// return cadena\n`;
+            _Console.salida += `t${c}=StackXQuery[(int)t${c - 1}];\n`;
+            c++;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `while(t${c} != -1){\n`;
+            _Console.salida += `printf("%c",(int)t${c});\n`;
+            _Console.salida += `t${c - 1} = t${c - 1} + 1;\n`;
+            _Console.salida += `t${c} = HeapXQuery[(int)t${c - 1}];\n`;
+            _Console.salida += `}\nprintf("\\n");\n\n`;
+
+            _Console.count++;
+            _Console.count++;
+            break;
+          case 3:
+            //boolean
+            _Console.salida += `// return boolean\n`;
+            _Console.salida += `printf("%d\\n",(int)${log[2]});\n`;
+            break;
+        }
+        break;
+      case 'If':
+        break;
+    }
   }
 
   private traducirLet(
@@ -558,7 +684,7 @@ export class TraductorXQuery {
   ) {
     if (ast) {
       // console.log('Traducir aritmetica');
-      // console.log(ast.name);
+      console.log(ast.name);
       switch (ast.name) {
         case '+':
           //ejecutar izq
@@ -770,6 +896,7 @@ export class TraductorXQuery {
         case 'Fin':
           if (!ast.listaNodos[1]) {
             var val = this.traducirValor(ast.listaNodos[0], envXML, envXQuery);
+            console.log(val);
             switch (val[1]) {
               case 0:
                 //error
@@ -783,7 +910,7 @@ export class TraductorXQuery {
                 var h = _Console.heapPointer;
                 var s = _Console.stackPointer;
 
-                _Console.salida += `// cadena: ${val[0]}`;
+                _Console.salida += `// cadena: ${val[0]}\n`;
                 _Console.salida += `t${c} = hxml;\n`;
                 c++;
                 for (var x = 0; x < val[0].length; x++) {
@@ -810,7 +937,8 @@ export class TraductorXQuery {
                 ];
               case 4:
                 if (val[0]) {
-                  switch (val[0].type) {
+                  console.log(val[0].tipo);
+                  switch (val[0].tipo) {
                     case 0:
                     //error
                     case 1:
@@ -826,9 +954,12 @@ export class TraductorXQuery {
                       _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
                       _Console.salida += `pxquery=t${c - 1};\n`;
                       c++;
-                      _Console.count = c;
+                      _Console.salida += `t${c}=HeapXQuery[(int)t${
+                        c - 1
+                      }];\n\n`;
+                      _Console.count = c + 1;
 
-                      return [+val[0].value, 1, +val[0].value, `t${c}`];
+                      return [+val[0].value, 1, `t${c}`];
                     case 2:
                       //traducir
                       var c = _Console.count;
@@ -842,7 +973,10 @@ export class TraductorXQuery {
                       _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
                       _Console.salida += `pxquery=t${c - 1};\n`;
                       c++;
-                      _Console.count = c;
+                      _Console.salida += `t${c}=HeapXQuery[(int)t${
+                        c - 1
+                      }];\n\n`;
+                      _Console.count = c + 1;
                       return [val[0].value, 2, `t${c}`];
                     case 3:
                       var c = _Console.count;
@@ -856,7 +990,10 @@ export class TraductorXQuery {
                       _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
                       _Console.salida += `pxquery=t${c - 1};\n`;
                       c++;
-                      _Console.count = c;
+                      _Console.salida += `t${c}=HeapXQuery[(int)t${
+                        c - 1
+                      }];\n\n`;
+                      _Console.count = c + 1;
                       return [
                         val[0].value === 'true' ? true : false,
                         3,
@@ -873,10 +1010,11 @@ export class TraductorXQuery {
                       `La variable no esta declarada => ${ast.listaNodos[0].nombre}`
                     )
                   );
-                  return [val[0], 4, 0];
+                  return null;
                 }
             }
           }
+          break;
         default:
           return this.traducirLogica(ast, envXML, envXQuery);
       }

@@ -588,8 +588,6 @@ var xQueryTrad = (function () {
         case 75:
         case 80:
         case 81:
-        case 84:
-        case 85:
         case 111:
         case 120:
           this.$ = $$[$0];
@@ -1101,6 +1099,28 @@ var xQueryTrad = (function () {
           node1.addHijo($$[$0 - 3]);
           node1.addHijo($$[$0 - 1]);
           this.$ = node1;
+
+          break;
+        case 84:
+          var nodo1 = new NodoXML(
+            "Return",
+            "Return",
+            _$[$0 - 1].first_line + 1,
+            _$[$0 - 1].first_column + 1
+          );
+          nodo1.addHijo($$[$0]);
+          this.$ = nodo1;
+
+          break;
+        case 85:
+          var nodo1 = new NodoXML(
+            "Return",
+            "Return",
+            _$[$0 - 1].first_line + 1,
+            _$[$0 - 1].first_column + 1
+          );
+          nodo1.addHijo($$[$0]);
+          this.$ = nodo1;
 
           break;
         case 86:
