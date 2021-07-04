@@ -59,8 +59,32 @@ export class TraductorXQuery {
         // logica
         break;
       case 'Expr':
+        _Console.salida += `// Operaciones Aritmeticas\n`;
         // aritmetica
-        console.log(this.traducirAritmetica(exp, envXML, envXQuery));
+        var ar = this.traducirAritmetica(exp, envXML, envXQuery);
+        //traducir
+        var c = _Console.count;
+        var h = _Console.heapPointer;
+        var s = _Console.stackPointer;
+        _Console.salida += `t${c}=hxquery;\n`;
+        _Console.salida += `HeapXQuery[(int)hxquery] = t${c - 1};\n`;
+        _Console.salida += `hxquery = hxquery + 1;\n`;
+        _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
+        _Console.salida += 'pxquery = pxquery +1;\n\n';
+        _Console.count++;
+        _Console.heapPointer++;
+        _Console.stackPointer++;
+        //agregar a tabla de simbolos
+        var sym = new XQuerySymbol(
+          ar[1],
+          varName,
+          ar[0],
+          exp.line,
+          exp.column,
+          envXQuery.nombre
+        );
+        sym.setPosicion(s);
+        envXQuery.addSimbolo(sym);
         break;
       case 'Exp':
         // xpath
@@ -78,24 +102,48 @@ export class TraductorXQuery {
           if (!exp.listaNodos[1]) {
             var val = this.traducirValor(exp.listaNodos[0], envXML, envXQuery);
             if (val[1] < 4) {
-              //traducir
-              var c = _Console.count;
-              var h = _Console.heapPointer;
-              var s = _Console.stackPointer;
-              _Console.salida += `// let ${varName}=${val[0]}\n`;
-              if (val[0] == 'true') {
-                val[0] = 1;
-              } else if (val[0] == 'false') {
-                val[0] = 0;
+              if (val[1] == 2) {
+                //string
+                // traducir
+                var c = _Console.count;
+                var h = _Console.heapPointer;
+                var s = _Console.stackPointer;
+                _Console.salida += `// let ${varName}=${val[0]}\n`;
+                _Console.salida += `t${c} = hxml;\n`;
+                c++;
+                for (var x = 0; x < val[0].length; x++) {
+                  var char = val[0].charCodeAt(x);
+                  _Console.salida += `HeapXQuery[(int)hxquery] = ${char};\n`;
+                  _Console.salida += `hxquery = hxquery + 1;\n`;
+                  h++;
+                }
+                _Console.salida += `HeapXQuery[(int)hxquery] = -1;\n`;
+                _Console.salida += `hxquery = hxquery + 1;\n`;
+                _Console.salida += `StackXQuery[(int)pxquery] = t${c - 1};\n`;
+                _Console.salida += 'pxquery = pxquery + 1;\n\n';
+                _Console.count = c;
+                _Console.heapPointer = h;
+                _Console.stackPointer = s;
+              } else {
+                //traducir
+                var c = _Console.count;
+                var h = _Console.heapPointer;
+                var s = _Console.stackPointer;
+                _Console.salida += `// let ${varName}=${val[0]}\n`;
+                if (val[0] == 'true') {
+                  val[0] = 1;
+                } else if (val[0] == 'false') {
+                  val[0] = 0;
+                }
+                _Console.salida += `t${c}=hxquery;\n`;
+                _Console.salida += `HeapXQuery[(int)hxquery] = ${val[0]};\n`;
+                _Console.salida += `hxquery = hxquery + 1;\n`;
+                _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
+                _Console.salida += 'pxquery = pxquery +1;\n\n';
+                _Console.count++;
+                _Console.heapPointer++;
+                _Console.stackPointer++;
               }
-              _Console.salida += `t${c}=hxquery;\n`;
-              _Console.salida += `HeapXQuery[(int)hxquery] = ${val[0]};\n`;
-              _Console.salida += `hxquery = hxquery + 1;\n`;
-              _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
-              _Console.salida += 'pxquery = pxquery +1;\n\n';
-              _Console.count++;
-              _Console.heapPointer++;
-              _Console.stackPointer++;
               //agregar a tabla de simbolos
               var sym = new XQuerySymbol(
                 val[1],
@@ -174,8 +222,22 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
+          var t = 1;
+          if (val1[1] === 2 || val2[1] === 2) t = 2;
+
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+
+          _Console.salida += `t${c}=${val1[2]} + ${val2[2]};\n`;
+
+          _Console.count++;
+          _Console.heapPointer++;
+          _Console.stackPointer++;
+
           //sumar
-          return val1 + val2;
+          return [val1[0] + val2[0], t, `t${c}`];
         case '-':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -189,8 +251,20 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 - val2;
+
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+
+          _Console.salida += `t${c}=${val1[2]} - ${val2[2]};\n`;
+
+          _Console.count++;
+          _Console.heapPointer++;
+          _Console.stackPointer++;
+
+          //restar
+          return [val1[0] - val2[0], 1, `t${c}`];
         case '*':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -204,8 +278,20 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 * val2;
+
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+
+          _Console.salida += `t${c}=${val1[2]} * ${val2[2]};\n`;
+
+          _Console.count++;
+          _Console.heapPointer++;
+          _Console.stackPointer++;
+
+          //multiplicar
+          return [val1[0] * val2[0], 1, `t${c}`];
         case 'div':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -219,8 +305,20 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 / val2;
+
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+
+          _Console.salida += `t${c}=${val1[2]} / ${val2[2]};\n`;
+
+          _Console.count++;
+          _Console.heapPointer++;
+          _Console.stackPointer++;
+
+          //dividir
+          return [val1[0] / val2[0], 1, `t${c}`];
         case 'mod':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -234,8 +332,19 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 % val2;
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+
+          _Console.salida += `t${c}=${val1[2]} % ${val2[2]};\n`;
+
+          _Console.count++;
+          _Console.heapPointer++;
+          _Console.stackPointer++;
+
+          //residuo
+          return [val1[0] % val2[0], 1, `t${c}`];
         case 'or':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -249,8 +358,29 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 || val2;
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// OR\n`;
+          _Console.salida += `if (${val1[2]} == 0) goto L${l};\n`;
+          _Console.salida += `t${c}=1;\n`;
+          _Console.salida += `goto L${l + 2};\n`;
+          _Console.salida += `L${l}:\nif (${val2[2]} == 0) goto L${l + 1};\n`;
+          _Console.salida += `t${c}=1;\n`;
+          _Console.salida += `goto L${l + 2};\n`;
+          // falso
+          _Console.salida += `L${l + 1}:\n t${c}=0;\n`;
+          // salida
+          _Console.salida += `L${l + 2}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
         case 'and':
           //ejecutar izq
           var val1 = this.traducirAritmetica(
@@ -264,8 +394,29 @@ export class TraductorXQuery {
             envXML,
             envXQuery
           );
-          //sumar
-          return val1 && val2;
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// AND\n`;
+          _Console.salida += `if (${val1[2]} == 1) goto L${l};\n`;
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 2};\n`;
+          _Console.salida += `L${l}:\nif (${val2[2]} == 1) goto L${l + 1};\n`;
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 2};\n`;
+          // falso
+          _Console.salida += `L${l + 1}:\n t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 2}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //and
+          return [val1[0] && val2[0], 3];
         case 'Fin':
           if (!ast.listaNodos[1]) {
             var val = this.traducirValor(ast.listaNodos[0], envXML, envXQuery);
@@ -274,29 +425,106 @@ export class TraductorXQuery {
                 //error
                 break;
               case 1:
-                return +val[0];
+                return [+val[0], 1, +val[0]];
               case 2:
-                return val[0];
+                //string
+                // traducir
+                var c = _Console.count;
+                var h = _Console.heapPointer;
+                var s = _Console.stackPointer;
+
+                _Console.salida += `// cadena: ${val[0]}`;
+                _Console.salida += `t${c} = hxml;\n`;
+                c++;
+                for (var x = 0; x < val[0].length; x++) {
+                  var char = val[0].charCodeAt(x);
+                  _Console.salida += `HeapXQuery[(int)hxquery] = ${char};\n`;
+                  _Console.salida += `hxquery = hxquery + 1;\n`;
+                  h++;
+                }
+                _Console.salida += `HeapXQuery[(int)hxquery] = -1;\n`;
+                _Console.salida += `hxquery = hxquery + 1;\n`;
+                _Console.salida += `StackXQuery[(int)pxquery] = t${c - 1};\n`;
+                _Console.salida += 'pxquery = pxquery + 1;\n\n';
+                _Console.salida += `t${c} = pxquery -1;\n\n`;
+                c++;
+                _Console.count = c;
+                _Console.heapPointer = h;
+                _Console.stackPointer = s;
+                return [val[0], 2, `t${c - 1}`];
               case 3:
-                return val[0] === 'true' ? true : false;
+                return [
+                  val[0] === 'true' ? true : false,
+                  3,
+                  val[0] === 'true' ? 1 : 0,
+                ];
               case 4:
                 if (val[0]) {
                   switch (val[0].type) {
                     case 0:
                     //error
                     case 1:
-                      return +val[0].value;
+                      //traducir
+                      var c = _Console.count;
+                      var h = _Console.heapPointer;
+                      var s = _Console.stackPointer;
+
+                      _Console.salida += `// obtener valor ${val[0].nombre}\n`;
+                      _Console.salida += `t${c}=pxquery;\n`;
+                      c++;
+                      _Console.salida += `pxquery=${val[0].posicion};\n`;
+                      _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
+                      _Console.salida += `pxquery=t${c - 1};\n`;
+                      c++;
+                      _Console.count = c;
+
+                      return [+val[0].value, 1, +val[0].value, `t${c}`];
                     case 2:
-                      return val[0].value;
+                      //traducir
+                      var c = _Console.count;
+                      var h = _Console.heapPointer;
+                      var s = _Console.stackPointer;
+
+                      _Console.salida += `// obtener valor ${val[0].nombre}\n`;
+                      _Console.salida += `t${c}=pxquery;\n`;
+                      c++;
+                      _Console.salida += `pxquery=${val[0].posicion};\n`;
+                      _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
+                      _Console.salida += `pxquery=t${c - 1};\n`;
+                      c++;
+                      _Console.count = c;
+                      return [val[0].value, 2, `t${c}`];
                     case 3:
-                      return val[0].value === 'true' ? true : false;
+                      var c = _Console.count;
+                      var h = _Console.heapPointer;
+                      var s = _Console.stackPointer;
+
+                      _Console.salida += `// obtener valor ${val[0].nombre}\n`;
+                      _Console.salida += `t${c}=pxquery;\n`;
+                      c++;
+                      _Console.salida += `pxquery=${val[0].posicion};\n`;
+                      _Console.salida += `t${c}=StackXQuery[(int)pxquery];\n`;
+                      _Console.salida += `pxquery=t${c - 1};\n`;
+                      c++;
+                      _Console.count = c;
+                      return [
+                        val[0].value === 'true' ? true : false,
+                        3,
+                        `t${c}`,
+                      ];
                   }
+                } else {
+                  //error
+                  errores.push(
+                    new Error_(
+                      ast.getLine(),
+                      ast.getColumn(),
+                      'Semantico',
+                      `La variable no esta declarada => ${ast.listaNodos[0].nombre}`
+                    )
+                  );
+                  return [val[0], 4, 0];
                 }
-            }
-            if (val[1] === 4 && val[0]) {
-              return val[0].valor;
-            } else {
-              return val[0];
             }
           }
       }
@@ -319,7 +547,6 @@ export class TraductorXQuery {
         return [ast.name, 3];
       case 'VARIABLE':
         return [envXQuery.searchVar(ast.name), 4];
-
       default:
         break;
     }

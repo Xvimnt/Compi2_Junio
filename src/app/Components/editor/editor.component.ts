@@ -197,7 +197,7 @@ export class EditorComponent {
         salida += 'hxpath=0;\n';
         salida += 'pxquery=0;\n';
         salida += 'hxquery=0;\n';
-        salida += 'cargaXML();\n';
+        salida += 'cargaXML();\n\n';
         this.ast = xQueryTrad.parse(this.entradaXpath.toString());
         let traductor = new TraductorXQuery();
         this.envXQuery = new EnvironmentXQuery('global', null);
