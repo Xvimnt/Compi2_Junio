@@ -294,12 +294,12 @@ Fin: Valor Opc {
     }
 		;
 
-Valor: ID { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
-    | NUMBER { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
-    | STRING { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
-    | STRING2 { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
-    | DECIMAL { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
-    | VARIABLE { $$ = new NodoXML($1,"Valor",@1.first_line+1,@1.first_column+1); }
+Valor: ID { $$ = new NodoXML($1,"ID",@1.first_line+1,@1.first_column+1); }
+    | NUMBER { $$ = new NodoXML($1,"NUMBER",@1.first_line+1,@1.first_column+1); }
+    | STRING { $$ = new NodoXML($1,"STRING",@1.first_line+1,@1.first_column+1); }
+    | STRING2 { $$ = new NodoXML($1,"STRING",@1.first_line+1,@1.first_column+1); }
+    | DECIMAL { $$ = new NodoXML($1,"NUMBER",@1.first_line+1,@1.first_column+1); }
+    | VARIABLE { $$ = new NodoXML($1,"VARIABLE",@1.first_line+1,@1.first_column+1); }
 	  | LlamadaFuncion { $$ = $1; }
 		;
 

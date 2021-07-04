@@ -798,14 +798,35 @@ var xQueryTrad = (function () {
 
           break;
         case 37:
+          this.$ = new NodoXML(
+            $$[$0],
+            "ID",
+            _$[$0].first_line + 1,
+            _$[$0].first_column + 1
+          );
+          break;
         case 38:
+        case 41:
+          this.$ = new NodoXML(
+            $$[$0],
+            "NUMBER",
+            _$[$0].first_line + 1,
+            _$[$0].first_column + 1
+          );
+          break;
         case 39:
         case 40:
-        case 41:
+          this.$ = new NodoXML(
+            $$[$0],
+            "STRING",
+            _$[$0].first_line + 1,
+            _$[$0].first_column + 1
+          );
+          break;
         case 42:
           this.$ = new NodoXML(
             $$[$0],
-            "Valor",
+            "VARIABLE",
             _$[$0].first_line + 1,
             _$[$0].first_column + 1
           );

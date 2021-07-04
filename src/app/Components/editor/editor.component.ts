@@ -46,7 +46,8 @@ import { EjecutorXPath } from './ejecutor/ejecutorXPath';
 import { _Optimizer } from './parser/Optimizer/Optimizer';
 import { Rule } from './parser/Optimizer/Rule';
 import { environment } from 'src/environments/environment';
-import { TraductorXQuery } from './ejecutor/traductorXQuery';
+import { TraductorXQuery } from './traductor/traductorXQuery';
+import { EnvironmentXQuery } from './parser/Symbol/EnviromentXQueryTrad';
 
 @Component({
   selector: 'editor-root',
@@ -58,12 +59,13 @@ export class EditorComponent {
   // Variables
   title = 'Compi2_Junio';
   entradaXml = '<helloworld>\n</helloworld>';
-  entradaXpath = '/helloworld';
+  entradaXpath = 'let $x := /helloworld';
   salida = 'TytusX Output: \n\n';
   ast: any;
   env: Environment;
   flag: boolean;
   envXML = new EnvironmentXML('global');
+  envXQuery = new EnvironmentXQuery('global', null);
   reglas: Array<Rule>;
 
   // Iconos
@@ -151,7 +153,7 @@ export class EditorComponent {
     var s = (_Console.stackPointer = 0);
 
     table.forEach((element) => {
-      console.log(element);
+      // console.log(element);
       if (element.tipo === 0) {
         //atributo
         result += `// atributo (etiqueta: ${element.ambito}): ${element.nombre} = "${element.valor}"\n`;
@@ -187,10 +189,15 @@ export class EditorComponent {
       if (errores.length == 0) {
         // Muestra el resultado en la pagina
         salida += '//main\n';
+        salida += 'pxpath=0;\n';
+        salida += 'hxpath=0;\n';
+        salida += 'pxquery=0;\n';
+        salida += 'hxquery=0;\n';
         salida += 'cargaXML();\n';
         this.ast = xQueryTrad.parse(this.entradaXpath.toString());
         let traductor = new TraductorXQuery();
-        salida += traductor.traducir(this.ast, this.envXML);
+        this.envXQuery = new EnvironmentXQuery('global', null);
+        salida += traductor.traducir(this.ast, this.envXML, this.envXQuery);
         this.cOutput(salida);
       } else {
         errores.forEach((error) => {
@@ -309,7 +316,7 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathASC.parse(this.entradaXpath.toString());
-      let newEnv = new Environment(null,this.envXML);
+      let newEnv = new Environment(null, this.envXML);
       // se pasa el env xml
       let ejecutor = new EjecutorXPath(newEnv);
       ejecutor.ejecutar(queryTree);
@@ -337,7 +344,7 @@ export class EditorComponent {
     this.clean();
     try {
       let queryTree = xPathDESC.parse(this.entradaXpath.toString());
-      let newEnv = new Environment(null,this.envXML);
+      let newEnv = new Environment(null, this.envXML);
       // se pasa el env xml
       let ejecutor = new EjecutorXPath(newEnv);
       ejecutor.ejecutar(queryTree);
@@ -533,6 +540,46 @@ export class EditorComponent {
       Swal.fire({
         title: 'Tabla de Simbolos',
         html: new Table().xmlTable(this.envXML.getTablaSimbolos()),
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+        width: 800,
+      });
+    }
+  }
+
+  xQueryTokenTable() {
+    if (this.flag) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se ha analizado el codigo aun',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (this.envXQuery.getTablaSimbolos().length == 0) {
+      Swal.fire({
+        title: 'Oops...',
+        text: 'No se encontro ninguna variable o funcion guardada',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else if (errores.length != 0) {
+      Swal.fire({
+        title: 'Oops...!',
+        text: 'Se encontraron errores en su codigo, no puede mostrar tabla de variables',
+        icon: 'error',
+        confirmButtonText: 'Entendido',
+        confirmButtonColor: 'rgb(8, 101, 104)',
+        background: 'black',
+      });
+    } else {
+      Swal.fire({
+        title: 'Tabla de Simbolos',
+        html: new Table().xmlTable(this.envXQuery.getTablaSimbolos()),
         confirmButtonText: 'Entendido',
         confirmButtonColor: 'rgb(8, 101, 104)',
         background: 'black',

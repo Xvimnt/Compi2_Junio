@@ -1,7 +1,6 @@
 import { errores } from '../Errores';
 import { Error_ } from '../Error';
 import { XMLSymbol } from '../Symbol/xmlSymbol';
-import { element } from 'protractor';
 
 export class EnvironmentXML {
   public nombre: string;
@@ -33,7 +32,7 @@ export class EnvironmentXML {
               simbolo.getFila(),
               simbolo.getColumna(),
               'Semantico',
-              "el atributo -> ' + simbolo.getNombre() + ' ya existe;"
+              'el atributo -> ' + simbolo.getNombre() + ' ya existe;'
             )
           );
           return;
@@ -51,8 +50,7 @@ export class EnvironmentXML {
     if (this.tablaSimbolos.length > 0) {
       this.tablaSimbolos.forEach((element) => {
         if (element.ambito == ambito) {
-          if(element.nombre == "" ) response = element.getValor();
-
+          if (element.nombre == '') response = element.getValor();
         }
       });
     }
