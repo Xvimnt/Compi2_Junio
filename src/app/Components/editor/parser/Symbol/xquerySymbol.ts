@@ -29,6 +29,8 @@ export class XQuerySymbol {
         return 'NUMBER';
       case 2:
         return 'STRING';
+      case 3:
+        return 'BOOLEAN';
     }
     return this.tipo;
   }
@@ -62,4 +64,5 @@ export enum TypeXQuery {
   ID = 0,
   NUMBER = 1,
   STRING = 2,
+  BOOLEAN = 3,
 }
