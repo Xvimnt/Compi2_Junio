@@ -23,7 +23,7 @@ export class TraductorXQuery {
     // console.log(ast);
     if (ast != null) {
       let tipo = ast.getTipo();
-      console.log(tipo);
+      // console.log(tipo);
       switch (tipo) {
         case 'LExpresiones':
           ast.getHijos().forEach((element) => {
@@ -43,7 +43,7 @@ export class TraductorXQuery {
     envXML: EnvironmentXML,
     envXQuery: EnvironmentXQuery
   ) {
-    console.log(ast, 'ejecutando let');
+    // console.log(ast, 'ejecutando let');
     //var name
     let varName = ast.getHijos()[0].name;
     //expresion
@@ -60,6 +60,7 @@ export class TraductorXQuery {
         break;
       case 'Expr':
         // aritmetica
+        console.log(this.traducirAritmetica(exp, envXML, envXQuery));
         break;
       case 'Exp':
         // xpath
@@ -76,12 +77,17 @@ export class TraductorXQuery {
           //valor opc || preservada opc
           if (!exp.listaNodos[1]) {
             var val = this.traducirValor(exp.listaNodos[0], envXML, envXQuery);
-            if (val[1] < 3) {
+            if (val[1] < 4) {
               //traducir
               var c = _Console.count;
               var h = _Console.heapPointer;
               var s = _Console.stackPointer;
               _Console.salida += `// let ${varName}=${val[0]}\n`;
+              if (val[0] == 'true') {
+                val[0] = 1;
+              } else if (val[0] == 'false') {
+                val[0] = 0;
+              }
               _Console.salida += `t${c}=hxquery;\n`;
               _Console.salida += `HeapXQuery[(int)hxquery] = ${val[0]};\n`;
               _Console.salida += `hxquery = hxquery + 1;\n`;
@@ -115,7 +121,7 @@ export class TraductorXQuery {
                 _Console.stackPointer++;
                 //agregar a tabla de simbolos
                 var sym = new XQuerySymbol(
-                  val[1],
+                  val[0].tipo,
                   varName,
                   val[0].valor,
                   exp.line,
@@ -146,6 +152,157 @@ export class TraductorXQuery {
     }
   }
 
+  private traducirAritmetica(
+    ast: NodoXML,
+    envXML: EnvironmentXML,
+    envXQuery: EnvironmentXQuery
+  ) {
+    if (ast) {
+      // console.log('Traducir aritmetica');
+      // console.log(ast);
+      switch (ast.name) {
+        case '+':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 + val2;
+        case '-':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 - val2;
+        case '*':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 * val2;
+        case 'div':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 / val2;
+        case 'mod':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 % val2;
+        case 'or':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 || val2;
+        case 'and':
+          //ejecutar izq
+          var val1 = this.traducirAritmetica(
+            ast.listaNodos[0],
+            envXML,
+            envXQuery
+          );
+          //ejecutar der
+          var val2 = this.traducirAritmetica(
+            ast.listaNodos[1],
+            envXML,
+            envXQuery
+          );
+          //sumar
+          return val1 && val2;
+        case 'Fin':
+          if (!ast.listaNodos[1]) {
+            var val = this.traducirValor(ast.listaNodos[0], envXML, envXQuery);
+            switch (val[1]) {
+              case 0:
+                //error
+                break;
+              case 1:
+                return +val[0];
+              case 2:
+                return val[0];
+              case 3:
+                return val[0] === 'true' ? true : false;
+              case 4:
+                if (val[0]) {
+                  switch (val[0].type) {
+                    case 0:
+                    //error
+                    case 1:
+                      return +val[0].value;
+                    case 2:
+                      return val[0].value;
+                    case 3:
+                      return val[0].value === 'true' ? true : false;
+                  }
+                }
+            }
+            if (val[1] === 4 && val[0]) {
+              return val[0].valor;
+            } else {
+              return val[0];
+            }
+          }
+      }
+    }
+  }
+
   private traducirValor(
     ast: NodoXML,
     envXML: EnvironmentXML,
@@ -158,8 +315,11 @@ export class TraductorXQuery {
         return [ast.name, 1];
       case 'STRING':
         return [ast.name, 2];
+      case 'BOOLEAN':
+        return [ast.name, 3];
       case 'VARIABLE':
-        return [envXQuery.searchVar(ast.name), 3];
+        return [envXQuery.searchVar(ast.name), 4];
+
       default:
         break;
     }
