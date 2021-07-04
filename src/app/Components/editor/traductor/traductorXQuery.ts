@@ -57,6 +57,31 @@ export class TraductorXQuery {
         break;
       case 'ExprLogica':
         // logica
+        _Console.salida += `// Operaciones Logicas\n`;
+        var lg = this.traducirLogica(exp, envXML, envXQuery);
+        //traducir
+        var c = _Console.count;
+        var h = _Console.heapPointer;
+        var s = _Console.stackPointer;
+        _Console.salida += `t${c}=hxquery;\n`;
+        _Console.salida += `HeapXQuery[(int)hxquery] = t${c - 1};\n`;
+        _Console.salida += `hxquery = hxquery + 1;\n`;
+        _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
+        _Console.salida += 'pxquery = pxquery +1;\n\n';
+        _Console.count++;
+        _Console.heapPointer++;
+        _Console.stackPointer++;
+        // agregar a tabla de simbolos
+        var sym = new XQuerySymbol(
+          lg[1],
+          varName,
+          lg[0],
+          exp.line,
+          exp.column,
+          envXQuery.nombre
+        );
+        sym.setPosicion(s);
+        envXQuery.addSimbolo(sym);
         break;
       case 'Expr':
         _Console.salida += `// Operaciones Aritmeticas\n`;
@@ -200,6 +225,332 @@ export class TraductorXQuery {
     }
   }
 
+  private traducirLogica(
+    ast: NodoXML,
+    envXML: EnvironmentXML,
+    envXQuery: EnvironmentXQuery
+  ) {
+    if (ast) {
+      // console.log(ast.name);
+      switch (ast.name) {
+        case '<=':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// <=\n`;
+          _Console.salida += `if (${val1[2]} <= ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case '>=':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// >=\n`;
+          _Console.salida += `if (${val1[2]} >= ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case '=':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// =\n`;
+          _Console.salida += `if (${val1[2]} == ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case '!=':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// !=\n`;
+          _Console.salida += `if (${val1[2]} != ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case '>':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// >\n`;
+          _Console.salida += `if (${val1[2]} > ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case '<':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// <\n`;
+          _Console.salida += `if (${val1[2]} < ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'eq':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// eq\n`;
+          _Console.salida += `if (${val1[2]} == ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'ne':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// ne\n`;
+          _Console.salida += `if (${val1[2]} != ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'lt':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// lt\n`;
+          _Console.salida += `if (${val1[2]} < ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'le':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// le\n`;
+          _Console.salida += `if (${val1[2]} <= ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'gt':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// gt\n`;
+          _Console.salida += `if (${val1[2]} > ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        case 'ge':
+          //ejecutar izq
+          var val1 = this.traducirLogica(ast.listaNodos[0], envXML, envXQuery);
+          //ejecutar der
+          var val2 = this.traducirLogica(ast.listaNodos[1], envXML, envXQuery);
+          //traducir
+          var c = _Console.count;
+          var h = _Console.heapPointer;
+          var s = _Console.stackPointer;
+          var l = _Console.labels;
+
+          _Console.salida += `// ge\n`;
+          _Console.salida += `if (${val1[2]} >= ${val2[2]}) goto L${l};\n`;
+          //verdadero
+          _Console.salida += `t${c}=0;\n`;
+          _Console.salida += `goto L${l + 1};\n`;
+          _Console.salida += `L${l}:\n`;
+          _Console.salida += `t${c}=1;\n`;
+          // salida
+          _Console.salida += `L${l + 1}:\n\n`;
+          l = l + 2;
+          c++;
+          _Console.labels = l;
+          _Console.count = c;
+          //or
+          return [val1[0] || val2[0], 3, `t${c - 1}`];
+        default:
+          return this.traducirAritmetica(ast, envXML, envXQuery);
+      }
+    }
+  }
+
   private traducirAritmetica(
     ast: NodoXML,
     envXML: EnvironmentXML,
@@ -207,7 +558,7 @@ export class TraductorXQuery {
   ) {
     if (ast) {
       // console.log('Traducir aritmetica');
-      // console.log(ast);
+      // console.log(ast.name);
       switch (ast.name) {
         case '+':
           //ejecutar izq
@@ -363,7 +714,6 @@ export class TraductorXQuery {
           var h = _Console.heapPointer;
           var s = _Console.stackPointer;
           var l = _Console.labels;
-
           _Console.salida += `// OR\n`;
           _Console.salida += `if (${val1[2]} == 0) goto L${l};\n`;
           _Console.salida += `t${c}=1;\n`;
@@ -372,10 +722,10 @@ export class TraductorXQuery {
           _Console.salida += `t${c}=1;\n`;
           _Console.salida += `goto L${l + 2};\n`;
           // falso
-          _Console.salida += `L${l + 1}:\n t${c}=0;\n`;
+          _Console.salida += `L${l + 1}:\nt${c}=0;\n`;
           // salida
           _Console.salida += `L${l + 2}:\n\n`;
-          l = l + 2;
+          l = l + 3;
           c++;
           _Console.labels = l;
           _Console.count = c;
@@ -411,12 +761,12 @@ export class TraductorXQuery {
           _Console.salida += `L${l + 1}:\n t${c}=1;\n`;
           // salida
           _Console.salida += `L${l + 2}:\n\n`;
-          l = l + 2;
+          l = l + 3;
           c++;
           _Console.labels = l;
           _Console.count = c;
           //and
-          return [val1[0] && val2[0], 3];
+          return [val1[0] && val2[0], 3, `t${c - 1}`];
         case 'Fin':
           if (!ast.listaNodos[1]) {
             var val = this.traducirValor(ast.listaNodos[0], envXML, envXQuery);
@@ -527,6 +877,8 @@ export class TraductorXQuery {
                 }
             }
           }
+        default:
+          return this.traducirLogica(ast, envXML, envXQuery);
       }
     }
   }
