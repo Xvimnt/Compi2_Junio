@@ -457,8 +457,16 @@ ClauseExpr: ExprLogica { $$ = $1; }
           }
 					;
 
-Return: RETURN ExprLogica { $$ = $2; }
-      | RETURN If { $$ = $2; }
+Return: RETURN ExprLogica { 
+        var nodo1 = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1)
+        nodo1.addHijo($2)
+        $$ = nodo1; 
+      }
+      | RETURN If { 
+        var nodo1 = new NodoXML("Return","Return",@1.first_line+1,@1.first_column+1)
+        nodo1.addHijo($2)
+        $$ = nodo1;  
+      }
       ;
 
 Function : DECLARE FUNCTION Prefix ':' ID Parameter AS XS':'TipoVar prod_statement ';' {
