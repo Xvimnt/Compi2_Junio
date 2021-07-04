@@ -13,13 +13,13 @@ export class TraductorXQuery {
   constructor() {}
 
   traducir(ast: NodoXML, envXML: EnvironmentXML, envXQuery: EnvironmentXQuery) {
-    console.log(_Console.count);
-    console.log(_Console.heapPointer);
-    console.log(_Console.stackPointer);
-    console.log(_Console.heapPointer2);
-    console.log(_Console.stackPointer2);
-    console.log(_Console.labels);
-    console.log(_Console.salida);
+    // console.log(_Console.count);
+    // console.log(_Console.heapPointer);
+    // console.log(_Console.stackPointer);
+    // console.log(_Console.heapPointer2);
+    // console.log(_Console.stackPointer2);
+    // console.log(_Console.labels);
+    // console.log(_Console.salida);
     // console.log(ast);
     if (ast != null) {
       let tipo = ast.getTipo();
@@ -35,7 +35,7 @@ export class TraductorXQuery {
           break;
       }
     }
-    return '//traduccion\n' + _Console.salida;
+    return _Console;
   }
 
   private traducirLet(
@@ -76,29 +76,68 @@ export class TraductorXQuery {
           //valor opc || preservada opc
           if (!exp.listaNodos[1]) {
             var val = this.traducirValor(exp.listaNodos[0], envXML, envXQuery);
-            //traducir
-            var c = _Console.count;
-            var h = _Console.heapPointer;
-            var s = _Console.stackPointer;
-            _Console.salida += `// let ${varName}=${val[0]}\n`;
-            _Console.salida += `t${c}=hxquery;\n`;
-            _Console.salida += `HeapXQuery[(int)hxquery] = ${val[0]};\n`;
-            _Console.salida += `hxquery = hxquery + 1;\n`;
-            _Console.salida += `StackXQuery[(int)${s}] = t${c};\n\n`;
-            _Console.count++;
-            _Console.heapPointer++;
-            _Console.stackPointer++;
-            //agregar a tabla de simbolos
-            var sym = new XQuerySymbol(
-              val[1],
-              varName,
-              val[0],
-              exp.line,
-              exp.column,
-              envXQuery.nombre
-            );
-            sym.setPosicion(s);
-            envXQuery.addSimbolo(sym);
+            if (val[1] < 3) {
+              //traducir
+              var c = _Console.count;
+              var h = _Console.heapPointer;
+              var s = _Console.stackPointer;
+              _Console.salida += `// let ${varName}=${val[0]}\n`;
+              _Console.salida += `t${c}=hxquery;\n`;
+              _Console.salida += `HeapXQuery[(int)hxquery] = ${val[0]};\n`;
+              _Console.salida += `hxquery = hxquery + 1;\n`;
+              _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
+              _Console.salida += 'pxquery = pxquery +1;\n\n';
+              _Console.count++;
+              _Console.heapPointer++;
+              _Console.stackPointer++;
+              //agregar a tabla de simbolos
+              var sym = new XQuerySymbol(
+                val[1],
+                varName,
+                val[0],
+                exp.line,
+                exp.column,
+                envXQuery.nombre
+              );
+              sym.setPosicion(s);
+              envXQuery.addSimbolo(sym);
+            } else {
+              if (val[0]) {
+                //traducir
+                var c = _Console.count;
+                var h = _Console.heapPointer;
+                var s = _Console.stackPointer;
+                _Console.salida += `// let ${varName}=${val[0].nombre}\n`;
+                _Console.salida += `t${c}=${val[0].posicion};\n`;
+                _Console.salida += `StackXQuery[(int)pxquery] = t${c};\n`;
+                _Console.salida += 'pxquery = pxquery + 1;\n\n';
+                _Console.count++;
+                _Console.stackPointer++;
+                //agregar a tabla de simbolos
+                var sym = new XQuerySymbol(
+                  val[1],
+                  varName,
+                  val[0].valor,
+                  exp.line,
+                  exp.column,
+                  envXQuery.nombre
+                );
+                sym.setPosicion(s);
+                envXQuery.addSimbolo(sym);
+              } else {
+                //error
+                errores.push(
+                  new Error_(
+                    exp.getLine(),
+                    exp.getColumn(),
+                    'Semantico',
+                    `La variable no esta declarada => ${exp.listaNodos[0].nombre}`
+                  )
+                );
+              }
+            }
+          } else {
+            //array
           }
         }
         break;
@@ -120,7 +159,7 @@ export class TraductorXQuery {
       case 'STRING':
         return [ast.name, 2];
       case 'VARIABLE':
-        break;
+        return [envXQuery.searchVar(ast.name), 3];
       default:
         break;
     }
